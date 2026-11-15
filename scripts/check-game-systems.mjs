@@ -210,7 +210,7 @@ for (const tier of ['easy', 'medium', 'hard']) {
   }
 }
 const { createDefaultGameSave, parseGameSaveFromValue, saveGameSave, loadGameSave, clearGameSave } = load('@/utils/game-storage');
-const { applyPuzzleAnswer, applyFeed, getSolvedCounts, currentPuzzleStreak } = load('@/utils/game-operations');
+const { applyPuzzleAnswer, applyFeed, applyFeedBite, getSolvedCounts, currentPuzzleStreak } = load('@/utils/game-operations');
 const { getRoomPlayHappinessBoost } = load('@/constants/cat-play');
 assert.equal(getRoomPlayHappinessBoost('toyPlay','blueBall'),12);
 assert.equal(getRoomPlayHappinessBoost('toyPlay','yarnRed'),22);
@@ -290,6 +290,48 @@ assert.equal(fed.coinTransactions, start.coinTransactions, 'Feeding never create
 const emptyWalletFeed = applyFeed({ ...start, wallet: { coins: 0 }, pet: { ...start.pet, lastCareAt: now } }, now);
 assert.equal(emptyWalletFeed.wallet.coins, 0); assert.equal(emptyWalletFeed.pet.stats.hunger, 97);
 assert.equal(applyFeed({ ...start, pet: { ...start.pet, stats: { ...start.pet.stats, hunger: 100 } } }, now), null);
+const biteStart = { ...start, pet: { ...start.pet, lastCareAt: now, lastInteractionAt: now - 1000, isAsleep: true,
+  stats: { ...start.pet.stats, hunger: 40, happiness: 50 } } };
+let biteSave = biteStart;
+for (let bite = 1; bite <= 12; bite++) {
+  biteSave = applyFeedBite(biteSave, bite === 12, now);
+  assert.equal(biteSave.pet.stats.hunger, 40 + bite * 5);
+  assert.equal(biteSave.pet.stats.happiness, bite === 12 ? 55 : 50);
+  assert.equal(biteSave.pet.lastInteractionAt, biteStart.pet.lastInteractionAt, 'A bite cannot cancel its own command');
+  assert.equal(biteSave.pet.isAsleep, false);
+  assert.equal(biteSave.wallet, biteStart.wallet);
+}
+assert.equal(biteStart.pet.stats.hunger, 40, 'Bite rewards leave the input untouched');
+assert.equal(biteSave.pet.stats.hunger, 100, 'A finished meal fills the cat');
+let decayingMeal = { ...biteStart, pet: { ...biteStart.pet, stats: { ...biteStart.pet.stats, hunger: 30 } } };
+for (let bite = 1; bite <= 14; bite++) decayingMeal = applyFeedBite(decayingMeal, bite === 14, now + bite * 1600);
+assert.equal(decayingMeal.pet.stats.hunger, 100, 'The last bite also covers decay during the meal');
+assert.equal(decayingMeal.pet.lastInteractionAt, biteStart.pet.lastInteractionAt);
+const sleepingFull = applyFeedBite({ ...biteStart, pet: { ...biteStart.pet, stats: { ...biteStart.pet.stats, hunger: 100 } } }, true, now);
+assert.equal(sleepingFull.pet.stats.hunger, 100);
+assert.equal(sleepingFull.pet.isAsleep, false, 'A one-bite meal still wakes a full sleeping cat');
+let fullBiteSave = { ...biteStart, pet: { ...biteStart.pet, stats: { ...biteStart.pet.stats, hunger: 98 } } };
+fullBiteSave = applyFeedBite(fullBiteSave, false, now);
+assert.equal(fullBiteSave.pet.stats.hunger, 100);
+assert.equal(applyFeedBite(fullBiteSave, false, now), null, 'An already full cat needs no extra hunger write');
+fullBiteSave = applyFeedBite(fullBiteSave, true, now);
+assert.equal(fullBiteSave.pet.stats.hunger, 100);
+assert.equal(fullBiteSave.pet.stats.happiness, 55, 'Finishing still awards happiness after hunger saturates');
+for (const [hunger, total] of [[30, 14], [36, 13], [96, 1], [0, 20], [99.75, 1]]) {
+  let sized = { ...biteStart, pet: { ...biteStart.pet, isAsleep: false, stats: { ...biteStart.pet.stats, hunger } } };
+  const size = 5;
+  for (let bite = 1; bite <= total; bite++) {
+    sized = applyFeedBite(sized, bite === total, now, size);
+    if (bite < total) {
+      assert.equal(sized.pet.stats.hunger, hunger + bite * size, 'Every bite immediately raises Fed by five points');
+      assert.ok(sized.pet.stats.hunger < 100, 'A sized meal is never full before its last bite');
+    }
+  }
+  assert.equal(sized.pet.stats.hunger, 100, 'The last bite of a sized meal fills the cat exactly');
+}
+const wokenFull = applyFeedBite({ ...biteStart, pet: { ...biteStart.pet, stats: { ...biteStart.pet.stats, hunger: 100 } } }, false, now, 0);
+assert.equal(wokenFull.pet.isAsleep, false); assert.equal(wokenFull.pet.stats.hunger, 100);
+assert.equal(applyFeedBite(wokenFull, false, now, 0), null, 'Empty bites for a full, awake cat write nothing');
 assert.equal(start.pet.placedDecorations[0].decorationId, 'bowlBlue');
 assert.equal(start.progress.decorationQuantities.bowlBlue, 1);
 const reopenedBowl = parseGameSaveFromValue(start).save;

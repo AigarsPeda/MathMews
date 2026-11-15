@@ -1,6 +1,6 @@
 # Adding cat animations and room interactions
 
-See the [23 October movement study](art/cat-motion-study.md) for the latest source review, predictive speed control, smoother starts/stops, route-leading gaze and validation.
+See the [movement study](art/cat-motion-study.md) for animation references, movement refinements and validation. Its 15 November cartoon review covers tapered legs, higher bend positions, softer swing timing, exported paw curl and reduced body roll.
 
 The exporter and app both read `scripts/3d/clips.json`. Each entry is `[frameCount, fps]`. A new key automatically becomes a `CatAnimationId` and can be used by a room activity step. All three cat skins must contain the same clips.
 
@@ -35,6 +35,12 @@ For a command initiated by a menu, pass the timestamp returned by `onRoomInterac
 `constants/cat-gaits.json` shares stride lengths, stance proportions and paw offsets between the Blender exporter and native playback. `trot` and `run` are native locomotion clips added by `game_cat.py`; activity plans continue to request `walk`. The native planner chooses a maximum pace from the task and distance. Sleep and return-home trips walk, longer ordinary trips trot, and long toy/mouse approaches can run. Actual clearance and curvature limit speed locally. The first stride and final approach stay at walking speed, with smooth acceleration and braking between them.
 
 Animation phase follows distance traveled. Gait changes preserve phase, outgoing clips follow the same distance clock, and hysteresis prevents repeated switching near a speed threshold. Planted paws use world contacts; an adjustment step lifts a foot before it overextends during a blend. Turning uses its original launch stride even after the locomotion stride changes. The running pose adds restrained shoulder/pelvis flex and a trailing tail. Reduce Motion retains a stable walking pose.
+
+The plush-paw pass uses strides of 0.80, 0.86 and 1.20 rig units for walk, trot and run. The run's hind contacts occur at phases 0.80 and 0.90, before the next fore contacts at 0.00 and 0.10. Recovery first peels the heel, then lifts the toes; a small opposite fore/hind swing bias keeps the mitten volumes apart without moving planted feet. `cat_gaits.paw_swing` supplies this shared walk/trot/run trajectory. Grounded travel still matches the distance clock.
+
+Contact rescue checks actual supported reach with a 0.004-unit reserve. A naturally lifted foot is not tested as if it were still planted, and vertical lift does not count as a misplaced contact. During gait crossfades, horizontal disagreement can release an obsolete anchor before it crowds the next hind contact. Curved steps retain their lateral release, now at 0.10 units. Very short stride corrections scale the airborne height and paw rotation together, rather than compressing a full-height swing into a tiny reposition.
+
+`node scripts/check-cat-stepping.mjs` checks the rebuilt orange skin's full-cycle mitten volumes, upward recovery toes and correction-free straight walking at 30/60/120 FPS. Add `--all-skins` after rebuilding grey and white. This check supplements the existing transition, turn, contact and route checks; it is not an animation-quality score.
 
 The references informed these choices rather than supplying animation assets:
 
@@ -361,3 +367,12 @@ The front padded chair beside the saved kitchen island was reachable on the floo
 Chained fridge commands also preserve the chair's identity while waking and jumping down. Previously, the fridge-open requirement was incorrectly applied to those chair exit steps.
 
 `node scripts/check-kitchen-chair-navigation.mjs` exercises fridge → front chair nap → wake → floor → fridge in the saved layout at three viewport heights. It checks actual actor completion, rendered landing pads against the cushion ellipse, continuity between steps, and occupied-seat rejection. The existing BrainPet Furniture Smoothness QA simulator completed the same sequence with normal object menus and unchanged furniture placement. Room-activity, rocking-chair, performance, TypeScript and scoped lint checks passed. Temporary debug files were deleted; no demonstration recordings were retained.
+
+
+### Locomotion load and pivot preparation
+
+The 15 November 2026 follow-up gives walk, trot and run separate loading patterns. Walk shoulders and hips accept weight at their respective contacts. Trot compresses on diagonal landings and rises through passing, with a steadier head. The run's main gathered/extended shape lives in the restricted `game_cat.pose()` body block: chest and pelvis rotate and translate toward or away from one another, the middle back rounds, and head offsets compensate for chest movement. Runtime adds contact loading and a small filtered middle-back response without a second running pitch cycle. Fore/hind running lift heights differ to separate the gathered mittens; stride, stance, footfall offsets, speed and clip duration keep their existing values.
+
+Supported pivots retain their 0.64-second quarter-turn, 1.12-second half-turn, short placements and 0.055-unit crouch. The head leads the shoulders by about 83–100 ms in the measured actor poses, followed by the pelvis about 50 ms later. The torso shifts toward support and the recovering paws lift their toes. Incoming torso yaw is retained when a command interrupts movement. Contact correction now distinguishes natural recovery from an added rescue lift, preserving the authored arc where possible while retaining rescue steps needed for spacing and reach.
+
+The [motion study](art/cat-motion-study.md#locomotion-load-and-silhouette-pass-15-november-2026) records before/after measurements, files changed, checks and visual scores. This pass does not certify the owner's above-96 quality threshold. Fast trot/run contact changes, moving-turn corrections and short-reposition ankle excursions remain. Orange was rebuilt; grey and white await the owner's final export. Review recordings and strips remain outside the repository.

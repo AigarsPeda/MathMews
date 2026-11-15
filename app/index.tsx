@@ -93,8 +93,10 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
     active: boolean;
     returnHome: () => void;
   } | null>(null);
+  const [roomActivityActive, setRoomActivityActive] = useState(false);
   const handleRoomActivityChange = useCallback((active: boolean, returnHome: () => void) => {
     roomActivityRef.current = { active, returnHome };
+    setRoomActivityActive(active);
   }, []);
   const { t } = useTranslation();
   const screenInsets = useScreenInsets();
@@ -107,7 +109,7 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
     wallet,
     progress,
     setPet,
-    feedPet,
+    feedPetBite,
     recordInteraction,
     removeDecorationFromRoom,
     removeBedFromRoom,
@@ -324,9 +326,9 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
     wakePet,
   ]);
 
-  const handleFeed = useCallback(() => {
-    if (feedPet()) showSpeech(t("home.enjoyedSnack", { name: pet.name }));
-  }, [feedPet, pet.name, showSpeech, t]);
+  const handleFeed = useCallback((finished: boolean, amount?: number) => {
+    if (feedPetBite(finished, amount) && finished) showSpeech(t("home.enjoyedSnack", { name: pet.name }));
+  }, [feedPetBite, pet.name, showSpeech, t]);
 
   const handleRoomActivityCompleted = useCallback((kind: RoomActivityKind, modelId?: string) => {
     const boost = getRoomPlayHappinessBoost(kind, modelId);
@@ -717,7 +719,7 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
   return (
     <View style={[styles.safe, screenInsets]}>
       <HomeBedtimeRoutine pet={pet} clock={worldClock} enabled={homeActive}
-        busy={isCareBlocked || isCareAnimationPlaying || !!decoratingRoom || !!decorationEntry || !!transition}
+        busy={roomActivityActive || isCareBlocked || isCareAnimationPlaying || !!decoratingRoom || !!decorationEntry || !!transition}
         hasCommand={!!requestedRoomCommand} onBedtime={handleBedtime} onMorning={handleMorning} />
       <View style={styles.screen}>
         <View style={styles.header}>

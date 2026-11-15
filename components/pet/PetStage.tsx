@@ -57,6 +57,7 @@ import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { PetStatsPanel } from "@/components/pet/PetStatsPanel";
+import { MEAL_RING_SIZE, MealProgressRing } from "@/components/pet/MealProgressRing";
 import { getBedDisplaySize, getCatBedSource, canFlipBed, canScaleBedDown, canScaleBedUp, getEquippedBedScale } from "@/constants/cat-beds";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import type { CatDecorationId } from "@/constants/cat-decorations";
@@ -101,7 +102,7 @@ import { moderateScale } from "@/utils/scale";
 import { getRoomObjectDepthAnchor, isRoomBackgroundDecoration } from "@/utils/room-depth";
 import { cloneElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Animated, { useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 import {
   Alert,
   Image,
@@ -118,6 +119,10 @@ const COMPACT_STAGE_INSET = moderateScale(12);
 const COMPACT_PET_MIN = 200;
 const COMPACT_PET_MAX = 300;
 const SPEECH_TAIL_X = moderateScale(23);
+/** Worklets cannot call moderateScale, so the ring's lift above the ears is fixed here. */
+const MEAL_RING_LIFT = moderateScale(2) + MEAL_RING_SIZE;
+/** The renderer reports the head 20 times a second; the ring glides between reports. */
+const HEAD_REPORT_GLIDE_MS = 50;
 const SPEECH_ANCHOR_X = moderateScale(30) + SPEECH_TAIL_X;
 
 function compactPetWidth(petType: PetType, compact: boolean) {
@@ -188,7 +193,7 @@ type PetStageProps = {
   roomActivityBlocked?: boolean;
   onRoomInteraction?: () => number | void;
   onRoomActivityChange?: (active: boolean, returnHome: () => void) => void;
-  onFeed?: () => void;
+  onFeed?: (finished: boolean, amount: number) => void;
   onRoomActivityCompleted?: (kind: RoomActivityKind, instanceId?: string) => void;
   onRoomActivityFailure?: (notice: RoomActivityFailureNotice) => void;
   onPlay?: (activity: CatPlayActivity) => void;
@@ -726,8 +731,8 @@ export function PetStage({
     setDecorating(true);
   }, [setWaitingToDecorate, setDecorating]);
   const blockedActivityHandler = useRef<((failure: BlockedRoomActivity) => void) | null>(null);
-  const { activity: roomActivity, commandAttention, blockedActivity, clearBlockedActivity, scale: activityScale, facing: activityFacing,
-    objectX, objectY, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep } = useRoomActivity(activityOptions,
+  const { activity: roomActivity, mealProgress, commandAttention, blockedActivity, clearBlockedActivity, scale: activityScale, facing: activityFacing,
+    objectX, objectY, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep } = useRoomActivity(activityOptions, stats.hunger,
     compact && usesNativeCat && graphicsMode !== "loading" && catPresent && !decorating && !roomActivityBlocked,
     lastInteractionAt, petSceneX, petSceneY, (instanceId, motion) => {
       const door = roomPlacedDecorations.find(item => item.instanceId === instanceId);
@@ -813,9 +818,31 @@ export function PetStage({
       }
     }
   }, [nativeWorld, objectX, objectY, onPlacedDecorationOffsetChange, onPlacedToyOffsetChange, playingId, roomPlacedDecorations, roomPlacedToys, updateObjectPosition]);
-  const handleNativePetPosition = useCallback((point: { x: number; y: number }) => {
+  // The meal ring rides on the rendered head. NaN hides it until the first report.
+  const catHeadX = useSharedValue(Number.NaN);
+  const catHeadY = useSharedValue(Number.NaN);
+  const headTracking = useRef<'off' | 'waiting' | 'following'>('off');
+  const eating = mealProgress != null;
+  useEffect(() => {
+    if (!eating) return;
+    headTracking.current = 'waiting';
+    return () => {
+      headTracking.current = 'off';
+      cancelAnimation(catHeadX); cancelAnimation(catHeadY);
+      catHeadX.set(Number.NaN); catHeadY.set(Number.NaN);
+    };
+  }, [catHeadX, catHeadY, eating]);
+  const handleNativePetPosition = useCallback((point: { x: number; y: number; headX?: number; headY?: number }) => {
     petSceneX.set(point.x); petSceneY.set(point.y);
-  }, [petSceneX, petSceneY]);
+    if (headTracking.current === 'off') return;
+    // A model without a head joint keeps the ring over the body.
+    const x = point.headX ?? point.x, y = point.headY ?? point.y - displayWidth * .2;
+    const glide = headTracking.current === 'following' && !reduceMotion
+      ? { duration: HEAD_REPORT_GLIDE_MS, easing: Easing.linear } : undefined;
+    headTracking.current = 'following';
+    catHeadX.set(glide ? withTiming(x, glide) : x);
+    catHeadY.set(glide ? withTiming(y, glide) : y);
+  }, [catHeadX, catHeadY, displayWidth, petSceneX, petSceneY, reduceMotion]);
   const activityPlayback = useMemo<PetPlaybackState | null>(() => {
     const step = roomActivity?.plan.steps[roomActivity.stepIndex];
     if (!step) return null;
@@ -825,7 +852,8 @@ export function PetStage({
   const catActivityStyle = useAnimatedStyle(() => ({
     transform: [{ scale: activityScale.get() }, { scaleX: activityFacing.get() }],
   }));
-  const visibleSpeech = !catPresent || roomActivity || decorating ? null : speechMessage;
+  const mealReturning = roomActivity?.plan.kind === 'bowlEat' && roomActivity.plan.steps[roomActivity.stepIndex].returnHome;
+  const visibleSpeech = !catPresent || roomActivity && !mealReturning || decorating ? null : speechMessage;
   const sceneZoomStyle = useAnimatedStyle(() => {
     return { transform: [
       { translateX: sceneX.get() },
@@ -851,6 +879,15 @@ export function PetStage({
         (petSceneY.get() - displayWidth * .2) * sceneScale.get() - speechHeight.get() },
     ],
   }));
+  const mealRingStyle = useAnimatedStyle(() => {
+    const headX = catHeadX.get(), headY = catHeadY.get(), tracked = !Number.isNaN(headX) && !Number.isNaN(headY);
+    const fallback = !nativeRendering || reduceMotion;
+    const x = tracked ? headX : petSceneX.get(), y = tracked ? headY : petSceneY.get() - displayWidth * .2;
+    return { opacity: tracked || fallback ? 1 : 0, transform: [
+      { translateX: viewport.width / 2 + x - MEAL_RING_SIZE / 2 },
+      { translateY: viewport.height / 2 + y - MEAL_RING_LIFT },
+    ] };
+  });
   const petDisplayWidth = avatarDisplayWidth(
     petType,
     avatarWidth,
@@ -1795,6 +1832,13 @@ export function PetStage({
               onAnimationComplete={roomActivity ? undefined : onAnimationComplete} onStepComplete={roomActivity ? undefined : onStepComplete} /></Pressable> : null}
             {visibleRoomItemLayers}
             {compact ? roomPetLayer : petCluster}
+            {roomVisible && !decorating && mealProgress != null ? <Animated.View testID="meal-progress" pointerEvents="none"
+              accessible accessibilityRole="progressbar" accessibilityLabel={t('home.mealProgress')}
+              accessibilityValue={{ min: 0, max: mealProgress.total, now: mealProgress.bites,
+                text: t('home.mealBites', { count: mealProgress.bites, total: mealProgress.total }) }}
+              style={[styles.mealProgress, mealRingStyle]}>
+              <MealProgressRing bites={mealProgress.bites} total={mealProgress.total} />
+            </Animated.View> : null}
             {overlayFeedback && <RoomPlacementOverlay visible={!!activeFeedback} world={nativeWorld} feedback={overlayFeedback} dragMotion={dragMotion} dragBase={dragBase}/>}
             {usesNativeCat && compact && nativeRendering && nativeSceneMounted && decorating && roomVisible &&
               <NativeRoomEditor zoom={zoom} cameraGesture={roomGesture} base={dragBase} motion={dragMotion} measure={measureDrag} prepare={prepareNativeDrag} stop={stopNativeDrag} pick={pickEditingItem} anchor={nativeDragAnchor}
@@ -1970,6 +2014,7 @@ export function PetStage({
 }
 
 const styles = StyleSheet.create({
+  mealProgress: { position: 'absolute', left: 0, top: 0, zIndex: ROOM_PET_LAYER_Z_INDEX + 1, width: MEAL_RING_SIZE, height: MEAL_RING_SIZE },
   graphicsHint: { position: "absolute", bottom: 8, alignSelf: "center", color: GameColors.textMuted, fontSize: 12 },
   transparentScene: { backgroundColor: 'transparent' },
   // Hidden stats keep the viewport identical in play and decoration mode.

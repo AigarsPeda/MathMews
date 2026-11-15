@@ -35,7 +35,7 @@ function load(id) {
   vm.runInNewContext(source, { module, exports: module.exports, require: load, Date: { now: () => now }, setTimeout: setTimeoutMock, clearTimeout: id => timers.delete(id) });
   return module.exports;
 }
-const { buildRoomActivity, buildRoomReturn, routeToSofa, roomOffsetToPoint, roomActivityStepKey, roomIdleDelay, ROOM_IDLE_DELAY_MS } = load('@/utils/room-activities');
+const { buildRoomActivity, buildRoomReturn, routeToSofa, roomOffsetToPoint, roomActivityStepKey, roomMealBiteCount, roomMealBiteSize, roomIdleDelay, ROOM_IDLE_DELAY_MS } = load('@/utils/room-activities');
 const { getCatWalkMotion, getCatJumpMotion, isCatWalk } = load('@/constants/cat-room-motion');
 for (const [x, y, animation, facing] of [[60, 0, 'walk', 1], [-60, 0, 'walk', -1], [0, -60, 'walkAway', 1],
   [0, 60, 'walkToward', 1], [60, -16.8, 'walkAwayDiagonal', 1], [-60, 16.8, 'walkTowardDiagonal', -1]]) {
@@ -99,7 +99,11 @@ const slots = []; let index = 0, effects = [], visibility = { active: true, redu
 const shared = initial => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
 const slot = initial => { const i = index++; if (!(i in slots)) slots[i] = initial(); return [i, slots[i]]; };
 mocks.react = {
-  useCallback: fn => fn,
+  useCallback: (fn, deps) => {
+    const [index, old] = slot(() => null);
+    if (!old || deps.some((dep, index) => dep !== old.deps[index])) slots[index] = { deps, value: fn };
+    return slots[index].value;
+  },
   useRef: initial => slot(() => ({ current: initial }))[1],
   useState: initial => { const [i, value] = slot(() => initial); return [value, next => { slots[i] = typeof next === 'function' ? next(slots[i]) : next; }]; },
   useEffect: (fn, deps) => {
@@ -117,13 +121,15 @@ const { useRoomActivity } = load('@/hooks/use-room-activity');
 const petX = shared(0), petY = shared(0);
 const arrivals = [], roomArrivals = [];
 let meals = 0;
+let bites = 0;
+let fullness = 75, fed = 0;
 const activityCompletions = [];
 let interaction = 1, enabled = true, roomVisible = true, hookRoom = mouseRoom;
 function render() {
   index = 0; effects = [];
   // The VM supplies a dependency-aware hook dispatcher instead of mounting React.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), () => meals++, id => roomArrivals.push(id), roomVisible, false, undefined, (kind,id) => activityCompletions.push({kind,id}));
+  const result = useRoomActivity(hookRoom, fullness, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), (finished, amount) => { bites++; fed += amount; if (finished) meals++; }, id => roomArrivals.push(id), roomVisible, false, undefined, (kind,id) => activityCompletions.push({kind,id}));
   effects.forEach(fn => fn()); return result;
 }
 assert.equal(render().activity, null);
@@ -417,10 +423,22 @@ for (const reduced of [false, true]) {
   enabled = false; render(); advance(0);
   hookRoom = mealRoom; visibility = { active: true, reduceMotion: reduced }; enabled = true; render();
   const before = meals;
+  const beforeBites = bites;
   interaction++; render().startActivity('bowlEat'); render(); render(); advance(0);
   assert.equal(meals, before, 'No hunger is awarded before eating');
   const plan = render().activity.plan;
-  advance(reduced ? 1800 : plan.steps.reduce((sum, step) => sum + step.durationMs, 0)); render();
+  advance(reduced ? 600 : plan.steps[0].durationMs); render();
+  assert.equal(JSON.stringify(render().mealProgress), JSON.stringify({ bites: 0, total: 5 }));
+  for (let bite = 1; bite <= 5; bite++) {
+    advance((reduced ? 600 : plan.steps[1].durationMs) / 5 + 1); render();
+    assert.equal(bites, beforeBites + bite, 'Each eating deadline awards exactly one bite');
+    assert.equal(meals, before + (bite === 5 ? 1 : 0), 'Only the last bite awards happiness and speech');
+    if (bite < 5) {
+      assert.equal(JSON.stringify(render().mealProgress), JSON.stringify({ bites: bite, total: 5 }));
+      hookRoom = { ...hookRoom, hungry: bite === 1, asleep: false }; render();
+    }
+  }
+  advance(reduced ? 600 : plan.steps[2].durationMs); render();
   assert.equal(meals, before + 1, 'Completing the meal feeds exactly once');
   assert.equal(render().activity, null);
   advance(60000); render(); assert.equal(meals, before + 1);
@@ -428,10 +446,28 @@ for (const reduced of [false, true]) {
 visibility = { active: true, reduceMotion: false };
 enabled = false; render(); advance(0); enabled = true; render();
 const mealsBeforeCancel = meals;
+const bitesBeforeCancel = bites;
 render().startActivity('bowlEat'); render(); advance(0);
+advance(render().activity.plan.steps[0].durationMs); render();
+advance(3200); render();
+assert.equal(bites, bitesBeforeCancel + 2);
 render().returnHome(); render(); advance(0); advance(60000); render();
-assert.equal(meals, mealsBeforeCancel, 'Interrupting the meal cancels its hunger reward');
-console.log('Verified deliberate bowl journeys, feeding after completion exactly once, cancellation and Reduce Motion.');
+assert.equal(meals, mealsBeforeCancel, 'Interrupting the meal cancels its completion bonus');
+assert.equal(bites, bitesBeforeCancel + 2, 'Interrupting the meal keeps exactly the bites eaten');
+assert.equal(render().mealProgress, null);
+console.log('Verified five timed bites, partial rewards after interruption, effect resumption and Reduce Motion.');
+
+enabled = false; render(); advance(0);
+hookRoom = { ...mealRoom, decorations: [foodBowl, sofa] }; enabled = true; render();
+const beforeSleep = { bites, meals };
+render().startActivity('bowlEat'); render(); advance(0);
+advance(render().activity.plan.steps[0].durationMs + 3201); render();
+assert.equal(bites, beforeSleep.bites + 2);
+render().startActivity('sofaSleep', sofa.instanceId); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'sofaSleep');
+advance(60_000); render();
+assert.equal(bites, beforeSleep.bites + 2, 'Going to sleep retains two bites and never awards the rest');
+assert.equal(meals, beforeSleep.meals);
 
 // Context and local command updates need not arrive in the same render.
 enabled = false; render(); advance(0); hookRoom = mealRoom; enabled = true; render();
@@ -564,8 +600,10 @@ assert.ok(nativeRoom.pathLength([route.path.at(-1), firstRoute.path.at(-1)]) > .
 assert.equal(rerouted.plan.targetInstanceId, foodBowl.instanceId, 'Moving the bowl preserves its identity');
 completeDynamicStep();
 const beforeRelocatingFood = meals;
+const bitesBeforeRelocatingFood = bites;
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'eating');
-advance(500);
+advance(3200); render();
+assert.equal(bites, bitesBeforeRelocatingFood + 2);
 hookRoom = { ...hookRoom, decorations: [{ ...foodBowl, offset: { x: .35, y: .25 } }] };
 hookRoom.nativeWorld = nativeRoom.buildNativeRoomWorld(hookRoom);
 const eatingPosition = { x: petX.get(), y: petY.get() }; render(); advance(0);
@@ -574,6 +612,53 @@ assert.equal(render().activity.plan.steps[0].bowlApproach, true);
 assert.ok(Math.hypot(petX.get() - eatingPosition.x, petY.get() - eatingPosition.y) < 1e-6, 'Relocating food cannot teleport the cat');
 for (let i = 0; render().activity && i < 5; i++) completeDynamicStep();
 assert.equal(meals, beforeRelocatingFood + 1, 'Only the meal at the new bowl position feeds');
+assert.equal(bites, bitesBeforeRelocatingFood + 5, 'Relocation keeps the original command bite budget');
+
+for (const interruption of ['complete', 'home', 'stop', 'disabled', 'background']) {
+  beginDynamicMeal();
+  hookRoom = { ...hookRoom, nativeStepCompletion: true }; render();
+  const approach = render().activity;
+  render().completeNativeStep(roomActivityStepKey(approach), approach.plan.steps[approach.stepIndex].native.path.at(-1)); render();
+  const eating = render().activity, key = roomActivityStepKey(eating), end = eating.plan.steps[eating.stepIndex].native.path.at(-1);
+  const before = { bites, meals };
+  advance(20_000); render();
+  assert.equal(bites, before.bites, 'Wall time cannot eat ahead of native rendering');
+  render().updateNativeHeight(end, 8, key + ':stale'); render();
+  assert.equal(bites, before.bites, 'Stale renderer reports cannot award bites');
+  render().updateNativeHeight(end, 1.599, key); render();
+  assert.equal(bites, before.bites);
+  render().updateNativeHeight(end, 1.601, key); render();
+  assert.equal(bites, before.bites + 1);
+  render().updateNativeHeight(end, 1.601, key); render();
+  render().updateNativeHeight(end, .2, key); render();
+  assert.equal(bites, before.bites + 1, 'Repeated or older clocks cannot repeat a bite');
+  render().updateNativeHeight(end, 3.201, key); render();
+  hookRoom = { ...hookRoom, hungry: true, asleep: true }; render();
+  assert.equal(JSON.stringify(render().mealProgress), JSON.stringify({ bites: 2, total: 5 }), 'Bites survive hungry/asleep option refreshes');
+  const resumedKey = roomActivityStepKey(render().activity);
+  if (interruption === 'complete') {
+    render().completeNativeStep(resumedKey, end); render();
+    render().completeNativeStep(resumedKey, end); render();
+    render().updateNativeHeight(end, 8, resumedKey); render();
+    assert.equal(bites, before.bites + 5, 'Completion catches up every missing bite exactly once');
+    assert.equal(meals, before.meals + 1);
+    assert.equal(render().mealProgress, null);
+  } else {
+    if (interruption === 'home') render().returnHome();
+    if (interruption === 'stop') render().stopActivity();
+    if (interruption === 'disabled') enabled = false;
+    if (interruption === 'background') visibility = { ...visibility, active: false };
+    render(); advance(0); render();
+    render().updateNativeHeight(end, 8, resumedKey);
+    render().completeNativeStep(resumedKey, end); render(); advance(60_000); render();
+    assert.equal(bites, before.bites + 2, `${interruption} keeps exactly two bites`);
+    assert.equal(meals, before.meals);
+    assert.equal(render().mealProgress, null);
+    visibility = { active: true, reduceMotion: false }; render(); advance(0); render();
+    assert.equal(bites, before.bites + 2, 'Resuming cannot recover an interrupted meal');
+  }
+}
+console.log('Verified rendered bite clocks, catch-up completion, duplicate/stale callbacks, and home/decorating/background interruption.');
 
 beginDynamicMeal(); completeDynamicStep();
 const activeMeal = render().activity, eating = activeMeal.plan.steps[activeMeal.stepIndex];
@@ -710,6 +795,7 @@ for (const reduced of [false, true]) {
   const finishRenderedStep = () => {
     const state = render().activity, step = state.plan.steps[state.stepIndex], key = roomActivityStepKey(state);
     assert.equal(step.native.blocked, false);
+    if (reduced && !step.native.awaitCompletion) { advance(600); render(); return; }
     assert.equal(step.native.awaitCompletion, true);
     advance(10_000); render();
     assert.equal(render().activity.stepIndex, state.stepIndex, 'Wall-clock time cannot outrun the renderer');
@@ -726,7 +812,7 @@ for (const reduced of [false, true]) {
   for (let i = 0; render().activity && i < 10; i++) {
     const state = render().activity, step = state.plan.steps[state.stepIndex];
     animations.push(reduced ? step.mood : step.animation);
-    assert.equal(meals, before, 'Feeding waits until the complete rendered meal and return');
+    assert.equal(meals, before + (step.returnHome ? 1 : 0), 'Feeding finishes at the bowl, not after the walk home');
     if (step.animation === 'eating') {
       const bowl = hookRoom.nativeWorld.objects.find(o => o.instanceId === 'left-bowl');
       const arrived = step.native.path[0];
@@ -1012,43 +1098,52 @@ resetClockRoom('day'); visibility = { active: true, reduceMotion: true }; render
 assert.equal(render().activity, null, 'Clock-driven exploration respects Reduce Motion');
 console.log('Verified native night nap arrival, safe dawn departure, morning activity, preserved commands, airborne dawn transitions and Reduce Motion.');
 
-// Meals progress while browsing another room, without native drawing callbacks.
-for (const reduced of [false,true]) for (const hideAt of ['command','walking','eating']) {
+for (const reduced of [false,true]) for (const hideAt of ['hidden','command','walking','eating']) {
   roomVisible=true;enabled=false;render();advance(0);
   visibility={active:true,reduceMotion:reduced};
   const offscreenRoom={...mealRoom,nativeStepCompletion:true};
   hookRoom={...offscreenRoom,nativeWorld:nativeRoom.buildNativeRoomWorld(offscreenRoom)};
   enabled=true;reportCat(hookRoom.nativeWorld.home);render();
   const before=meals;
+  const beforeBites=bites;
+  if(hideAt==='hidden'){roomVisible=false;render();}
   interaction++;render().startActivity('bowlEat',foodBowl.instanceId,interaction);render();
-  if(hideAt!=='command') {
+  if(hideAt!=='command'&&hideAt!=='hidden') {
     advance(0);render();
     if(hideAt==='eating') {
       const state=render().activity,step=state.plan.steps[state.stepIndex];
-      render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();
+      if(reduced)advance(600);
+      else render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));
+      render();
       assert.equal(render().activity.plan.steps[render().activity.stepIndex].mood,'eating');
+      if(reduced)advance(241);
+      else {
+        const eating=render().activity;
+        render().updateNativeHeight(eating.plan.steps[eating.stepIndex].native.path.at(-1),3.21,roomActivityStepKey(eating));
+      }
+      render();assert.equal(bites,beforeBites+2);
     }
   }
   roomVisible=false;render();advance(0);render();
   // Frequent layout/context renders must not restart a hidden meal's deadline.
   for(let i=0;i<50;i++){advance(1000);hookRoom={...hookRoom};render();}
-  assert.equal(meals,before+1,`Hidden ${hideAt} meal finishes exactly once`);
+  assert.equal(meals,before+(hideAt==='hidden'?1:0),`Only an already hidden command completes after ${hideAt}`);
+  assert.equal(bites,beforeBites+(hideAt==='hidden'?5:hideAt==='eating'?2:0),'Room changes preserve only already eaten bites');
   assert.equal(render().activity,null);
   assert.equal(timers.size,0,'A completed hidden meal leaves no idle scheduler running');
   roomVisible=true;render();advance(0);render();
-  advance(20000);render();assert.equal(meals,before+1,'Returning cannot award the meal again');
+  advance(20000);render();assert.equal(meals,before+(hideAt==='hidden'?1:0),'Returning cannot award the meal again');
 }
-console.log('Verified meals finish from pending commands, walking and eating while browsing another room, with native rendering paused, stable deadlines and no duplicate rewards.');
+console.log('Verified hidden timer meals, stable deadlines, and interruption when browsing away before or during eating.');
 
-// Returning mid-meal hands completion back to the renderer, without a second reward.
 roomVisible=true;enabled=false;render();advance(0);
 visibility={active:true,reduceMotion:false};
 const returningMealRoom={...mealRoom,nativeStepCompletion:true};
 hookRoom={...returningMealRoom,nativeWorld:nativeRoom.buildNativeRoomWorld(returningMealRoom)};
-enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+enabled=true;reportCat(hookRoom.nativeWorld.home);render();roomVisible=false;render();
 const beforeReturnMeal=meals;
 interaction++;render().startActivity('bowlEat',foodBowl.instanceId,interaction);render();advance(0);render();
-roomVisible=false;render();advance(100);render();
+advance(100);render();
 roomVisible=true;render();
 for(let i=0;i<10&&render().activity;i++) {
   const state=render().activity,step=state.plan.steps[state.stepIndex];
@@ -1778,3 +1873,171 @@ console.log('Verified independent nap rotation through the actual scheduler with
   assert.equal(render().activity.plan.steps[render().activity.stepIndex].native.elapsed,0,'A stale sleep report cannot fast-forward the resumed wake');
 }
 console.log('Verified delayed sleep reports cannot replace a newly started wake clock in the room scheduler.');
+
+for (let level = 0; level <= 100; level += .25) {
+  const total = roomMealBiteCount(level), size = roomMealBiteSize(level);
+  assert.equal(total, Math.max(1, Math.ceil((100 - Math.round(level)) / 5)));
+  assert.ok(total >= 1 && total <= 20);
+  assert.equal(size, Math.min(5, 100 - level));
+  assert.equal(Math.round(Math.min(100, level + total * 5)), 100);
+}
+assert.equal(roomMealBiteCount(74.8), 5);
+assert.equal(roomMealBiteCount(120), 1); assert.equal(roomMealBiteSize(120), 0);
+for (const [initialFullness, total, helpings] of [[0, 20, 4], [30, 14, 3], [36, 13, 3], [75, 5, 1], [96, 1, 1], [100, 1, 1]]) {
+  assert.equal(roomMealBiteCount(initialFullness), total);
+  const plan = buildRoomActivity({ ...mealRoom, asleep: initialFullness === 100 }, 0, 'bowlEat', foodBowl.instanceId, { bites: 0, total });
+  const eatingSteps = plan.steps.filter(step => step.mood === 'eating');
+  assert.equal(eatingSteps.length, helpings);
+  assert.equal(plan.mealTotal, total);
+  eatingSteps.forEach((step, helping) => {
+    assert.equal(step.durationMs, Math.min(5, total - helping * 5) * 1600);
+    assert.equal(step.animationFps, 12);
+    assert.equal(step.mealBiteOffset, helping * 5);
+  });
+  const keys = eatingSteps.map((_, helping) => roomActivityStepKey({ plan, stepIndex: helping + 1, startedAt: now }));
+  assert.equal(new Set(keys).size, helpings, 'Consecutive eating steps have distinct renderer/crumb keys even at the same timestamp');
+}
+
+function beginFullMeal({ initialFullness = 30, native = true, reduced = false, hidden = false } = {}) {
+  slots.forEach(value => value?.cleanup?.()); slots.length = 0; timers.clear();
+  fullness = initialFullness;
+  visibility = { active: true, reduceMotion: reduced }; roomVisible = !hidden; enabled = true;
+  hookRoom = { ...dynamicOptions, asleep: initialFullness === 100, nativeStepCompletion: native,
+    nativeWorld: nativeRoom.buildNativeRoomWorld(dynamicOptions) };
+  render(); reportCat(hookRoom.nativeWorld.home); render();
+  const before = { bites, meals, fed };
+  render().startActivity('bowlEat', foodBowl.instanceId); render(); advance(0); render();
+  finishMealStep();
+  return before;
+}
+function finishMealStep() {
+  const current = render().activity, step = current.plan.steps[current.stepIndex];
+  if (step.native?.awaitCompletion) {
+    render().completeNativeStep(roomActivityStepKey(current), step.native.path.at(-1)); render();
+  } else {
+    advance(Math.max(0, (visibility.reduceMotion ? 600 : step.durationMs) - (now - current.startedAt))); render();
+  }
+}
+function assertMealProgress(eaten, total) {
+  assert.equal(JSON.stringify(render().mealProgress), JSON.stringify({ bites: eaten, total }));
+}
+
+for (const mode of [{ native: true }, { native: false }, { reduced: true }, { native: false, reduced: true }, { hidden: true }, { hidden: true, reduced: true }]) {
+  for (const initialFullness of [0, 30, 36, 74.8, 95, 96, 99.75, 100]) {
+    const before = beginFullMeal({ ...mode, initialFullness });
+    const total = roomMealBiteCount(initialFullness), helpings = Math.ceil(total / 5);
+    assertMealProgress(0, total);
+    for (let helping = 0; helping < helpings; helping++) {
+      const current = render().activity, step = current.plan.steps[current.stepIndex];
+      let key = roomActivityStepKey(current);
+      assert.equal(step.mood, 'eating');
+      assert.equal(step.mealBiteOffset, helping * 5);
+      const stepBites = Math.min(5, total - helping * 5);
+      for (let bite = 1; bite <= stepBites; bite++) {
+        const expected = Math.min(total, helping * 5 + bite);
+        if (step.native.awaitCompletion) {
+          render().updateNativeHeight(step.native.path.at(-1), bite * 1.6 + .001, key); render();
+          render().updateNativeHeight(step.native.path.at(-1), bite * 1.6 + .001, key); render();
+        } else { advance((mode.reduced ? 600 : step.durationMs) / stepBites); render(); }
+        assert.equal(bites, before.bites + expected, 'Every helping uses cumulative bites without exceeding the budget');
+        assert.equal(meals, before.meals + Number(expected === total), 'Only the final meal bite finishes');
+        assert.ok(Math.abs(fed - before.fed - Math.min(100 - initialFullness, expected * 5)) < 1e-9, 'Each bite feeds five points, capped at the missing fullness');
+        if (expected < total) assert.ok(render().mealProgress === null || render().mealProgress.bites < render().mealProgress.total,
+          'The ring is never full before the last bite, even for a nearly full cat');
+        if (step.native.awaitCompletion || helping < helpings - 1 || bite < stepBites) assertMealProgress(expected, total);
+        const beforeFullnessRender = render().activity;
+        fullness = Math.min(100, initialFullness + expected * 5); render();
+        assert.equal(render().activity, beforeFullnessRender, 'Changing fullness alone never tears down the step');
+        if (bite === 2) {
+          hookRoom = { ...hookRoom, hungry: false, asleep: false }; render();
+          assertMealProgress(expected, total);
+          key = roomActivityStepKey(render().activity);
+        }
+      }
+      if (step.native.awaitCompletion) {
+        render().updateNativeHeight(step.native.path.at(-1), 80, key); render();
+        assert.equal(bites, before.bites + Math.min(total, (helping + 1) * 5), 'A late clock cannot consume the next helping');
+        finishMealStep();
+        const next = render().activity;
+        render().completeNativeStep(key, step.native.path.at(-1));
+        render().updateNativeHeight(step.native.path.at(-1), 80, key); render();
+        assert.equal(render().activity, next, 'Previous helping completion cannot advance the next one');
+      }
+      assert.notEqual(roomActivityStepKey(render().activity), key);
+      if (helping < helpings - 1) assertMealProgress((helping + 1) * 5, total);
+    }
+    assert.equal(render().activity.plan.steps[render().activity.stepIndex].returnHome, true);
+    assert.equal(render().mealProgress, null);
+    finishMealStep();
+    advance(60000); render();
+    assert.equal(bites, before.bites + total);
+    assert.equal(meals, before.meals + 1);
+    assert.ok(Math.abs(fed - before.fed - Math.min(100 - initialFullness, total * 5)) < 1e-9,
+      'A whole meal awards the displayed bite budget; the finishing save covers fractional decay');
+    if (mode.hidden) assert.equal(timers.size, 0);
+  }
+}
+console.log('Verified fullness-sized meals, continuous progress, fixed-speed helpings, final-bite completion, stale callbacks, timer/native/hidden rooms and Reduce Motion.');
+
+for (const interruption of ['home', 'stop', 'disabled', 'background', 'browse']) {
+  const before = beginFullMeal();
+  finishMealStep();
+  const second = render().activity, step = second.plan.steps[second.stepIndex], key = roomActivityStepKey(second);
+  render().updateNativeHeight(step.native.path.at(-1), 3.201, key); render();
+  assertMealProgress(7, 14);
+  fullness = 65; render();
+  if (interruption === 'home') render().returnHome();
+  if (interruption === 'stop') render().stopActivity();
+  if (interruption === 'disabled') enabled = false;
+  if (interruption === 'background') visibility = { active: false, reduceMotion: false };
+  if (interruption === 'browse') roomVisible = false;
+  render(); advance(0); render();
+  render().updateNativeHeight(step.native.path.at(-1), 8, key);
+  render().completeNativeStep(key, step.native.path.at(-1)); render();
+  advance(60000); render();
+  assert.equal(bites, before.bites + 7, `${interruption} keeps exactly seven bites from two helpings`);
+  assert.equal(meals, before.meals);
+  assert.equal(render().mealProgress, null);
+  enabled = true; roomVisible = true; visibility = { active: true, reduceMotion: false }; render(); advance(0); render();
+  render().startActivity('bowlEat', foodBowl.instanceId); render(); advance(0); render();
+  assert.equal(render().activity.plan.mealTotal, 7, 'A later Eat command uses current fullness, not the old budget');
+  assert.equal(render().activity.plan.steps.filter(item => item.mood === 'eating').length, 2);
+  for (let remaining = 0; render().activity && remaining < 10; remaining++) finishMealStep();
+  assert.equal(bites, before.bites + 14);
+  assert.ok(Math.abs(fed - before.fed - 70) < 1e-9, 'The second meal feeds what was missing when it started');
+  assert.equal(meals, before.meals + 1);
+}
+console.log('Verified second-helping interruptions keep seven bites and later commands size a fresh meal.');
+
+for (const mode of [{ native: true }, { native: false }, { reduced: true }, { hidden: true }]) {
+  const before = beginFullMeal(mode);
+  finishMealStep();
+  const second = render().activity, step = second.plan.steps[second.stepIndex], key = roomActivityStepKey(second);
+  if (step.native.awaitCompletion) render().updateNativeHeight(step.native.path.at(-1), 3.201, key);
+  else advance((mode.reduced ? 600 : 8000) * 2 / 5);
+  render(); assertMealProgress(7, 14);
+  fullness = 65; render();
+  hookRoom = { ...hookRoom, decorations: [{ ...foodBowl, offset: { x: -.3, y: .35 } }] };
+  hookRoom.nativeWorld = nativeRoom.buildNativeRoomWorld(hookRoom); render(); advance(0); render();
+  const relocated = render().activity;
+  assert.equal(relocated.stepIndex, 0);
+  assert.equal(relocated.plan.mealTotal, 14);
+  const remainingHelpings = relocated.plan.steps.filter(item => item.mood === 'eating');
+  assert.equal(remainingHelpings.length, 2, 'Relocation plans only the seven uneaten bites');
+  assert.equal(remainingHelpings[0].mealBiteOffset, 7);
+  assert.equal(remainingHelpings[1].mealBiteOffset, 12);
+  render().completeNativeStep(key, step.native.path.at(-1));
+  render().updateNativeHeight(step.native.path.at(-1), 80, key); render();
+  assert.equal(bites, before.bites + 7);
+  finishMealStep(); assertMealProgress(7, 14);
+  finishMealStep(); assertMealProgress(12, 14);
+  finishMealStep();
+  assert.equal(bites, before.bites + 14);
+  assert.equal(meals, before.meals + 1);
+  assert.equal(render().mealProgress, null);
+  finishMealStep(); advance(60000); render();
+  assert.equal(bites, before.bites + 14);
+  assert.ok(Math.abs(fed - before.fed - 70) < 1e-9, 'A relocated meal still feeds exactly the missing fullness');
+  assert.equal(meals, before.meals + 1);
+}
+console.log('Verified second-helping bowl relocation preserves the total and schedules only remaining helpings in native/timer/hidden/Reduce Motion modes.');

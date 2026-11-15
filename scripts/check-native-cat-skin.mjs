@@ -67,6 +67,11 @@ for (const coat of ['orange', 'grey', 'white']) {
   for (const joint of ['spine','head','neck','ear.L','ear.R','L.forelegjoint0','R.forelegjoint0','L.hindlegjoint0','R.hindlegjoint0','tailjoint0'])
     assert.ok(bodyJoints.has(joint), `${coat}: ${joint} deforms the same connected body`);
   const named = new Map(model.nodes.map((n, i) => [n.name, i]));
+  for (const side of ['L','R']) for (const [limb,paw] of [['foreleg','front'],['hindleg','rear']]) {
+    const upperLength=Math.hypot(...model.nodes[named.get(`${side}.${limb}joint1`)].translation);
+    const lowerLength=Math.hypot(...model.nodes[named.get(`${side}.${paw}.paw`)].translation);
+    assert.ok(upperLength<lowerLength*.85, `${coat}: the ${limb} retains the higher cartoon bend proportions`);
+  }
   for (const [parent, child] of [['head', 'ear.L'], ['head', 'ear.R'], ['spine', 'chest'], ['chest', 'neck'], ['neck', 'head'], ['chest', 'L.forelegjoint0'], ['pelvis', 'L.hindlegjoint0'], ['L.forelegjoint1', 'L.front.paw'], ['spine', 'tailjoint0']]) {
     assert.ok(model.nodes[named.get(parent)]?.children?.includes(named.get(child)), `${coat}: anatomical ${parent} → ${child} hierarchy`);
   }

@@ -39,7 +39,7 @@ function StatRing({ stat, expanded, active, visible, onPress }: { stat: Stat; ex
     }
     if (!active) return;
     const changed = progress.get() !== stat.value;
-    if (reducedMotion) {
+    if (reducedMotion || stat.icon === 'feed') {
       progress.set(stat.value);
       pulse.set(1);
     } else if (changed) {
@@ -50,7 +50,7 @@ function StatRing({ stat, expanded, active, visible, onPress }: { stat: Stat; ex
       ));
     }
     return () => { cancelAnimation(progress); cancelAnimation(pulse); };
-  }, [stat.value, active, visible, reducedMotion, progress, pulse]);
+  }, [stat.value, stat.icon, active, visible, reducedMotion, progress, pulse]);
   const ringEnd = useDerivedValue(() => progress.get() / 100);
   const ringOpacity = useDerivedValue(() => progress.get() > 0 ? 1 : 0);
   const percentText = useDerivedValue(() => `${Math.round(progress.get())}%`);

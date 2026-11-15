@@ -13,9 +13,22 @@ for(const degrees of [-180,-90,45,90,180]) {
   const feet=names.map(n=>actorBones()[n].slice(12,15));
   render({active:true,world,playback:idle,activityKey:'pivot',travel:{path:[home],heading:degrees*Math.PI/180,duration:2,distance:0,jump:false}});
   const duration=catTurnDuration(degrees*Math.PI/180);
-  let previous=[false,false,false,false],placements=0;
+  const standingHeight=actorBones().spine[13];
+  let previous=[false,false,false,false],placements=0,maxReach=0,maxDrop=0,minGap=Infinity;
   for(let frame=0;frame<=Math.ceil((duration+.1)*60);frame++) {
     drawCat(1/60);const bones=actorBones(),state=actorState();
+    maxDrop=Math.max(maxDrop,(standingHeight-bones.spine[13])/scale);
+    for(const part of ['front','rear']) {
+      const left=bones[`L.${part}.paw`],right=bones[`R.${part}.paw`];
+      minGap=Math.min(minGap,Math.hypot(left[12]-right[12],left[14]-right[14])/scale);
+      for(const side of ['L','R']) {
+        const paw=bones[`${side}.${part}.paw`],joint=bones[`${side}.${part==='front'?'foreleg':'hindleg'}joint0`];
+        maxReach=Math.max(maxReach,Math.hypot(paw[12]-joint[12],paw[14]-joint[14])/scale);
+      }
+    }
+    assert.ok(maxDrop<.07,'The plush cat stays close to standing height');
+    assert.ok(maxReach<.22,'Each paw stays under its own shoulder or hip');
+    assert.ok(minGap>.30,'Mitten paws never overlap their opposite partner');
     const lifted=names.map((name,i)=>bones[name][13]>feet[i][1]+.002*scale);
     placements+=lifted.filter((v,i)=>v&&!previous[i]).length;
     assert.ok(lifted.filter(Boolean).length<=2,'Never leave fewer than two supporting paws');
@@ -25,10 +38,11 @@ for(const degrees of [-180,-90,45,90,180]) {
     if(frame%2===0&&[90,180].includes(degrees))poses.push({degrees,progress:(frame+1)/60/duration,nodes:bones});
     previous=lifted;
   }
-  assert.equal(placements,Math.abs(degrees)<=90?4:8,'Four placements per quarter-turn replace repeated microsteps');
+  // Thick legs need smaller angular reaches; cadence increases, not duration.
+  assert.equal(placements,4*Math.ceil(Math.abs(degrees)/30),'Each paw takes placements of at most 30 degrees');
   assert.ok(duration<=1.12+1e-8,'A half-turn must not delay the next action');
-  metrics.push({degrees,duration,placements});
+  metrics.push({degrees,duration,placements,maxDrop,maxReach,minGap});
 }
 fs.writeFileSync('/tmp/brainpet-turn-poses.json',JSON.stringify(poses));
 fs.writeFileSync('/tmp/brainpet-pivot-rhythm-metrics.json',JSON.stringify(metrics,null,2));
-console.log('Verified purposeful pivot rhythm: four placements per quarter-turn, eight per half-turn, diagonal support and a fixed footprint.');
+console.log('Verified purposeful pivot rhythm: short 30-degree placements within the original turn duration, diagonal support and a fixed footprint.');

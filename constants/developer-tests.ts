@@ -1,0 +1,37 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Load only the selected dev screen. */
+import type { ComponentType } from 'react';
+export type DeveloperTest = { id: string; title: string; group: string; load: () => ComponentType; usesSavedProgress?: boolean };
+
+export const DEVELOPER_TESTS: DeveloperTest[] = __DEV__ ? [
+  { id: "action-motion", title: "Action motion", group: "Puzzles", load: () => require('@/scripts/native/action-motion/fixture').default },
+  { id: "activity-mix", title: "Activity mix", group: "Puzzles", load: () => require('@/scripts/native/activity-mix/fixture').default },
+  { id: "berry", title: "Puzzle theme", group: "Puzzles", load: () => require('@/scripts/native/berry/fixture').default },
+  { id: "bridge", title: "Equation and ratio models", group: "Puzzles", load: () => require('@/scripts/native/bridge/fixture').default },
+  { id: "bridge-feedback", title: "Equation feedback", group: "Puzzles", load: () => require('@/scripts/native/bridge-feedback/fixture').default },
+  { id: "bridge-teaching", title: "Equation and ratio teaching", group: "Puzzles", load: () => require('@/scripts/native/bridge-teaching/fixture').default },
+  { id: "cat-capture", title: "Cat preview and animations", group: "Cat", load: () => require('@/scripts/native/cat-capture/fixture').CatCapturePreview },
+  { id: "cat-feeding", title: "Cat feeding", group: "Cat", load: () => require('@/scripts/native/cat-feeding/fixture').default },
+  { id: "cat-plans", title: "Cat plans", group: "Cat", load: () => require('@/scripts/native/cat-plans/fixture').default },
+  { id: "decimal-models", title: "Decimal models", group: "Puzzles", load: () => require('@/scripts/native/decimal-models/fixture').default },
+  { id: "everyday", title: "Everyday", group: "Puzzles", load: () => require('@/scripts/native/everyday/fixture').default },
+  { id: "fraction-help", title: "Fraction help", group: "Puzzles", load: () => require('@/scripts/native/fraction-help/fixture').default },
+  { id: "fraction-models", title: "Fraction models", group: "Puzzles", load: () => require('@/scripts/native/fraction-models/fixture').default },
+  { id: "fractions-intro", title: "Fractions intro", group: "Puzzles", load: () => require('@/scripts/native/fractions-intro/fixture').default },
+  { id: "geometry", title: "Geometry", group: "Puzzles", load: () => require('@/scripts/native/geometry/fixture').default },
+  { id: "geometry-help", title: "Geometry help", group: "Puzzles", load: () => require('@/scripts/native/geometry-help/fixture').default },
+  { id: "hard-questions", title: "Hard questions", group: "Puzzles", load: () => require('@/scripts/native/hard-questions/fixture').default },
+  { id: "home-lives", title: "Home lives", group: "Game state", load: () => require('@/scripts/native/home-lives/fixture').default },
+  { id: "lesson-progress", title: "Lesson progress", group: "Game state", load: () => require('@/scripts/native/lesson-progress/fixture').default },
+  { id: "lives", title: "Lives", group: "Game state", load: () => require('@/scripts/native/lives/fixture').default },
+  { id: "number-line", title: "Number line", group: "Puzzles", load: () => require('@/scripts/native/number-line/fixture').default },
+  { id: "place-value", title: "Place value", group: "Puzzles", load: () => require('@/scripts/native/place-value/fixture').default },
+  { id: "practice-variety", title: "Practice variety", group: "Puzzles", load: () => require('@/scripts/native/practice-variety/fixture').default },
+  { id: "puzzle-companion", title: "Puzzle companion", group: "Puzzles", load: () => require('@/scripts/native/puzzle-companion/fixture').default },
+  { id: "puzzle-drag", title: "Puzzle drag", group: "Puzzles", load: () => require('@/scripts/native/puzzle-drag/fixture').default },
+  { id: "puzzle-layout", title: "Puzzle layout", group: "Puzzles", load: () => require('@/scripts/native/puzzle-layout/fixture').default },
+  { id: "puzzle-path", title: "Puzzle path", group: "Puzzles", load: () => require('@/scripts/native/puzzle-path/fixture').default },
+  { id: "puzzle-replay", title: "Puzzle replay", group: "Game state", load: () => require('@/scripts/native/puzzle-replay/fixture').default },
+  { id: "puzzle-scenes", title: "Puzzle scenes", group: "Puzzles", load: () => require('@/scripts/native/puzzle-scenes/fixture').default },
+  { id: "timed-challenges", title: "Timed challenges", group: "Game state", load: () => require('@/scripts/native/timed-challenges/fixture').default },
+  { id: "puzzle-replay-cold", title: "Replay with disk persistence", group: "Game state", load: () => require('@/scripts/native/puzzle-replay/cold-fixture').default, usesSavedProgress: true },
+] : [];

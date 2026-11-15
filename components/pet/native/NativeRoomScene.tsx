@@ -88,6 +88,8 @@ type Props = {
   onPosition?: (point: {
     x: number;
     y: number;
+    headX?: number;
+    headY?: number;
   }) => void;
   onContactPosition?: (position: Vec3, elapsed?: number, activityKey?: string) => void;
   onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion) => void;

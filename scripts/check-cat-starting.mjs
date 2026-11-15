@@ -8,7 +8,7 @@ const distance=(a,b)=>Math.hypot(...a.map((v,k)=>v-b[k]));
 const paws=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'];
 const metrics=[],poses=[];
 enableActorCrossfade();
-for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(const length of [.25,2]) {
+for(const skin of process.argv.includes('--orange')?['orange']:['orange','grey','white'])for(const fps of [30,60,120])for(const length of [.25,2]) {
   openSkin(skin);resetCatActor();
   const scale=.4,home=[0,.068,0],world={width:390,height:420,catScale:scale,radius:.16,home,objects:[]};
   const base={active:true,world};render({...base,playback:idle});

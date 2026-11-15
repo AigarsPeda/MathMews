@@ -72,6 +72,7 @@ export const LIFE_BUY_COST = 7;
 
 export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;
+export const FEED_BITES_PER_MEAL = 5;
 export const PET_HAPPINESS_BOOST = 10;
 export const BOX_PLAY_HAPPINESS_BOOST = 18;
 /** Cooldown after a pet or feed action finishes. */

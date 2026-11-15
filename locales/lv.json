@@ -115,6 +115,8 @@
     "notHungry": "{{name}} tagad nav izsalcis.",
     "alreadyHappy": "{{name}} jau ir ļoti laimīgs!",
     "enjoyedSnack": "{{name}} baudīja uzkodu!",
+    "mealProgress": "Ēšana",
+    "mealBites": "Kumosi: {{count}} / {{total}}",
     "playBox": "Spēlēt ar kasti",
     "enjoyedPlayBox": "{{name}} mīl kasti!",
     "activities": "Nodarbības",
@@ -1904,5 +1906,21 @@
     "erase": "Dzēst pēdējo ciparu",
     "clear": "Notīrīt",
     "sign": "Mainīt zīmi"
+  },
+  "developer": {
+    "title": "Izstrādātāja režīmi",
+    "enabled": "Testa režīms ieslēgts",
+    "sessionHint": "Izvēlies testa ekrānu. Pārstartējot lietotni, visi režīmi izslēdzas.",
+    "choose": "Izvēlēties testa ekrānu",
+    "open": "Atvērt testa ekrānu",
+    "off": "Izslēgt",
+    "search": "Meklēt testa ekrānus",
+    "savedProgress": "Izmanto tavu saglabāto spēles progresu. Testa darbības var to mainīt.",
+    "failed": "Testu neizdevās ielādēt. Izslēdz to vai iestatījumos izvēlies citu testu.",
+    "groups": {
+      "Cat": "Kaķis",
+      "Game state": "Spēles stāvoklis",
+      "Puzzles": "Uzdevumi"
+    }
   }
 }

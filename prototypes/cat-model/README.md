@@ -2,7 +2,7 @@
 
 `cat-orange.blend` contains the original cartoon cat, its connected skin and 36 animation clips. It opens in standing idle. Choose the `sit` NLA track for sofa sitting.
 
-`scripts/3d/original_cat.py` constructs the sealed body, rounded head and paws, short neck, triangular ears and hooked tail. It creates the anatomical rest skeleton and normalized skin weights in that same pose. `scripts/3d/game_cat.py` paints the coats, attaches expressions and collar, solves two-segment limb IK and bakes the existing game actions. No downloaded mesh or purchased assets are used.
+`scripts/3d/original_cat.py` constructs the sealed body: a cheeked round head, short neck, bean torso, chunky legs, mitten paws, rounded ears and plush hooked tail. It creates the anatomical rest skeleton and normalized, relaxed skin weights in that same pose. `scripts/3d/game_cat.py` paints the coats (including the inner ears, blush, toe lines and collar), projects the face onto the head, solves two-segment limb IK and bakes the game actions. Deeply bent limbs draw in toward the body instead of folding; see the [cartoon restyle notes](../../docs/art/cat-model-research.md). No downloaded mesh or purchased assets are used.
 
 Run `scripts/3d/export-native.py -- --cats` through Blender to refresh all three native GLBs and this orange rig. Grey/white editable intermediates stay under `/tmp`. Review the shipped GLB through `scripts/3d/review-native-cat.py`, since the native game loads GLB rather than the authoring file.
 

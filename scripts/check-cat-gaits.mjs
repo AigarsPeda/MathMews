@@ -57,8 +57,17 @@ assert.ok(distance(revised.path[0],before)<1e-8&&revised.paces[0]>1,'A changed r
 }
 
 const poses=[],metrics=[];
-for(const skin of ['orange','grey','white']) {
+for(const skin of process.argv.includes('--orange')?['orange']:['orange','grey','white']) {
   openSkin(skin);
+  const rest=sampleCatClip('idle',0);
+  for(const gait of ['walk','trot','run'])for(let paw=0;paw<4;paw++) {
+    const spec=CAT_GAITS[gait],name=names[paw];
+    const support=sampleCatClip(gait,(spec.offsets[paw]+spec.stance*.5)%1)[name];
+    const swing=sampleCatClip(gait,(spec.offsets[paw]+spec.stance+(1-spec.stance)*.5)%1)[name];
+    const alignment=m=>m.slice(4,7).reduce((sum,v,k)=>sum+v*rest[name][4+k],0);
+    assert.ok(alignment(support)>.999,`${skin}/${gait}: support pads stay level`);
+    assert.ok(alignment(swing)<(paw<2?.97:.995),`${skin}/${gait}: the airborne paw curls instead of carrying a flat pad through the entire stride`);
+  }
   for(const gait of ['trot','run'])for(let paw=0;paw<4;paw++)for(const contact of [.05,.5,.95]) {
     const spec=CAT_GAITS[gait],phase=(spec.offsets[paw]+spec.stance*contact)%1;
     const bones=sampleCatClip(gait,phase),p=bones[names[paw]].slice(12,15);

@@ -5,6 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "preandroid": "expo prebuild --platform android --no-install --no-clean",
     "preios": "expo prebuild --platform ios --no-install --no-clean",
     "ios": "expo run:ios",
     "lint": "expo lint",
@@ -14,6 +15,7 @@
     "build:dev:android": "npx eas-cli@24.10.0 build --profile development --platform android",
     "licenses": "node scripts/licenses.mjs",
     "branding": "node scripts/generate-branding.mjs",
+    "assets:cat-stills": "\"${BLENDER:-/Applications/Blender.app/Contents/MacOS/Blender}\" --background --python-exit-code 1 --python scripts/3d/render-native-branding.py",
     "dependencies": "npm run licenses",
     "assets:3d": "node scripts/3d/build.mjs",
     "assets:verify": "node scripts/3d/verify.mjs",
@@ -27,6 +29,7 @@
     "test:puzzle-experience": "node scripts/check-puzzle-progress.mjs && node scripts/check-puzzle-transition.mjs && node scripts/check-puzzle-experience.mjs && node scripts/check-topic-path-entry.mjs",
     "test:result-dismissal": "node scripts/check-result-dismissal.mjs",
     "test:cat-task-chains": "node scripts/check-cat-task-chains.mjs",
+    "test:cat-meals": "node scripts/check-cat-meals.mjs",
     "test:feeding-effects": "node scripts/check-native-room.mjs --feeding-effects",
     "test:ball-physics": "python3 scripts/native/check-ball-physics.py",
     "test:runtime-safety": "python3 scripts/native/check-runtime-safety.py",

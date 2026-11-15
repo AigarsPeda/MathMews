@@ -35,6 +35,7 @@ for(const moving of [false,true])for(const degrees of [-90,90,180]) {
   const completions=[],props={active:true,world,playback:walking,travel:make(start,end),activityKey:'curved-turn',
     onRoomStepComplete:key=>completions.push(key)};
   render(props);
+  let minPawGap=Infinity,minPawClearance=Infinity,maxLateralReach=0;
   let last=start,contacts=[],slip=0,firstMotion,paused=false,previousYaw=actorState().heading,largestYawStep=0;
   for(let i=0;i<fps*10;i++) {
     drawCat(1/fps);
@@ -44,6 +45,20 @@ for(const moving of [false,true])for(const degrees of [-90,90,180]) {
     assert.ok(Object.values(bones).every(m=>m.every(Number.isFinite)));
     if(step>1e-5&&firstMotion===undefined)firstMotion=i/fps;
     if(state.elapsed>.15&&state.elapsed<state.routeDuration-.15)assert.ok(step>1e-8,'No stopped frame within the walking turn');
+    for(const part of ['front','rear']) {
+      const left=bones[`L.${part}.paw`],right=bones[`R.${part}.paw`];
+      const dx=(right[12]-left[12])/scale,dz=(right[14]-left[14])/scale;
+      const across=dx*Math.cos(state.heading)-dz*Math.sin(state.heading);
+      const along=dx*Math.sin(state.heading)+dz*Math.cos(state.heading);
+      minPawGap=Math.min(minPawGap,across);
+      // The plush mittens are about .30 wide and .37 long. Check their
+      // footprint as well as side ordering, including the first supported step.
+      minPawClearance=Math.min(minPawClearance,Math.hypot(across/.30,along/.37));
+      for(const side of ['L','R']) {
+        const paw=bones[`${side}.${part}.paw`],joint=bones[`${side}.${part==='front'?'foreleg':'hindleg'}joint0`];
+        maxLateralReach=Math.max(maxLateralReach,Math.abs((paw[12]-joint[12])*Math.cos(state.heading)-(paw[14]-joint[14])*Math.sin(state.heading))/scale);
+      }
+    }
     const yawStep=Math.abs(Math.atan2(Math.sin(state.heading-previousYaw),Math.cos(state.heading-previousYaw)));
     largestYawStep=Math.max(largestYawStep,yawStep);previousYaw=state.heading;
     for(const [j,name] of ['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'].entries()) {
@@ -68,7 +83,10 @@ for(const moving of [false,true])for(const degrees of [-90,90,180]) {
   assert.ok(largestYawStep<=6/fps+1e-6,'Never snap to the destination heading');
   assert.ok(distance(actorState().position,end)<1e-7,'Preserve the requested endpoint');
   assert.deepEqual(completions,['curved-turn'],'Finish exactly once after the actual curved route');
-  metrics.push({skin,fps,moving,degrees,firstMotion,slip,largestYawStep,duration:actorState().routeDuration});
+  assert.ok(minPawGap>.24,`Paws stay on their own side through the curve: ${minPawGap}`);
+  assert.ok(minPawClearance>=1,`${skin}/${fps}/${moving}/${degrees}: plush paw footprints do not overlap: ${minPawClearance}`);
+  assert.ok(maxLateralReach<.23,`Shoulders never sweep far across a planted paw: ${maxLateralReach}`);
+  metrics.push({skin,fps,moving,degrees,minPawGap,minPawClearance,maxLateralReach,firstMotion,slip,largestYawStep,duration:actorState().routeDuration});
 }
 // A seated cat and Reduce Motion must not enter the new standing departure.
 for(const [clip,reduceMotion] of [['sit',false],['idle',true]]) {

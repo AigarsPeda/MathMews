@@ -12,7 +12,7 @@
     "ramp": 0.18
   },
   "trot": {
-    "stride": 1.0,
+    "stride": 0.86,
     "stance": 0.52,
     "offsets": [
       0,
@@ -28,13 +28,13 @@
     ]
   },
   "run": {
-    "stride": 1.35,
+    "stride": 1.2,
     "stance": 0.36,
     "offsets": [
       0,
       0.1,
-      0.52,
-      0.62
+      0.8,
+      0.9
     ],
     "speed": 4.6,
     "ramp": 0.36,

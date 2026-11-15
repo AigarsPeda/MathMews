@@ -11,7 +11,7 @@ import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeath
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
-import { applyPuzzleAnswer, applyFeed, currentPuzzleStreak } from "@/utils/game-operations";
+import { applyPuzzleAnswer, applyFeed, applyFeedBite, currentPuzzleStreak } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
 import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
 import {
@@ -152,6 +152,7 @@ type GameContextValue = {
   beginChallenge: (levelId: string, mode?: "timed" | "untimed") => boolean;
   expireChallenge: (attemptId: string) => void;
   feedPet: () => boolean;
+  feedPetBite: (finished: boolean, amount?: number) => boolean;
   isReady: boolean;
   hasCompletedOnboarding: boolean;
   pet: PetProfile;
@@ -370,6 +371,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [setSave]);
   const feedPet = useCallback(() => {
     const next = applyFeed(saveRef.current);
+    if (!next) return false;
+    setSave(next);
+    return true;
+  }, [setSave]);
+  const feedPetBite = useCallback((finished: boolean, amount?: number) => {
+    const next = applyFeedBite(saveRef.current, finished, Date.now(), amount);
     if (!next) return false;
     setSave(next);
     return true;
@@ -1273,6 +1280,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       beginChallenge,
       expireChallenge,
       feedPet,
+      feedPetBite,
       refreshWallet,
       dismissWalletNotice,
       setPet,
@@ -1333,6 +1341,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       beginChallenge,
       expireChallenge,
       feedPet,
+      feedPetBite,
       refreshWallet,
       dismissWalletNotice,
       setPet,

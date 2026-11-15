@@ -25,17 +25,34 @@ export function catSpeedGait(speed: number, previous: CatGait, maximum: CatGait)
  * complete pose afterward without accumulating height in the saved contact. */
 export function catGaitContact(animated: Vec3, anchor: Vec3 | undefined, ground: number, scale: number): Vec3 | undefined {
   'worklet';
-  if (animated[1] > ground + .008 * scale) return undefined;
+  // Release at the beginning of the authored lift. A 0.008-unit dead band
+  // held the paw into its acceleration and then released it with a jerk.
+  if (animated[1] > ground + .0015 * scale) return undefined;
   if (anchor) return anchor;
-  return animated[1] <= ground + .003 * scale ? [animated[0], ground, animated[2]] : undefined;
+  return animated[1] <= ground + .001 * scale ? [animated[0], ground, animated[2]] : undefined;
 }
 
 /** A short adjustment step reconciles different footfall patterns while speeding
  * up. Lift before advancing the paw instead of dragging an overextended foot. */
-export function catGaitSwing(from: Vec3, to: Vec3, elapsed: number, scale: number): Vec3 {
+export function catGaitSwing(from: Vec3, to: Vec3, elapsed: number, scale: number, release?: { offset: Vec3; duration: number }): Vec3 {
   'worklet';
-  const t = Math.max(0,Math.min(1,elapsed/.14)), blend=t*t*(3-2*t);
+  const t = Math.max(0,Math.min(1,elapsed/(release?.duration??.14))), blend=t*t*(3-2*t);
+  // A naturally lifting paw already has an authored arc and ankle roll. Carry
+  // its contact discrepancy into that swing without adding a second hop.
+  if(release)return to.map((value,index)=>value+release.offset[index]*(1-blend)) as Vec3;
+  const lift=Math.min(.065,.03+.16*Math.hypot(to[0]-from[0],to[2]-from[2])/scale);
   return [from[0]+(to[0]-from[0])*blend,
-    from[1]+(to[1]-from[1])*blend+.065*scale*Math.sin(Math.PI*t)**2,
+    from[1]+(to[1]-from[1])*blend+lift*scale*Math.sin(Math.PI*t)**2,
     from[2]+(to[2]-from[2])*blend];
+}
+
+/** Spread the walk's concentrated quintic swing slightly across its airborne
+ * interval. End position and stance velocity are unchanged, including the
+ * second swing after a launch. The correction is zero throughout support. */
+export function catWalkSwingOffset(phase: number, paw: number) {
+  'worklet';
+  const gait=((phase-CAT_GAITS.walk.offsets[paw])%1+1)%1;
+  if(gait<=.6)return 0;
+  const t=(gait-.6)/.4,quintic=t*t*t*(10-15*t+6*t*t),cubic=t*t*(3-2*t);
+  return .8*.4*(cubic-quintic);
 }

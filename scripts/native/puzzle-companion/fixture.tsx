@@ -4,7 +4,7 @@ import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import { useGame } from "@/contexts/GameProvider";
 import i18n from "@/i18n";
 import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
-import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { Pressable, ScrollView, Text } from "react-native";
@@ -21,6 +21,7 @@ export default function CompanionFixture() {
 }
 function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: () => void }) {
   const router = useRouter();
+  const pathname = usePathname() === "/dev-test" ? "/dev-test" : "/companion-qa";
   const { pet } = useGame();
   const [english] = useState(() => i18n.cloneInstance({ lng: "en" }));
   const [latvian] = useState(() => i18n.cloneInstance({ lng: "lv" }));
@@ -32,8 +33,8 @@ function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: (
   const [advancing, setAdvancing] = useState(false);
   const puzzleNumber = pageNumber;
   useEffect(() => {
-    if (advancing && visible) router.prefetch({ pathname: "/companion-qa" as "/play", params: { puzzle: String(puzzleNumber + 1) } });
-  }, [advancing, puzzleNumber, router, visible]);
+    if (advancing && visible) router.prefetch({ pathname: pathname as "/play", params: { puzzle: String(puzzleNumber + 1) } });
+  }, [advancing, pathname, puzzleNumber, router, visible]);
   if (!__DEV__) return <Redirect href="/" />;
   const language = scenario === "latvian" ? latvian : english;
   const correct = scenario !== "retry" && scenario !== "long";
@@ -67,7 +68,7 @@ function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: (
       message={language.t(lessonFinal ? "learning.bossComplete" : correct ? "play.greatJob" : "play.goodTry")}
       detail={scenario === "long" ? "Count each group once, then put them together. ".repeat(18) + "End of the clue." : correct ? "4 + 3 = 7." : "Count each group once, then put them together."}
       continueLabel={scenario === "stage" ? language.t("learning.nextStage") : undefined}
-      coinsEarned={correct ? 4 : 0} onContinue={()=>{setContinued(n=>n+1);setVisible(false);if(advancing)router.replace({pathname:"/companion-qa" as "/play",params:{puzzle:String(puzzleNumber+1)}});}}
+      coinsEarned={correct ? 4 : 0} onContinue={()=>{setContinued(n=>n+1);setVisible(false);if(advancing)router.replace({pathname:pathname as "/play",params:{puzzle:String(puzzleNumber+1)}});}}
       onGoHome={correct ? ()=>{setHome(n=>n+1);setVisible(false);} : undefined} />
   </SafeAreaView></I18nextProvider>;
 }

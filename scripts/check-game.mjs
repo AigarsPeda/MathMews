@@ -5,11 +5,13 @@ import { spawnSync } from 'node:child_process';
 const core = [
   "check-world-clock",
   "check-crash-recovery",
+  "check-developer-modes",
   "check-game-systems",
   "check-store-placement-flow",
   "check-room-editing",
   "check-room-transition",
   "check-cat-task-chains",
+  "check-cat-meals",
   "check-cat-collision-recovery",
   "check-filament-shared-value",
   "check-filament-surface-lifetime",

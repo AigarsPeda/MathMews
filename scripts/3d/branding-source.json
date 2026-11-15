@@ -1,6 +1,16 @@
 {
-  "assets/3d/native/cat-orange.glb": "6962759fd40f71fca19f89523a0d7a8552511116e9d7fc064291be24b4549bb8",
-  "assets/3d/cat-splash.png": "7f03f31450492bb25bb7bfdfe029490d91197a26bebc6bb6ca127a9d684feed5",
-  "assets/3d/cat-preview.png": "59922d434d69b9fe63a709288f565b0660b68c471f63088445172f6a8a9e61fb",
-  "docs/art/startup-cat-native.png": "5535225d49beef3a118ac5f1937b35a77000e397f832def7119022879c717908"
+  "assets/3d/native/cat-orange.glb": "f984fcc5525f7ec9f2c4394f028ecc4cf7d3ca3b5397e597dc2389ee08cc0111",
+  "assets/3d/cat-splash.png": "1e9a77176bd3e426fd41ffd4c8021eeb0d1e61ea4a17e9e9e11ab254c1ba3a37",
+  "assets/3d/cat-preview.png": "2c9d911e8599b2cb26e180da03571475c7abc7e596c7688bf325025aa1c104b9",
+  "docs/art/startup-cat-native.png": "adca916972fc314695005bc17f4fbd4d59ed1b173b2c67af81d7166b8a73304b",
+  "assets/3d/cat-shop-orange.png": "60a78d081e25f17ba0f01da34533cc23e223ad2b44d0e26ff2c3e43b7ede997b",
+  "assets/images/icon.png": "883af6a4838d8d5fd82cdadc8fd3b708db959e04560a55bd45d402be1e794249",
+  "assets/images/android-icon-foreground.png": "386d80a0285c6b193ffb5865044622f058f1629f8c2eb1f5b9247e2bb4a79bae",
+  "assets/images/android-icon-monochrome.png": "574f10b4b64580e65223794a09a0adee3e3a2c5418d07423ff06cb8d7c6e6a99",
+  "assets/images/splash-brand.png": "4e261481de559ec01ae4f9e81069574ce24ad8e119d320be7a338c09c0d58c28",
+  "assets/images/splash-launch.png": "413031cb0006dce6a05f09c88a16719a8e5cf1a43007e59a94bf537730a6b7e0",
+  "assets/3d/native/cat-grey.glb": "405310dc80cd1952d2d9dfcd1b6d78683a806623ee5cefa28634e450bcb5ef3e",
+  "assets/3d/native/cat-white.glb": "658c0d35ee897d9cb36cf3e2ec6d1ed388a14e494350ed7c43911f1b3c02e859",
+  "assets/3d/cat-shop-grey.png": "6dc8158451b4350005e18fb5daec0b4ae9b1f4df9b2ad2647e5533da0400583a",
+  "assets/3d/cat-shop-white.png": "d41219c444246bd09aa027d308d53f8244441fca3dd21e38c325ac1e4c1ec563"
 }

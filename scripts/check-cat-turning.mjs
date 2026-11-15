@@ -125,7 +125,15 @@ for(const skin of ['orange','grey','white']) {
         const orientation=catTurnPawOrientation(angle,t,i),basis=transforms.getWorldTransform(asset.getFirstEntityByName(pawNames[i])).data;
         for(const column of [0,4,8]) {
           const x=soles[i][column],y=soles[i][column+1],z=soles[i][column+2],c=Math.cos(orientation.heading),s=Math.sin(orientation.heading);
-          assert.ok(distance(basis.slice(column,column+3),[x*c+z*s,y,z*c-x*s])<.002*scale,`${degrees} frame=${frame} paw=${i} axis=${column} sole error=${distance(basis.slice(column,column+3),[x*c+z*s,y,z*c-x*s])/scale}`);
+          // Recovery now rolls the toes up. Keep the same strict matrix
+          // tolerance, including zero pitch for every planted support interval.
+          const expected=[x*c+z*s,y,z*c-x*s],heading=startHeading+orientation.heading;
+          const along=expected[0]*Math.sin(heading)+expected[2]*Math.cos(heading);
+          const raised=along*Math.cos(orientation.pitch)-y*Math.sin(orientation.pitch);
+          expected[0]+=(raised-along)*Math.sin(heading);
+          expected[1]=along*Math.sin(orientation.pitch)+y*Math.cos(orientation.pitch);
+          expected[2]+=(raised-along)*Math.cos(heading);
+          assert.ok(distance(basis.slice(column,column+3),expected)<.002*scale,`${degrees} frame=${frame} paw=${i} axis=${column} sole error=${distance(basis.slice(column,column+3),expected)/scale}`);
         }
         if(Math.abs(p[1]-neutral[i][1])<1e-6)grounded.push(i);
       }
@@ -183,7 +191,7 @@ for(const skin of ['orange','grey','white']) {
           }
           const offsets=[.18,.68,0,.5],gait=((phase-offsets[i])%1+1)%1,oldGait=((previousPhase-offsets[i])%1+1)%1;
           if(step.done&&previousProgress>=step.end&&gait<.59&&oldGait<.59&&gait>oldGait) {
-            assert.ok(distance(p,previousFeet[i])<.004*scale,'The first touchdown joins the distance-driven planted walk without sliding');
+            assert.ok(distance(p,previousFeet[i])<.004*scale,`${skin}/${degrees}/${length}/${fps} frame=${frame} paw=${i} progress=${progress} stride=${state.walkStride} slip=${distance(p,previousFeet[i])/scale}: The first touchdown joins the distance-driven planted walk without sliding`);
           }
           if(progress<.91)assert.ok(distance(p,previousFeet[i])<8/fps*scale,`${skin}/${degrees}/${length}/${fps} frame=${frame} paw=${i} progress=${progress} before=${previousProgress} step=${step.progress} jump=${distance(p,previousFeet[i])/scale}: no paw snaps at the turn/walk seam`);
         });
@@ -303,7 +311,7 @@ for(const skin of ['orange','grey','white']) {
     }
     assert.ok(samples>fps*.5&&resumed,'The real route exercised and resumed a complete pre-hop turn');
   }
-  console.log(`Verified ${skin}: left/right 23–180 degree turns, exact paw contacts and level soles, diagonal support, head anticipation, interruption and mid-turn pause at 30/60/120 FPS and two sizes.`);
+  console.log(`Verified ${skin}: left/right 23–180 degree turns, exact paw contacts, planted sole headings and recovery roll, diagonal support, head anticipation, interruption and mid-turn pause at 30/60/120 FPS and two sizes.`);
 }
 // The foot trajectory itself has no slip while planted and zero lift at contact.
 for(const angle of [-Math.PI,Math.PI/2])for(let i=0;i<4;i++) {

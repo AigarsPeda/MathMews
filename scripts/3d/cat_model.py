@@ -14,7 +14,7 @@ BODY_HOME = (0, .08, .44)
 TAIL_HOME = (0, .44, .35)
 TAIL_REST_POINTS = [(0, 0, 0), (.24, .14, .045), (.43, .12, .27), (.42, .04, .48)]
 TAIL_BOX_POINTS = [(0, 0, 0), (.12, .10, .27), (.42, .12, .50), (.45, .04, .72)]
-COATS = {'orange': 'EFA45E', 'grey': '929DA8', 'white': 'E9E4DA'}
+COATS = {'orange': 'EFA45E', 'grey': '929DA8', 'white': 'E0D9CE'}
 STRIPES = {'orange': 'B47C50', 'grey': '667380', 'white': 'C7C0B5'}
 CREAM = 'FFF5E5'
 BLUSH = 'F09AAE'
@@ -473,10 +473,11 @@ def pose_cat(rig, state, t):
             ear.rotation_euler.x += .18 * pulse(t,.22 + side*.018,.055)
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
     if state.startswith('walk') or state == 'turn':
+        from cat_gaits import paw_swing
         standing = 1
         # Lateral-sequence feline walk: hind, same-side front, opposite hind,
         # opposite front. Planted paws move backward at the runtime's stride
-        # speed; low, smooth swings avoid a high-stepping marching gait.
+        # speed; the recovery lifts the toes clear of the oversized mittens.
         yaw = {'walk': 107.5, 'walkAwayDiagonal': 152.5, 'walkAway': 197.5,
                'walkTowardDiagonal': 62.5, 'walkToward': 17.5}.get(state, 107.5)
         root.rotation_euler.z = math.radians(yaw)
@@ -496,16 +497,16 @@ def pose_cat(rig, state, t):
             gait = (t - offset) % 1
             if gait < .60:
                 travel = -.24 + .80 * gait
-                lift = 0
+                lift, pitch = 0, 0
             else:
                 swing = (gait - .60) / .40
-                # Hermite swing matches the stance velocity at both contacts.
-                travel = .24 + .32 * swing - 2.40 * swing**2 + 1.60 * swing**3
-                lift = .065 * math.sin(math.pi * swing)**2
+                # Match stance velocity AND zero acceleration at both ends.
+                # The paw leaves/returns to support without a sudden kick.
+                travel, lift, pitch = paw_swing(swing, .80, .60, .105, y < 0)
             paw.location.y = y + travel
             paw.location.z = height + lift
             paw.scale.z = height
-            paw.rotation_euler = (-.10 * lift / .065, 0, 0)
+            paw.rotation_euler = (pitch, 0, 0)
             if state == 'turn':
                 paw.location.y = y + travel * .20
                 paw.location.x += .025 * math.sin(phase + offset * math.tau)

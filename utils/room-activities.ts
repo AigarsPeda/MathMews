@@ -14,6 +14,7 @@ import { bathroomFixtureKind, type BathroomPhase } from "@/constants/bathroom-ac
 import { isPlayablePlant } from "@/constants/plant-play";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
+import { FEED_BITES_PER_MEAL, FEED_HUNGER_RESTORE } from "@/constants/game";
 import type { NativeRoomWorld, NativeTravel, Vec3 } from "@/utils/native-room-world";
 import { catFloorPoint, catScreenPoint, findFoodBowlApproach, findFurnitureTransfer, findWindowWatchPerch, findCatBrushPass, findCatCrawlPass } from "@/utils/native-room-world";
 import { isHomeRoomId, isRoomDoor, roomTravelDirection, type HomeRoomId, type RoomEntry, type RoomTravelDirection } from "@/constants/home-rooms";
@@ -27,6 +28,16 @@ export { roomOffsetToPoint, type RoomPoint } from '@/utils/room-coordinates';
 
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export const ROOM_MEAL_DURATION_MS = 8_000;
+export type RoomMealProgress = { bites: number; total: number };
+export function roomMealBiteCount(fullness: number): number {
+  // Match the displayed percentage. Care decay must not add a near-empty bite
+  // when a meal is restarted at, for example, a displayed 40% (39.999 saved).
+  const missing = 100 - Math.round(Math.max(0, Math.min(100, Number.isFinite(fullness) ? fullness : 0)));
+  return Math.max(1, Math.ceil(missing / (FEED_HUNGER_RESTORE / FEED_BITES_PER_MEAL)));
+}
+export function roomMealBiteSize(fullness: number): number {
+  return Math.min(FEED_HUNGER_RESTORE / FEED_BITES_PER_MEAL, Math.max(0, 100 - fullness));
+}
 export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel" | "wander";
 export type RoomActivityCommand = { id: number; kind: RoomActivityKind; instanceId?: string; interactionAt?: number; ambientPeriod?: WorldPeriod };
 export type RoomActivityStep = {
@@ -62,6 +73,7 @@ export type RoomActivityStep = {
   bathroomPhase?: BathroomPhase;
   bathroomApproach?: Vec3;
   bowlApproach?: boolean;
+  mealBiteOffset?: number;
   returnHome?: boolean;
   leavingRoom?: boolean;
   enteringRoom?: boolean;
@@ -75,6 +87,7 @@ export type RoomActivityStep = {
 };
 export type RoomActivityPlan = {
   kind: RoomActivityKind | "returnHome";
+  mealTotal?: number;
   ambientPeriod?: WorldPeriod;
   /** Only user commands show a notice when their route is blocked. */
   userRequested?: boolean;
@@ -294,7 +307,8 @@ export function continueFurnitureExploration(
 }
 
 /** Commands and idle choices share object eligibility and rendered coordinates. */
-export function buildRoomActivity(room: RoomActivityOptions, turn: number, command?: RoomActivityKind, preferredInstanceId?: string): RoomActivityPlan | null {
+export function buildRoomActivity(room: RoomActivityOptions, turn: number, command?: RoomActivityKind, preferredInstanceId?: string,
+  meal: RoomMealProgress = { bites: 0, total: FEED_BITES_PER_MEAL }): RoomActivityPlan | null {
   if (room.width <= room.petSize || room.height <= room.petSize) return null;
   if (!command && room.period !== undefined && room.hungry) return null;
   const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
@@ -329,9 +343,13 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     const center = roomOffsetToPoint(bowl.offset, room.width, room.height, size);
     const position = clampCatPoint({ x: center.x, y: center.y - room.petSize * 0.3 }, room);
     const [frames] = CAT_ANIMATION_CLIPS.eating;
-    return { kind: "bowlEat", targetInstanceId: bowl.instanceId, steps: [
+    const helpings = Math.ceil(Math.max(0, meal.total - meal.bites) / FEED_BITES_PER_MEAL);
+    return { kind: "bowlEat", targetInstanceId: bowl.instanceId, mealTotal: meal.total, steps: [
       { ...walkTo(home, position, room.petSize), bowlApproach: true },
-      { position, mood: "eating", animation: "eating", animationFps: frames / (ROOM_MEAL_DURATION_MS / 1000), durationMs: ROOM_MEAL_DURATION_MS },
+      ...Array.from({ length: helpings }, (_, helping): RoomActivityStep => ({ position, mood: "eating", animation: "eating",
+        animationFps: frames / (ROOM_MEAL_DURATION_MS / 1000),
+        durationMs: ROOM_MEAL_DURATION_MS * Math.min(FEED_BITES_PER_MEAL, meal.total - meal.bites - helping * FEED_BITES_PER_MEAL) / FEED_BITES_PER_MEAL,
+        mealBiteOffset: meal.bites + helping * FEED_BITES_PER_MEAL })),
       { ...walkTo(position, home, room.petSize), returnHome: true },
     ] };
   }

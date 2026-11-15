@@ -300,12 +300,11 @@ def feeding_effects():
 def cats():
  from game_cat import export_cats
  export_cats(scope,ARGS,export)
+ import runpy
+ renderer=runpy.run_path(str(ROOT/'scripts/3d/render-native-branding.py'))
+ renderer['regenerate'](renderer['selected_skins'](ARGS))
 if '--food-spill' in ARGS:food_spill()
 if '--feeding-effects' in ARGS:feeding_effects()
 if '--cats' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:items()
 if '--items' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:
  cats()
- # Keep OS launch and React fallback artwork in sync with a cat rebuild.
- import runpy, subprocess
- runpy.run_path(str(ROOT/'scripts/3d/render-native-branding.py'))
- subprocess.run(['node',str(ROOT/'scripts/generate-branding.mjs')],cwd=ROOT,check=True)

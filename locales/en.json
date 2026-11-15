@@ -115,6 +115,8 @@
     "notHungry": "{{name}} isn't hungry right now.",
     "alreadyHappy": "{{name}} is already super happy!",
     "enjoyedSnack": "{{name}} enjoyed the snack!",
+    "mealProgress": "Eating",
+    "mealBites": "{{count}} / {{total}} bites",
     "playBox": "Play box",
     "enjoyedPlayBox": "{{name}} loves the box!",
     "removedFromRoom": "{{name}} was put away.",
@@ -1902,5 +1904,21 @@
     "erase": "Erase last digit",
     "clear": "Clear",
     "sign": "Change sign"
+  },
+  "developer": {
+    "title": "Developer modes",
+    "enabled": "Test mode enabled",
+    "sessionHint": "Choose a test screen below. All modes turn off when the app restarts.",
+    "choose": "Choose a test screen",
+    "open": "Open test screen",
+    "off": "Turn off",
+    "search": "Search test screens",
+    "savedProgress": "Uses your saved game progress. Test actions can change it.",
+    "failed": "This test could not load. Turn it off or choose another test in Settings.",
+    "groups": {
+      "Cat": "Cat",
+      "Game state": "Game state",
+      "Puzzles": "Puzzles"
+    }
   }
 }

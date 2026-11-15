@@ -2,7 +2,7 @@ import { grantCatPlanRewards } from "@/utils/cat-plan-rewards";
 import { lifetimePuzzleIds } from "@/utils/reset-puzzle-progress";
 import { recordLearningAttempt } from "@/utils/learning-evidence";
 import type { LearningAttemptContext } from "@/types/learning";
-import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
+import { FEED_BITES_PER_MEAL, FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES, PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
 import { getTimedChallengeLevel } from "@/constants/curriculum";
 import type { Progress, PuzzleProgress } from "@/types/game";
@@ -97,4 +97,14 @@ export function applyFeed(save: GameSave, now = Date.now()): GameSave | null {
   return { ...save, pet: { ...withPetCareUpdate(save.pet, stats => ({ ...stats,
     hunger: boostStat(stats.hunger, FEED_HUNGER_RESTORE), happiness: boostStat(stats.happiness, FEED_HAPPINESS_BOOST) }), now),
     isAsleep: false, lastInteractionAt: now } };
+}
+
+/** The bite that finishes a meal fills the cat, covering rounding and decay during the meal. */
+export function applyFeedBite(save: GameSave, finished: boolean, now = Date.now(),
+  amount = FEED_HUNGER_RESTORE / FEED_BITES_PER_MEAL): GameSave | null {
+  if (!finished && !canFeedForEffect(save.pet.stats, save.pet.isAsleep === true)) return null;
+  return { ...save, pet: { ...withPetCareUpdate(save.pet, stats => ({ ...stats,
+    hunger: finished ? 100 : boostStat(stats.hunger, amount),
+    happiness: finished ? boostStat(stats.happiness, FEED_HAPPINESS_BOOST) : stats.happiness }), now),
+    isAsleep: false } };
 }

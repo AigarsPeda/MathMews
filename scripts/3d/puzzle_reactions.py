@@ -49,7 +49,7 @@ def pose_reaction(driver, state, t, idle):
         paw.location.y -= .18*lift
         paw.location.z += .67*lift
         wrist = -.80*lift + .20*greet
-        chest, roll = -.055*load, -.055*load
+        chest, roll = -.11*load, -.075*load
         happy = smooth_window(t,.22,.84,.10)
         blink = pulse(t,.72,.105)
         lids, mouth = .7*blink, .85*pulse(t,.44,.20)
@@ -58,20 +58,21 @@ def pose_reaction(driver, state, t, idle):
         tail.rotation_euler = (.04*load, .10*pulse(t,.55,.23), -.12*load)
         tail_tip = .17*pulse(t,.65,.22)
     elif state == 'puzzleProud':
-        # A modest "we did it": chest opens first, eyes meet the player,
-        # one deliberate nod, then a warm slow blink instead of more nodding.
-        proud = beat(t, [(0,0),(.20,1),(.48,1),(.79,.6),(.96,0),(1,0)])
-        nod = pulse(t,.48,.14)
-        head.rotation_euler = (-.16*proud + .34*nod, -.08*proud, .045*proud)
-        head.location.z += .055*proud - .025*nod
-        body.location.z += .025*proud
-        chest, hips = -.09*proud, .025*proud
+        proud = beat(t, [(0,0),(.08,0),(.25,1),(.72,1),(.95,0),(1,0)])
+        nod = pulse(t,.43,.09)
+        tail_follow = beat(t, [(0,0),(.13,0),(.36,1),(.77,1),(.97,0),(1,0)])
+        head.rotation_euler = (-.28*proud + .13*nod, -.045*proud, .035*proud)
+        head.location.y -= .025*proud
+        head.location.z += .12*proud - .018*nod
+        body.location.z -= .015*proud
+        chest, hips = -.25*proud, .055*proud
         happy = proud
-        blink = pulse(t,.73,.14)
+        blink = smooth_window(t,.48,.82,.10)
         lids = blink
-        ears = [[-.22*proud,-.045*proud,0],[-.16*proud,.045*proud,0]]
-        tail.rotation_euler = (.05*proud,.13*pulse(t,.62,.26),0)
-        tail_tip = -.18*pulse(t,.77,.20)
+        brow_lift = [.025*proud, .025*proud]
+        ears = [[-.15*proud,.06*proud,0],[-.15*proud,-.06*proud,0]]
+        tail.rotation_euler = (.12*tail_follow,.14*tail_follow,0)
+        tail_tip = .42*tail_follow
     elif state == 'puzzleBounce':
         # One committed spring with a smaller rebound. The neck counters the
         # chest; shoulders absorb landing before the tail tip catches up.
@@ -93,63 +94,73 @@ def pose_reaction(driver, state, t, idle):
         tail.rotation_euler = (.18*gather-.22*hop+.12*land,0,0)
         tail_tip = .30*pulse(t,.48,.20) - .20*pulse(t,.84,.12)
     elif state == 'puzzleOops':
-        # A quick "oh!", then a downcast glance and a pause. The gaze finds
-        # the player again before the ears and tail recover.
-        surprise = pulse(t,.115,.09)
-        down = beat(t, [(0,0),(.16,0),(.31,1),(.52,1),(.78,0),(1,0)])
-        reassure = pulse(t,.81,.13)
-        head.location.z += .025*surprise - .105*down
-        head.rotation_euler = (-.12*surprise+.27*down-.09*reassure, .10*down, -.12*down)
-        body.location.z -= .055*down
-        chest, hips = .07*down, -.025*down
-        sad = down
-        blink = .75*pulse(t,.22,.065) + pulse(t,.82,.10)
-        lids = .6*pulse(t,.82,.10)
-        mouth = .75*surprise
-        eye_open = 1 + .24*surprise
-        brow_lift = [.050*surprise, .040*surprise]
-        gaze = [.012*down, -.012*down]
-        ears = [[.28*down+.10*surprise,-.39*down,0],[.20*down+.14*surprise,.30*down,0]]
-        tail.rotation_euler = (-.80*beat(t,[(0,0),(.18,0),(.39,1),(.58,1),(.91,0),(1,0)]),0,0)
-        tail_tip = -.16*pulse(t,.49,.20) + .17*pulse(t,.87,.10)
+        # Abrupt backward upper-body recoil, pause, then avert the eyes.
+        # Body Y is not consumed by game_cat; chest/hip counter-pitch and the
+        # head's rearward travel carry the backward line over planted feet.
+        recoil = beat(t,[(0,0),(.04,0),(.12,1),(.26,1),(.48,0),(1,0)])
+        away = beat(t,[(0,0),(.22,0),(.37,1),(.66,1),(.92,0),(1,0)])
+        tail_follow = beat(t,[(0,0),(.12,0),(.32,1),(.63,1),(.96,0),(1,0)])
+        head.location.y += .17*recoil-.055*away
+        head.location.z += .065*recoil-.075*away
+        head.rotation_euler = (-.27*recoil+.19*away, -.06*away, -.36*away)
+        body.location.z -= .13*recoil+.045*away
+        chest, hips, roll = -.30*recoil+.07*away, .12*recoil, -.035*away
+        sad = .78*away
+        blink = .75*pulse(t,.28,.055) + pulse(t,.87,.08)
+        lids = .45*pulse(t,.87,.08)
+        mouth = .80*recoil*(1-away)
+        eye_open = 1+.22*recoil
+        brow_lift = [.045*recoil+.018*away, .040*recoil]
+        gaze = [-.026*away,-.010*away]
+        ears = [[-.30*recoil+.18*away,-.38*away,0],[-.25*recoil+.16*away,.28*away,0]]
+        tail.rotation_euler = (-.84*tail_follow,0,-.13*away)
+        tail_tip = -.14*pulse(t,.52,.22)
     elif state == 'puzzleThink':
-        # The eyes search the clue first. Head tilt follows, then one ear
-        # swivels to listen. A little recognition lift resolves the question.
-        study = beat(t,[(0,0),(.18,1),(.48,1),(.69,.3),(.88,0),(1,0)])
-        tilt = beat(t,[(0,0),(.20,0),(.39,1),(.59,1),(.81,0),(1,0)])
-        idea = pulse(t,.76,.11)
-        head.rotation_euler = (.11*study-.19*idea, .23*study-.08*idea, -.28*tilt)
-        head.location.z -= .045*study
-        head.location.z += .055*idea
-        chest, roll = .035*study, -.035*tilt
-        sad = .55*study
-        blink = pulse(t,.56,.075)
-        mouth = .55*idea
-        eye_open = 1+.16*idea
-        brow_lift = [.045*tilt+.025*idea, -.012*tilt+.025*idea]
-        gaze = [.018*study-.028*idea, -.006*study+.016*idea]
-        ears = [[.13*study,-.17*study,0],[.22*tilt-.27*idea,.43*tilt, .12*tilt]]
-        tail.rotation_euler = (-.38*study, .12*pulse(t,.49,.15), .08*tilt)
-        tail_tip = .24*pulse(t,.72,.17)
+        # Shift onto the left foreleg, lift the free paw and
+        # hold a diagonal head/body line. No repeated head shaking.
+        study = beat(t,[(0,0),(.06,0),(.24,1),(.70,1),(.95,0),(1,0)])
+        tilt = beat(t,[(0,0),(.16,0),(.32,1),(.68,1),(.92,0),(1,0)])
+        idea = pulse(t,.78,.10)
+        head.rotation_euler = (.065*study-.14*idea, -.27*tilt, .21*tilt)
+        head.location.x += .055*tilt
+        head.location.z += .015*study+.045*idea
+        body.location.x -= .075*study
+        body.location.z -= .065*study
+        chest, hips, roll = -.055*study, .035*study, .11*tilt
+        paw = driver['feet'][1]
+        paw.location.x -= .045*tilt
+        paw.location.y -= .07*tilt
+        paw.location.z += .29*tilt
+        wrist = -.42*tilt
+        sad = .48*study
+        blink = pulse(t,.73,.05)
+        mouth = .25*idea
+        eye_open = 1+.10*idea
+        brow_lift = [.060*tilt+.025*idea,-.018*tilt+.025*idea]
+        gaze = [.018*study,-.002*study+.010*idea]
+        ears = [[.08*study,-.06*study,0],[.20*tilt-.18*idea,.35*tilt,.12*tilt]]
+        tail.rotation_euler = (-.22*study,.08*tilt,.14*tilt)
+        tail_tip = .27*pulse(t,.60,.28)
     elif state == 'puzzleRecover':
-        # Share the disappointment, exhale with eyes closed, then take a
-        # visible breath and lift the chest. Finish with a small confident nod.
-        low = beat(t,[(0,0),(.23,1),(.43,1),(.69,0),(1,0)])
-        breath = pulse(t,.60,.18)
-        resolve = pulse(t,.78,.13)
-        head.location.z -= .14*low
-        head.location.z += .045*breath
-        head.rotation_euler = (.29*low-.13*breath+.13*resolve, -.065*low, .07*low)
-        body.location.z -= .09*low
-        body.location.z += .045*breath
-        chest, hips = .11*low-.08*breath, -.045*low
+        # Exhale low, then expand through a long upward recovery and HOLD the
+        # open chest. The final few frames release to neutral for clip mixing.
+        low = beat(t,[(0,0),(.18,1),(.34,1),(.63,0),(1,0)])
+        inhale = beat(t,[(0,0),(.36,0),(.60,1),(.80,1),(.97,0),(1,0)])
+        resolve = pulse(t,.76,.07)
+        head.location.y -= .13*low
+        head.location.z += -.20*low+.20*inhale
+        head.rotation_euler = (.34*low-.30*inhale+.10*resolve,-.025*low,0)
+        body.location.z += -.21*low-.008*inhale
+        chest, hips = .23*low-.25*inhale, -.09*low+.06*inhale
         sad = low
-        blink = smooth_window(t,.29,.51,.10) + .65*pulse(t,.85,.07)
-        lids = .55*pulse(t,.85,.07)
-        happy = .45*resolve
-        ears = [[.29*low-.19*breath,-.35*low,0],[.22*low-.23*breath,.27*low,0]]
-        tail.rotation_euler = (-.9*beat(t,[(0,0),(.30,1),(.49,1),(.85,0),(1,0)]),0,0)
-        tail_tip = -.12*pulse(t,.44,.18) + .24*pulse(t,.80,.17)
+        blink = smooth_window(t,.23,.43,.07)
+        lids = .35*pulse(t,.80,.07)
+        happy = .48*inhale
+        brow_lift = [.025*inhale,.025*inhale]
+        ears = [[.26*low-.20*inhale,-.40*low,0],[.22*low-.20*inhale,.38*low,0]]
+        tail_low = beat(t,[(0,0),(.25,1),(.43,1),(.78,0),(1,0)])
+        tail.rotation_euler = (-.98*tail_low+.08*inhale,0,0)
+        tail_tip = -.10*pulse(t,.39,.17)+.30*pulse(t,.79,.18)
 
     for ear, rotation in zip(driver['ears'], ears):
         ear.rotation_euler = rotation

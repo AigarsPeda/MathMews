@@ -11,24 +11,35 @@ export function catTurnDuration(angle: number) {
   return .16 + Math.max(.35, Math.abs(angle) / (Math.PI / 2)) * .48;
 }
 
+function turnTravel(progress: number) {
+  'worklet';
+  const t=Math.max(0,Math.min(1,progress)),ramp=.06;
+  return t<ramp?t*t/(2*ramp*(1-ramp)):t>1-ramp?1-(1-t)**2/(2*ramp*(1-ramp)):(t-ramp/2)/(1-ramp);
+}
+
 /** Look first, then step around the planted feet, then straighten the neck. */
 export function catTurnPose(angle: number, progress: number, initialHead = 0, initialCrouch = 0) {
   'worklet';
   const t = Math.max(0, Math.min(1, progress));
-  const travel = Math.max(0, Math.min(1, (t - .12) / .80)), ramp = .06;
-  const body = travel < ramp ? travel * travel / (2 * ramp * (1 - ramp))
-    : travel > 1 - ramp ? 1 - (1 - travel) ** 2 / (2 * ramp * (1 - ramp))
-    : (travel - ramp / 2) / (1 - ramp);
+  const duration=catTurnDuration(angle), seconds=t*duration;
+  const body=turnTravel((t-.12)/.80);
+  // Absolute delays keep the look/shoulder/hip sequence readable on both
+  // quarter and half turns without extending the existing placement clock.
+  const chest=turnTravel((seconds-.10)/(duration-.18));
+  const hips=turnTravel((seconds-.15)/(duration-.23));
+  const cycles=Math.max(1,Math.ceil(Math.abs(angle)/(Math.PI/6)-1e-6));
+  const loadingSide=Math.sign(angle)*.020*Math.cos(Math.max(0,t-.12)/.80*cycles*Math.PI*2)
+    *smooth(seconds/.065)*(1-smooth((t-.88)/.12));
   const anticipation = Math.max(.22,.14/catTurnDuration(angle));
   const loading = Math.max(.16,.10/catTurnDuration(angle));
   const look = smooth(t / anticipation) * (1 - smooth((t - .72) / .28));
-  return { heading: angle * body, head: initialHead * (1 - smooth(t / anticipation)) + Math.sign(angle) * Math.min(.48, Math.abs(angle) * .6) * look,
-    crouch: initialCrouch * (1 - smooth(t / loading)) + (.09+.09*Math.min(1,Math.abs(angle)/(Math.PI/2))) * smooth(t / loading) * (1 - smooth((t - .82) / .18)) };
+  return { heading: angle * body, chestYaw:angle*(chest-body), hipYaw:angle*(hips-body), side:loadingSide, head: initialHead * (1 - smooth(t / anticipation)) + Math.sign(angle) * Math.min(.48, Math.abs(angle) * .6) * look,
+    crouch: initialCrouch * (1 - smooth(t / loading)) + (.035+.020*Math.min(1,Math.abs(angle)/(Math.PI/2))) * smooth(t / loading) * (1 - smooth((t - .82) / .18)) };
 }
 
 function turnStep(angle: number, progress: number, paw: number) {
   'worklet';
-  const cycles = Math.max(1, Math.ceil(Math.abs(angle) / (Math.PI / 2) - 1e-6));
+  const cycles = Math.max(1, Math.ceil(Math.abs(angle) / (Math.PI / 6) - 1e-6));
   const travel = Math.max(0, Math.min(cycles, (progress - .12) / .80 * cycles));
   const cycle = Math.min(cycles - 1, Math.floor(travel));
   const onset = angle > 0 ? [.5, 0, .06, .56] : [0, .5, .56, .06];
@@ -39,11 +50,11 @@ function turnStep(angle: number, progress: number, paw: number) {
 export function catTurnPawOrientation(angle: number, progress: number, paw: number) {
   'worklet';
   const { before, after, step } = turnStep(angle, progress, paw);
-  return { heading: before + (after - before) * smooth(step), settled: before === 0 ? smooth(step) : 1 };
+  return { heading: before + (after - before) * smooth(step), pitch:.24*Math.sin(Math.PI*step)**2, settled: before === 0 ? smooth(step) : 1 };
 }
 
 /** Coordinates are relative to the heading at the start of the turn.
- * Diagonal pairs alternate support, making two purposeful beats per quarter-turn.
+ * Diagonal pairs alternate support, using short placements without extending the turn clock.
  * Paw order is left fore, right fore, left hind, right hind.
  */
 export function catTurnPaw(neutral: Vec3, initial: Vec3, angle: number, progress: number, paw: number): Vec3 {

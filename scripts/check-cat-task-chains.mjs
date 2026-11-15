@@ -16,9 +16,9 @@ function stageProperty(name,context){if(!propertyScripts.has(name)){const node=f
 const delivery=find(stageSource,n=>ts.isCallExpression(n)&&n.expression.getText(stageSource)==='useEffect'&&n.arguments[0]?.getText(stageSource).includes('handledRoomCommand.current === roomCommand.id')).arguments[0].getText(stageSource);
 const deliverCommand=new vm.Script(compile(`(${delivery})()`));
 
-function harness({reduced=false,native=true,cold=false,targets={},doors=false}={}){
+function harness({reduced=false,native=true,cold=false,targets={},doors=false,fullness=75}={}){
   let now=1_800_000_000_000, timerId=0, dirty=true, owner, effects=[], active=true, interaction=now;
-  const timers=new Map(), cache=new Map(), rooms=new Map(), arrivals=[], completions=[], feeds=[], failures=[];
+  const timers=new Map(), cache=new Map(), rooms=new Map(), arrivals=[], completions=[], feeds=[], bites=[], failures=[];
   const clock={now:()=>now};
   function slot(initial){const instance=owner,index=instance.cursor++;if(!(index in instance.slots))instance.slots[index]=initial();return [instance,index,instance.slots[index]];}
   const same=(a,b)=>a&&a.length===b.length&&b.every((v,i)=>Object.is(v,a[i]));
@@ -85,8 +85,8 @@ function harness({reduced=false,native=true,cold=false,targets={},doors=false}={
       const entry=props.roomEntry;
       if(room.options.entry!==entry)room.options={...room.base,entry};
       room.props=props;owner=room;room.cursor=0;
-      room.api=useRoomActivity(room.options,props.catHomeRoomId===room.id,interaction,room.x,room.y,(id,motion)=>{const door=room.options.decorations.find(item=>item.instanceId===id);if(door?.doorDestination)env.handleCatRoomArrival(door.doorDestination,undefined,motion);},
-        ()=>feeds.push(room.id),props.onSendCatToRoom,props.roomVisible,false,undefined,(kind,id)=>completions.push({room:room.id,kind,id}),failure=>failures.push({room:room.id,...failure}));
+      room.api=useRoomActivity(room.options,fullness,props.catHomeRoomId===room.id,interaction,room.x,room.y,(id,motion)=>{const door=room.options.decorations.find(item=>item.instanceId===id);if(door?.doorDestination)env.handleCatRoomArrival(door.doorDestination,undefined,motion);},
+        finished=>{bites.push(room.id);if(finished)feeds.push(room.id);},props.onSendCatToRoom,props.roomVisible,false,undefined,(kind,id)=>completions.push({room:room.id,kind,id}),failure=>failures.push({room:room.id,...failure}));
       pending.push(()=>deliverCommand.runInNewContext({
         roomCommand:props.roomCommand,handledRoomCommand:room.handled,compact:true,usesNativeCat:true,catPresent:props.catHomeRoomId===room.id,
         decorating:false,roomActivityBlocked:false,graphicsMode:'native',viewport:{width:390,height:420},displayWidth:80,
@@ -137,11 +137,11 @@ function harness({reduced=false,native=true,cold=false,targets={},doors=false}={
   function partial(fraction=.45){const room=current(),state=room.api.activity,step=state.plan.steps[state.stepIndex],travel=step.native;
     const elapsed=travel.duration*fraction,point=travel.legs?.length?motion.catMotionSample(travel.legs,elapsed).position:
       travel.jump?motion.catJumpPoint(travel.path[0],travel.path.at(-1),Math.max(0,Math.min(1,(fraction-.2)/.5)),.35*room.options.nativeWorld.catScale):motion.catPathPoint(travel.path,motion.catTravelProgress(elapsed,travel.duration),travel.paces);
-    const screen=worldApi.catScreenPoint(point,room.options.nativeWorld);room.x.set(screen.x);room.y.set(screen.y);room.api.updateNativeHeight(point,elapsed);return point;
+    const screen=worldApi.catScreenPoint(point,room.options.nativeWorld);room.x.set(screen.x);room.y.set(screen.y);room.api.updateNativeHeight(point,elapsed,roomActivityStepKey(state));return point;
   }
   flush();if(!cold){for(const id of HOME_ROOM_IDS)transitionApi.ready(id);flush();}
   for(const room of rooms.values())room.api.updateNativeHeight(room.options.nativeWorld.home,0);
-  return {env,rooms,arrivals,completions,feeds,failures,current,request,finishStep,until,atTask,atInteraction,partial,flush,advance,stepKey:roomActivityStepKey,
+  return {env,rooms,arrivals,completions,feeds,bites,failures,current,request,finishStep,until,atTask,atInteraction,partial,flush,advance,stepKey:roomActivityStepKey,
     ready(id){transitionApi.ready(id??env.transition?.destination??env.pet.homeRoomId);flush();},
     browse(id){env.handleVisitRoom(id);flush();},
     setActive(value){active=value;dirty=true;flush();},
@@ -166,13 +166,17 @@ for(const reduced of [false,true])for(const native of [true,false]){
 console.log('Verified four-room action chains, exact targets, one cat, unchanged furnishings, native/timer completion and Reduce Motion.');
 
 for(const reduced of [false,true]){
-  const h=harness({reduced});
+  const h=harness({reduced,fullness:30});
   h.request('bathroom');h.partial();h.request('bedroom');h.request('kitchen');
   h.until(()=>h.atInteraction('kitchen'));
   assert.deepEqual(h.arrivals.map(a=>a.destination),['kitchen'],'The newest destination replaces earlier requests during a floor walk');
   assert.equal(h.feeds.length,0,'Walking to a bowl cannot award feeding');
+  assert.equal(h.bites.length,0,'Approaching the bowl cannot award bites');
+  if(reduced)h.advance(241);else {h.partial(.45);h.flush();}
+  assert.equal(h.bites.length,2,'Eating progress awards two bites before returning home');
   h.until(()=>h.current().api.activity===null);
   assert.deepEqual(h.feeds,['kitchen'],'Completing the rendered meal awards feeding once');
+  assert.equal(h.bites.length,14,'A 30-percent-full cat finishes fourteen bites across three helpings');
   assert.equal(h.completions.filter(c=>c.kind==='bowlEat').length,1);
 }
 console.log('Verified rapid departure retargeting, cancelled destinations, actual meal completion and no duplicate rewards.');
@@ -238,12 +242,15 @@ for(const phase of ['departure','entry','jump','meal']){
   h.partial();
   const room=h.current(),state=h.state(),key=h.stepKey(state),end=state.step.native.path.at(-1);
   const before={arrivals:h.arrivals.length,feeds:h.feeds.length,completions:h.completions.length};
+  const bitesBefore=h.bites.length;
   h.setActive(false);h.advance(60_000);
   room.api.completeNativeStep(key,end);h.flush();
   assert.deepEqual({arrivals:h.arrivals.length,feeds:h.feeds.length,completions:h.completions.length},before,`${phase}: background timers and late renderer callbacks cannot finish paused tasks`);
   assert.equal(h.state().plan.kind,state.plan.kind,`${phase}: pausing preserves the task`);
   assert.equal(h.state().stepIndex,state.stepIndex,`${phase}: pausing preserves the current step`);
-  h.setActive(true);h.until(()=>h.atInteraction(destination));
+  h.setActive(true);h.until(()=>phase==='meal'?h.current().api.activity===null:h.atInteraction(destination));
+  if(phase==='meal')assert.equal(h.feeds.length,before.feeds,'Backgrounding abandons the remaining meal instead of resuming it');
+  assert.equal(h.bites.length,bitesBefore,'Background and resume cannot award more bites');
   h.request('bedroom');h.until(()=>h.atInteraction('bedroom'));h.assertSingleCat();
 }
 console.log('Verified pause/resume during departure, entry, jumps and meals, followed immediately by a task in another room.');
@@ -262,7 +269,7 @@ for(const native of [true,false]){
   h.browse('bathroom');
   assert.equal(h.current().props.roomVisible,false,'Browsing keeps the cat in the room where its task runs');
   h.until(()=>h.current().api.activity===null);
-  assert.deepEqual(h.feeds,['kitchen'],'An offscreen meal finishes exactly once');
+  assert.deepEqual(h.feeds,[],'Browsing another room interrupts the meal without a completion bonus');
   assert.equal(h.env.pet.homeRoomId,'bathroom','Offscreen task completion cannot force the view back');
   h.request('bedroom');h.until(()=>h.atInteraction('bedroom'));h.assertSingleCat();
 }

@@ -2,6 +2,7 @@ import type { CatCommandAttention } from '@/utils/native-cat-expression';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { WorldPeriod } from '@/utils/world-clock';
 import type { HomeRoomId } from "@/constants/home-rooms";
+import { FEED_BITES_PER_MEAL } from "@/constants/game";
 import { FLOOR_Y, nativeRoomEdge, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { getCatJumpMotion, getCatWalkMotion, isCatJump, isCatWalk } from "@/constants/cat-room-motion";
@@ -14,7 +15,10 @@ import {
   routeToSofa,
   roomOffsetToPoint,
   roomActivityStepKey,
+  roomMealBiteCount,
+  roomMealBiteSize,
   roomIdleDelay,
+  type RoomMealProgress,
   type RoomActivityKind,
   type RoomActivityOptions,
   type RoomActivityPlan,
@@ -29,12 +33,13 @@ type ActivityRequest = { id: number; kind: RoomActivityKind | "returnHome" | "st
 /** One scheduler owns idle choices, commands, and the visible journey home. */
 export function useRoomActivity(
   options: RoomActivityOptions,
+  fullness: number,
   enabled: boolean,
   lastInteractionAt: number | undefined,
   petX: SharedValue<number>,
   petY: SharedValue<number>,
   onDoorArrival?: (instanceId: string, motion?: CatTravelMotion) => void,
-  onFeed?: () => void,
+  onFeed?: (finished: boolean, amount: number) => void,
   onRoomArrival?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod, motion?: CatTravelMotion) => void,
   roomVisible = true,
   preservePositionWhenDisabled = false,
@@ -56,6 +61,28 @@ export function useRoomActivity(
   const nativePosition = useRef<Vec3 | undefined>(undefined);
   const nativeElapsed = useRef(0);
   const running = useRef<ActivityState | null>(null);
+  const feedBite = useRef(onFeed);
+  const latestFullness = useRef(fullness);
+  useEffect(() => { latestFullness.current = fullness; }, [fullness]);
+  const meal = useRef<RoomMealProgress & { remaining: number } | null>(null);
+  const [mealProgress, setMealProgress] = useState<RoomMealProgress | null>(null);
+  const cancelMeal = useCallback(() => {
+    meal.current = null;
+    setMealProgress(null);
+  }, []);
+  const awardMealBites = useCallback((count: number) => {
+    const current = meal.current;
+    if (!current) return;
+    const target = Math.min(current.total, Math.max(0, Math.floor(count)));
+    if (target <= current.bites) return;
+    while (current.bites < target && meal.current === current) {
+      current.bites++;
+      const amount = roomMealBiteSize(100 - current.remaining);
+      current.remaining -= amount;
+      feedBite.current?.(current.bites === current.total, amount);
+    }
+    if (meal.current === current) setMealProgress({ bites: current.bites, total: current.total });
+  }, []);
   const updateNativeHeight = useCallback((position: readonly number[], elapsed?: number, activityKey?: string) => {
     // A new step can start before React publishes it to the drawing thread.
     // Reports still arriving from the old step cannot set its resume clock.
@@ -63,7 +90,15 @@ export function useRoomActivity(
     nativeHeight.current = position[1];
     nativePosition.current = [position[0], position[1], position[2]];
     if (elapsed !== undefined) nativeElapsed.current = elapsed;
-  }, []);
+    const current = running.current;
+    const step = current?.plan.steps[current.stepIndex];
+    if (activityKey && elapsed !== undefined && current?.plan.kind === 'bowlEat'
+      && step?.mood === 'eating' && step.native?.awaitCompletion) {
+      const biteOffset = step.mealBiteOffset ?? 0;
+      const stepBites = Math.min(FEED_BITES_PER_MEAL, (current.plan.mealTotal ?? FEED_BITES_PER_MEAL) - biteOffset);
+      awardMealBites(biteOffset + Math.min(stepBites, elapsed * 1000 / step.durationMs * stepBites));
+    }
+  }, [awardMealBites]);
   const exitMotion = useRef<CatTravelMotion | undefined>(undefined);
   const nativeAdvance = useRef<((key: string, position: Vec3, motion?: CatTravelMotion) => void) | null>(null);
   const completeNativeStep = useCallback((key: string, position: Vec3, motion?: CatTravelMotion) => nativeAdvance.current?.(key, position, motion), []);
@@ -94,14 +129,13 @@ export function useRoomActivity(
   const pendingCommand = useRef<Omit<ActivityRequest, "id"> | null>(null);
   const doorArrival = useRef(onDoorArrival);
   const stopComplete = useRef(onStopped);
-  const feedComplete = useRef(onFeed);
   const activityComplete = useRef(onCompleted);
   const activityBlocked = useRef(onBlocked);
   const roomArrival = useRef(onRoomArrival);
   useEffect(() => {
     doorArrival.current = onDoorArrival;
     stopComplete.current = onStopped;
-    feedComplete.current = onFeed;
+    feedBite.current = onFeed;
     activityComplete.current = onCompleted;
     activityBlocked.current = onBlocked;
     roomArrival.current = onRoomArrival;
@@ -117,6 +151,7 @@ export function useRoomActivity(
   // Game activities continue while browsing. Only rendering is paused.
   const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => {
+    cancelMeal();
     setBlockedActivity(null);
     const target=instanceId && liveWorld.current?.objects.find(object=>object.instanceId===instanceId);
     if(target && !ambientPeriod && roomVisible && enabled && screenActive && !reduceMotion && kind!=='stop' && kind!=='returnHome') {
@@ -131,7 +166,7 @@ export function useRoomActivity(
       return;
     }
     setRequest(current => ({ id: (current?.id ?? 0) + 1, kind, instanceId, interactionAt, ambientPeriod }));
-  }, [enabled, reduceMotion, roomVisible, screenActive]);
+  }, [cancelMeal, enabled, reduceMotion, roomVisible, screenActive]);
   const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => requestActivity(kind, instanceId, interactionAt, ambientPeriod), [requestActivity]);
   const stopActivity = useCallback(() => requestActivity("stop"), [requestActivity]);
   useEffect(() => {
@@ -164,6 +199,7 @@ export function useRoomActivity(
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
+    const biteTimers: ReturnType<typeof setTimeout>[] = [];
     let stopped = false;
     // Scheduler refs are read after commit. They must not determine render
     // output or dependency arrays, which React Compiler cannot track.
@@ -175,6 +211,16 @@ export function useRoomActivity(
     const active = screenActive && (roomVisible || continueActivity);
     const resumingRoom = !wasRoomVisible.current && roomVisible;
     const wasHiddenActivity = hiddenActivity.current;
+    const interruptedMeal = (running.current?.plan.kind === 'bowlEat' || queuedPlan.current?.kind === 'bowlEat')
+      && (!screenActive || !enabled || wasRoomVisible.current && !roomVisible);
+    if (interruptedMeal) {
+      cancelMeal();
+      const current = running.current;
+      if (current) running.current = { ...current, plan: buildRoomReturn(options, current.plan, current.stepIndex,
+        { x: petX.get(), y: petY.get() }), stepIndex: 0, startedAt: Date.now() };
+      queuedPlan.current = null;
+      nativeElapsed.current = 0;
+    }
     hiddenActivity.current = backgroundActivity;
     wasRoomVisible.current = roomVisible;
     const continuing = wasActive.current && active;
@@ -199,7 +245,6 @@ export function useRoomActivity(
             roomArrival.current?.(plan.destination, plan.ambientPeriod,exitMotion.current);
           return;
         }
-        if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
         // Ambient play keeps the room lively; care boosts require a player command.
         if (completed && plan.userRequested && plan.kind !== "returnHome" && !completed.plan.steps.some(step => step.native?.blocked)) activityComplete.current?.(plan.kind, plan.targetInstanceId);
         if (roomVisible) timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
@@ -210,7 +255,7 @@ export function useRoomActivity(
         step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length || step.native.brushSide !== undefined)) ? { ...step } :
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
-        step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
+        step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion && !step.hold };
         const nextStep=plan.steps[stepIndex+1];
         if(step.native.walkAfterLanding && nextStep && !reduceMotion) {
           const landing=step.native.path[step.native.path.length-1];
@@ -235,7 +280,7 @@ export function useRoomActivity(
           const position = room.nativeStepCompletion && nativePosition.current ? nativePosition.current : step.native.path[0];
           step = { ...step, position: catScreenPoint(position, liveWorld.current), animation: "idle", mood: "idle", hold: false,
             sofaApproach: undefined, bedPhase: undefined, bathroomPhase: undefined, durationMs: 200, moveMs: 0,
-            native: { ...step.native, path: [position], distance: 0, duration: .2, jump: false, awaitCompletion: roomVisible && room.nativeStepCompletion } };
+            native: { ...step.native, path: [position], distance: 0, duration: .2, jump: false, awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion } };
         }
         if (reduceMotion) step.native = { ...step.native!, path: [step.native!.path.at(-1)!], legs: undefined, distance: 0, jump: false };
       }
@@ -281,8 +326,26 @@ export function useRoomActivity(
       const next = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? visibleStep : item) }, stepIndex, startedAt: Date.now() - elapsed * 1000 };
       running.current = next;
       setState(next);
+      const eating = plan.kind === 'bowlEat' && step.mood === 'eating' && !step.native?.blocked;
+      const biteOffset = step.mealBiteOffset ?? 0;
+      const stepBites = Math.min(FEED_BITES_PER_MEAL, (plan.mealTotal ?? FEED_BITES_PER_MEAL) - biteOffset);
+      const stepDuration = reduceMotion ? 600 : step.durationMs;
+      if (eating) {
+        awardMealBites(biteOffset + Math.min(stepBites, elapsed * 1000 / stepDuration * stepBites));
+        if (!step.native?.awaitCompletion) {
+          for (let bite = 1; bite <= stepBites; bite++) {
+            const remaining = stepDuration * bite / stepBites - elapsed * 1000;
+            if (remaining > 0) biteTimers.push(setTimeout(() => {
+              if (!stopped && running.current === next) awardMealBites(biteOffset + bite);
+            }, remaining));
+          }
+        }
+      }
       const advanceStep = () => {
-        if ((!roomVisible || room.nativeStepCompletion === false) && step.native) {
+        if (stopped || running.current !== next) return;
+        for (const biteTimer of biteTimers) clearTimeout(biteTimer);
+        if (eating) awardMealBites(biteOffset + FEED_BITES_PER_MEAL);
+        if ((reduceMotion || !roomVisible || room.nativeStepCompletion === false) && step.native) {
           nativePosition.current = step.native.path.at(-1)!;
           nativeHeight.current = nativePosition.current[1];
           petX.set(step.position.x); petY.set(step.position.y);
@@ -319,9 +382,13 @@ export function useRoomActivity(
         advanceStep();
       } : null;
       if (!step.hold && !step.native?.awaitCompletion)
-        timer = setTimeout(advanceStep, reduceMotion ? 600 : Math.max(0, step.durationMs - elapsed * 1000));
+        timer = setTimeout(advanceStep, reduceMotion && plan.kind !== 'bowlEat' ? 600 : Math.max(0, stepDuration - elapsed * 1000));
     };
     const startPlan = (plan: RoomActivityPlan) => {
+      if (plan.kind === 'bowlEat' && !meal.current) {
+        meal.current = { bites: 0, total: plan.mealTotal!, remaining: Math.max(0, Math.min(100, 100 - latestFullness.current)) };
+        setMealProgress({ bites: 0, total: plan.mealTotal! });
+      }
       queuedPlan.current = null;
       exitMotion.current=undefined;
       if (plan.ambientPeriod && plan.ambientPeriod !== latestOptions.current.period) {
@@ -339,7 +406,8 @@ export function useRoomActivity(
       runStep(plan, 0);
     };
     const planActivity = (room: RoomActivityOptions, kind?: RoomActivityKind, instanceId?: string) => {
-      const plan = buildRoomActivity({ ...room, napTurn: napTurn.current }, turn.current++, kind, instanceId);
+      const mealBudget = kind === 'bowlEat' ? meal.current ?? { bites: 0, total: roomMealBiteCount(latestFullness.current) } : undefined;
+      const plan = buildRoomActivity({ ...room, napTurn: napTurn.current }, turn.current++, kind, instanceId, mealBudget);
       if (plan?.steps.some(step => step.animation === 'curlSleep')) {
         const current = running.current, step = current?.plan.steps[current.stepIndex];
         const repeating = current?.plan.kind === plan.kind && current.plan.targetInstanceId === plan.targetInstanceId
@@ -384,7 +452,7 @@ export function useRoomActivity(
             startPlan({...task,userRequested:!request.ambientPeriod,ambientPeriod:request.ambientPeriod,
               steps:task.steps.map((step,index)=>index?step:{...step,enteringRoom:true,
                 travelDirection:options.entry!.direction,entryMotion:options.entry!.motion})});
-            return () => {stopped=true;nativeAdvance.current=null;clearTimeout(timer);};
+            return () => {stopped=true;nativeAdvance.current=null;clearTimeout(timer);for(const biteTimer of biteTimers)clearTimeout(biteTimer);};
           }
         }
         if (request && request.id !== handledRequest.current) {
@@ -392,7 +460,7 @@ export function useRoomActivity(
           pendingCommand.current = { kind: request.kind, instanceId: request.instanceId, interactionAt: request.interactionAt, ambientPeriod: request.ambientPeriod };
         }
         startPlan(entry);
-        return () => { stopped = true; nativeAdvance.current = null; clearTimeout(timer); };
+        return () => { stopped = true; nativeAdvance.current = null; clearTimeout(timer); for (const biteTimer of biteTimers) clearTimeout(biteTimer); };
       }
       const newRequest = request && request.id !== handledRequest.current ? request : null;
       if (newRequest) handledRequest.current = newRequest.id;
@@ -417,20 +485,20 @@ export function useRoomActivity(
       if (!newRequest && queuedPlan.current) {
         const queued = queuedPlan.current;
         timer = setTimeout(() => startPlan(queued), 0);
-      } else if (current && !newRequest && liveWorld.current && (continuing || resumingRoom || resumingActivity)) {
+      } else if (current && !newRequest && (liveWorld.current || current.plan.kind === 'bowlEat') && (continuing || resumingRoom || resumingActivity)) {
         const step = current.plan.steps[current.stepIndex];
-        const target = liveWorld.current.objects.find(o => o.instanceId === current.plan.targetInstanceId);
-        if ((!target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome'
+        const target = liveWorld.current?.objects.find(o => o.instanceId === current.plan.targetInstanceId);
+        if ((liveWorld.current && !target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome'
           || current.plan.kind === 'fridgeInvestigate' && !target?.fridgeOpen
           || (current.plan.kind === 'drawerHide' || current.plan.kind === 'cupboardHide') && !target?.opened) && returning) {
           timer = setTimeout(() => runStep(returning, 0), 0);
-        } else if (step.animation === 'eating' && target && step.native?.targetPosition
+        } else if (step.mood === 'eating' && target && step.native?.targetPosition
           && pathLength([target.position, step.native.targetPosition]) > .05) {
-          const meal = planActivity(options, 'bowlEat', target.instanceId);
-          if (meal) timer = setTimeout(() => startPlan(meal), 0);
+          const relocatedMeal = planActivity(options, 'bowlEat', target.instanceId);
+          if (relocatedMeal) timer = setTimeout(() => startPlan(relocatedMeal), 0);
         } else {
           const replanWalk = isCatWalk(step.animation) && !step.native?.legs?.length && step.native?.brushSide === undefined;
-          const elapsed = wasHiddenActivity ? Math.max(0, (Date.now() - current.startedAt) / 1000)
+          const elapsed = wasHiddenActivity || reduceMotion && current.plan.kind === 'bowlEat' ? Math.max(0, (Date.now() - current.startedAt) / 1000)
             : replanWalk ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
           runStep(current.plan, current.stepIndex, elapsed, Boolean(replanWalk));
         }
@@ -459,8 +527,11 @@ export function useRoomActivity(
       stopped = true;
       nativeAdvance.current = null;
       clearTimeout(timer);
+      for (const biteTimer of biteTimers) clearTimeout(biteTimer);
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
-  }, [screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
-  return { activity, commandAttention, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
+  }, [awardMealBites, cancelMeal, screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
+  return { activity, mealProgress: screenActive && activity?.plan.kind === 'bowlEat'
+    && activity.plan.steps[activity.stepIndex].mood === 'eating' ? mealProgress : null,
+    commandAttention, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
 }

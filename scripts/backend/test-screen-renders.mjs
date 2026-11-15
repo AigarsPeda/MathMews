@@ -23,7 +23,7 @@ const renderer = Reconciler({
 
 // Run the real screen/header and catalog logic. Native views, navigation, and
 // purchases are boundaries; FlatList keeps RN's shallow-prop PureComponent contract.
-async function harness(screen = 'store', compiled = false) {
+async function harness(screen = 'store', compiled = false, graphicsMode = '3d') {
   const cache = new Map(), components = new Map(), props = new Map(), counts = new Map();
   const gameContext = React.createContext(null), clockContext = React.createContext(Date.now());
   const calls = [], timers = new Map();
@@ -45,6 +45,11 @@ async function harness(screen = 'store', compiled = false) {
   const dimensions = { width: 390, height: 844 }, insets = { top: 0, bottom: 0 };
   function view(name) {
     if (!components.has(name)) components.set(name, function Probe(p) {
+      React.useEffect(() => {
+        if (p.testID !== 'meal-progress') return;
+        props.set('meal-progress-visible', true);
+        return () => props.set('meal-progress-visible', false);
+      }, [p.testID]);
       props.set(name, p); counts.set(name, (counts.get(name) ?? 0) + 1);
       if (p.testID) { props.set(p.testID, p); counts.set(p.testID, (counts.get(p.testID) ?? 0) + 1); }
       if (name === 'Group') {
@@ -69,7 +74,7 @@ async function harness(screen = 'store', compiled = false) {
   }
   const petDisplay = { playback: { mood: 'idle' }, baseMood: 'idle', send() {}, isCareBlocked: false, isCareAnimationPlaying: false };
   const roomTransition = { transition: null, progress: {}, visit() {}, ready() {} };
-  const roomEditor = {}, iap = {}, speech = { speechMessage: null, showSpeech() {} };
+  const roomEditor = {}, iap = {}, speech = { speechMessage: null, showSpeech: message => calls.push(['showSpeech', message]) };
   const shared = value => ({ value, get() { return this.value; }, set(next) { this.value = next; } });
   function useWorkletValue(read) {
     const latest = React.useRef(read);
@@ -86,9 +91,10 @@ async function harness(screen = 'store', compiled = false) {
     'expo-font': { useFonts: () => [true, null] },
     '@shopify/react-native-skia': { Canvas: view('Canvas'), Path: view('Path'), Group: view('Group'), DashPathEffect: view('DashPathEffect'),
       Skia: { Path: { Make() { const points = []; return { points, moveTo(x, y) { points.push([x, y]); }, lineTo(x, y) { points.push([x, y]); }, close() {} }; } } } },
-    '@/lib/graphics-mode': { useGraphicsMode: () => '3d' },
+    '@/lib/graphics-mode': { useGraphicsMode: () => graphicsMode },
     '@/hooks/use-room-camera': { useRoomCamera: () => stageCamera },
-    '@/hooks/use-room-activity': { useRoomActivity: options => {
+    '@/hooks/use-room-activity': { useRoomActivity: (options, fullness) => {
+      props.set('activityFullness', fullness);
       props.set('activityOptions', options); counts.set('stageRenders', (counts.get('stageRenders') ?? 0) + 1);
       const room = `stageRenders:${options.homeRoomId}`; counts.set(room, (counts.get(room) ?? 0) + 1);
       return stageActivity;
@@ -107,7 +113,8 @@ async function harness(screen = 'store', compiled = false) {
       } },
     'react-native-worklets-core': { useSharedValue: value => React.useState(() => shared(value))[0] },
     '@/hooks/use-filament-shared-value': { useFilamentSharedValue: value => value },
-    'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText'), ScrollView: view('AnimatedScrollView') }, useReducedMotion: () => false,
+    'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText'), ScrollView: view('AnimatedScrollView') }, useReducedMotion: () => React.useContext(activityContext).reduceMotion,
+      cancelAnimation() {}, withTiming: value => value, Easing: { linear: value => value },
       useSharedValue: value => React.useState(() => shared(value))[0],
       useAnimatedScrollHandler: handler => handler,
       useAnimatedStyle: useWorkletValue,
@@ -203,7 +210,7 @@ async function harness(screen = 'store', compiled = false) {
     if (id in mocks) return mocks[id];
     if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'native-scene' && id.endsWith('/NativeRoomScene')) && !(['contact-shadows', 'lamp-light'].includes(screen) && /\/Native(ContactShadows|LampLight)$/.test(id)) && !(screen === 'colliders' && id.endsWith('/NativeRoomColliders')) && !(screen === 'drag-target' && id.endsWith('/DraggableRoomPet')) && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
       const name = id.split('/').at(-1);
-      return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : target[key] ?? view(key) });
+      return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : key === 'MEAL_RING_SIZE' ? 28 : target[key] ?? view(key) });
     }
     let file = id.startsWith('@/') ? path.resolve(id.slice(2)) : path.resolve(base, id);
     if (/\.(png|webp|mp4|glb|ttf)$/.test(file)) return file;
@@ -298,6 +305,7 @@ async function harness(screen = 'store', compiled = false) {
     async setRoomActivity(next) { stageActivity = { ...stageActivity, ...next }; await render(); },
     async setStage(next) { stageProps = { ...stageProps, ...next }; await render(); },
     async setActive(active) { activity = { ...activity, active }; await render(); },
+    async setReducedMotion(reduceMotion) { activity = { ...activity, reduceMotion }; await render(); },
     async setParams(next) { searchParams = { ...searchParams, ...next }; await render(); },
     async advance(ms) { clock += ms; await update(() => { for (const callback of [...timers.values()]) callback(); }); },
     get game() { return game; }, async setGame(next) { game = { ...game, ...next }; await render(); },
@@ -309,6 +317,53 @@ async function harness(screen = 'store', compiled = false) {
 
 for (const compiled of [false, true]) {
 const mode = compiled ? 'with React Compiler' : 'without React Compiler';
+
+test(`Home feeds per bite and speaks only on completion (${mode})`, async () => {
+  const h = await harness('home', compiled);
+  try {
+    const bites = [];
+    await h.setGame({ feedPetBite: finished => { bites.push(finished); return true; } });
+    for (let bite = 1; bite <= 5; bite++) {
+      await h.update(() => h.props('PetStage:kitchen').onFeed(bite === 5));
+      assert.equal(h.calls.filter(call => call[0] === 'showSpeech').length, bite === 5 ? 1 : 0);
+      await h.setGame({ pet: { ...h.game.pet, stats: { ...h.game.pet.stats, hunger: 40 + bite * 5 } } });
+      assert.equal(h.props('PetStage:kitchen').stats.hunger, 40 + bite * 5);
+    }
+    assert.deepEqual(bites, [false, false, false, false, true]);
+  } finally { await h.close(); }
+});
+
+for (const graphicsMode of ['3d', 'simple']) test(`Meal progress shows awarded bites and hides after interruption (${graphicsMode}, ${mode})`, async () => {
+  const h = await harness('stage', compiled, graphicsMode);
+  try {
+    await h.setStage({ onFeed() {}, placedDecorations: [
+      { decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    await h.setRoomActivity({ activity: { plan: { kind: 'bowlEat', targetInstanceId: 'bowl',
+      steps: [{ mood: 'eating', animation: 'eating', position: { x: 0, y: 0 }, durationMs: 8000 }] }, stepIndex: 0 }, mealProgress: { bites: 0, total: 14 } });
+    assert.equal(h.props('meal-progress-visible'), true);
+    assert.equal(h.props('meal-progress').pointerEvents, 'none');
+    assert.equal(h.props('meal-progress').accessibilityLabel, 'home.mealProgress');
+    if (graphicsMode === '3d') await h.setReducedMotion(true);
+    const anchor = h.props('meal-progress').style[1].read();
+    assert.equal(anchor.opacity, 1, 'Simple graphics and Reduce Motion do not wait for a rendered head');
+    assert.ok(anchor.transform.every(transform => Object.values(transform).every(Number.isFinite)));
+    for (let bite = 1; bite <= 14; bite++) {
+      await h.setRoomActivity({ mealProgress: { bites: bite, total: 14 } });
+      assert.equal(h.props('meal-progress').accessibilityValue.now, bite);
+      assert.equal(h.props('meal-progress').accessibilityValue.max, 14);
+      assert.equal(h.props('MealProgressRing').bites, bite);
+      assert.equal(h.props('MealProgressRing').total, 14);
+      const activityOptions = h.props('activityOptions');
+      await h.setGame({ pet: { ...h.game.pet, stats: { ...h.game.pet.stats, hunger: 30 + bite * 5 } } });
+      assert.equal(h.props('PetStatsPanel').stats.hunger, 30 + bite * 5);
+      assert.equal(h.props('activityFullness'), 30 + bite * 5);
+      assert.equal(h.props('activityOptions'), activityOptions, 'Bites cannot rebuild scheduler options');
+    }
+    await h.setRoomActivity({ mealProgress: null, activity: null });
+    assert.equal(h.props('meal-progress-visible'), false);
+  } finally { await h.close(); }
+});
 
 test(`Undo availability only rerenders the room being decorated (${mode})`, async () => {
   const h = await harness('home-adapter', compiled);
@@ -1334,6 +1389,27 @@ test(`Home bedtime clock ticks do not rerender the rooms (${mode})`, async () =>
     const count = h.count('PetStage');
     for (let tick = 0; tick < 5; tick++) await h.advance(5000);
     assert.equal(h.count('PetStage'), count);
+  } finally { await h.close(); }
+});
+
+test(`Home keeps an active meal through the night boundary and stat updates (${mode})`, async () => {
+  const h = await harness('home', compiled);
+  try {
+    const pet = { ...h.game.pet, type: 'cat', homeRoomId: 'kitchen', catHomeRoomId: 'kitchen',
+      stats: { ...h.game.pet.stats, hunger: 36 }, homeRooms: { ...h.game.pet.homeRooms,
+        bedroom: { roomId: 'room1', placedDecorations: [{ decorationId: 'bedroomDoubleBed', instanceId: 'bed', offset: { x: 0, y: 0 } }] } } };
+    await h.setGame({ pet, worldClock: { ...h.game.worldClock, realMs: h.now, worldMs: (21 * 3600 - 1) * 1000, speed: 1 } });
+    await h.update(() => h.props('PetStage:kitchen').onRoomActivityChange(true, () => {}));
+    await h.advance(1600);
+    await h.setGame({ pet: { ...pet, stats: { ...pet.stats, hunger: 41 } } });
+    assert.equal(h.props('PetStage:kitchen').roomCommand, undefined, 'A stat refresh cannot replace eating with automatic room travel');
+    assert.equal(h.props('PetStage:bedroom').roomCommand, undefined);
+    for (const hunger of [46, 51, 56, 61, 66, 71, 76, 81, 86, 91, 96, 100]) {
+      await h.setGame({ pet: { ...pet, stats: { ...pet.stats, hunger } } });
+      assert.equal(h.props('PetStage:kitchen').roomCommand, undefined, 'Every bite keeps the meal ahead of automatic bedtime');
+    }
+    await h.update(() => h.props('PetStage:kitchen').onRoomActivityChange(false, () => {}));
+    assert.equal(h.props('PetStage:kitchen').roomCommand?.kind, 'roomTravel', 'Automatic bedtime can run after the meal ends');
   } finally { await h.close(); }
 });
 

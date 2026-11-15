@@ -175,7 +175,7 @@ export function catWalkTiming(path: Vec3[], scale: number, gait: CatGait = 'walk
     if (before < .001 || after < .001) continue;
     const cosine = ((b[0]-a[0])*(c[0]-b[0])+(b[2]-a[2])*(c[2]-b[2])) / (before*after);
     const curvature = Math.acos(Math.max(-1,Math.min(1,cosine))) / Math.max(.02, (before+after)/2);
-    const pace = Math.max(1, Math.min(5, speed / Math.sqrt(1.8*scale/Math.max(.001,curvature))));
+    const pace = Math.max(1, Math.min(5, speed / Math.min(Math.sqrt(1.8*scale/Math.max(.001,curvature)), 1.8/Math.max(.001,curvature))));
     paces[i] = Math.max(paces[i],pace); paces[i+1] = Math.max(paces[i+1],pace);
   }
   // Carry each local speed restriction backward for braking and forward for
@@ -313,4 +313,25 @@ export function steerCatPath(path: Vec3[], position: Vec3, heading: number, scal
   if(!clear(end,b))return undefined;
   for(let i=index;i<route.length;i++)result.push(route[i]);
   return result;
+}
+
+/** A support paw must not stay behind while its shoulder sweeps around a tight
+ * curve. Shorten the local stride before the corner, preserving walk cadence. */
+export function catCurveStride(path: readonly Vec3[], position: Vec3, scale: number) {
+  'worklet';
+  let nearest=0,best=Infinity;
+  for(let i=0;i<path.length;i++) {
+    const distance=Math.hypot(path[i][0]-position[0],path[i][2]-position[2]);
+    if(distance<best){best=distance;nearest=i;}
+  }
+  let curvature=0;
+  for(let i=Math.max(1,nearest-1);i<Math.min(path.length-1,nearest+4);i++) {
+    if(Math.hypot(path[i][0]-position[0],path[i][2]-position[2])>.65*scale)continue;
+    const a=path[i-1],b=path[i],c=path[i+1];
+    const before=Math.hypot(b[0]-a[0],b[2]-a[2]),after=Math.hypot(c[0]-b[0],c[2]-b[2]);
+    if(before<1e-5||after<1e-5)continue;
+    const angle=Math.acos(Math.max(-1,Math.min(1,((b[0]-a[0])*(c[0]-b[0])+(b[2]-a[2])*(c[2]-b[2]))/(before*after))));
+    curvature=Math.max(curvature,angle*scale/((before+after)/2));
+  }
+  return Math.max(.36,.8/Math.max(1,curvature*2));
 }

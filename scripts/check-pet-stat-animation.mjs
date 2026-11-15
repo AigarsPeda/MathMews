@@ -91,7 +91,7 @@ const mocks = {
     cancelAnimation: value => value.cancel(), Easing: { out: value => value, inOut: value => value, cubic: 'cubic' },
   },
   '@shopify/react-native-skia': { Canvas: 'Canvas', Circle: 'Circle', Path: 'Path', Text: 'SkiaText',
-    Skia: { PathBuilder: { Make: () => ({ addArc: () => ({ detach: () => ({}) }) }) } },
+    Skia: { PathBuilder: { Make: () => ({ addArc: (rect, start, sweep) => ({ detach: () => ({ rect, start, sweep }) }) }) } },
     matchFont: () => ({ measureText: text => ({ width: text.length * 7 }), getMetrics: () => ({ ascent: -10, descent: 2 }) }) },
 };
 function load(file) {
@@ -122,10 +122,10 @@ function nodes(tree) {
   return tree?.props ? [tree, ...nodes(tree.props.children)] : [];
 }
 const panelHost = host(), ringHost = host();
-let wisdom = 19, visible = true, ring;
+let wisdom = 19, hunger = 80, statIcon = 'lightbulb', visible = true, ring;
 function update() {
-  const panel = render(panelHost, PetStatsPanel, { stats: { hunger: 80, happiness: 90 }, wisdom, compact: true, visible });
-  const entry = nodes(panel).find(node => node.props.stat?.icon === 'lightbulb');
+  const panel = render(panelHost, PetStatsPanel, { stats: { hunger, happiness: 90 }, wisdom, compact: true, visible });
+  const entry = nodes(panel).find(node => node.props.stat?.icon === statIcon);
   ring = nodes(render(ringHost, entry.type, entry.props));
 }
 function displayed() {
@@ -169,6 +169,36 @@ visible = false; wisdom = 35; reducedMotion = true; update(); advance(1000);
 assert.equal(displayed(), 35);
 visible = true; update(); assert.equal(displayed(), 35, 'Reduced motion snaps on return without a pulse');
 reducedMotion = false; wisdom = 40; update();
+statIcon = 'feed'; hunger = 36; update();
+assert.equal(displayed(), 36);
+for (let bite = 1; bite <= 5; bite++) {
+  hunger += 5; update();
+  assert.equal(displayed(), hunger, 'The Fed ring and number update in the same render as each bite');
+  advance(700);
+}
+reducedMotion = true; hunger += 5; update();
+assert.equal(displayed(), hunger, 'A reduced-motion bite updates Fed immediately');
+const { MealProgressRing } = load('components/pet/MealProgressRing.tsx');
+for (let total = 1; total <= 20; total++) {
+  const mealHost = host();
+  for (let bites = 0; bites <= total; bites++) {
+    const segments = nodes(render(mealHost, MealProgressRing, { bites, total })).filter(node => node.type === 'Path');
+    assert.equal(segments.length, total);
+    assert.equal(segments.filter(node => node.props.opacity === 1).length, bites, 'Exactly one segment fills immediately per bite');
+    segments.forEach((segment, index) => {
+      const angle = 360 / total, gap = total === 1 ? 0 : Math.min(4, angle * .15);
+      assert.equal(segment.props.path.start, -90 + index * angle + gap / 2);
+      assert.equal(segment.props.path.sweep, angle - gap);
+      assert.equal(segment.props.strokeCap, 'butt', 'Segment caps cannot overlap their gaps');
+    });
+  }
+}
+for (const [bites, total, expectedSegments, expectedFilled] of [[NaN, 13, 13, 0], [-1, 13, 13, 0], [99, 13, 13, 13], [1, 0, 0, 0], [1, NaN, 0, 0], [1, Infinity, 0, 0]]) {
+  const segments = nodes(render(host(), MealProgressRing, { bites, total })).filter(node => node.type === 'Path');
+  assert.equal(segments.length, expectedSegments);
+  assert.equal(segments.filter(node => node.props.opacity === 1).length, expectedFilled);
+}
+console.log('Verified immediate Fed updates, segmented meal geometry, all 1–20 bite counts, and invalid ring inputs.');
 for (const instance of [panelHost, ringHost]) for (const slot of instance.slots) slot?.cleanup?.();
 assert.ok([...sharedValues].every(value => !value.pending()), 'Unmount cancels all animated values');
 assert.ok([...listeners.values()].every(value => value.size === 0), 'Unmount removes navigation listeners');
@@ -182,15 +212,20 @@ assert.equal(render(webHost, mocks['@/hooks/use-screen-settled'].useScreenSettle
 const source = ts.createSourceFile('app/play.tsx', fs.readFileSync('app/play.tsx', 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 let callback;
 function visit(node) {
-  if (ts.isVariableDeclaration(node) && node.name.getText(source) === 'handleGoHome') callback = node.initializer.arguments[0];
+  if (ts.isJsxAttribute(node) && node.name.getText(source) === 'onGoHome') {
+    const expression = node.initializer?.expression;
+    if (expression && ts.isConditionalExpression(expression) && ts.isArrowFunction(expression.whenTrue)) callback = expression.whenTrue;
+  }
   ts.forEachChild(node, visit);
 }
 visit(source); assert.ok(callback);
 function goHome() {
   const calls = [];
-  const context = { router: { dismissTo: href => calls.push(['dismissTo', href]) } };
+  const context = { earnedDecoration: { decorationId: 'basket' },
+    requestRoomDecoration: item => calls.push(['decoration', item.id]),
+    router: { dismissTo: href => calls.push(['dismissTo', href]) } };
   vm.runInNewContext(`(${callback.getText(source)})()`, context);
   return calls;
 }
-assert.deepEqual(goHome(), [['dismissTo', '/']], 'Go home preserves the existing screen and its previous stat values');
+assert.deepEqual(goHome(), [['decoration', 'basket'], ['dismissTo', '/']], 'Placing a reward preserves Home and its previous stat values');
 console.log('Pet stats animate on screen return, enter rooms current, resume interruptions, respect reduced motion, and preserve Home navigation.');

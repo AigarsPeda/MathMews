@@ -9,9 +9,17 @@ import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 
 const brandingSource = JSON.parse(fs.readFileSync('scripts/3d/branding-source.json'));
+const requiredSources = [
+  'docs/art/startup-cat-native.png', 'assets/3d/cat-preview.png', 'assets/3d/cat-splash.png',
+  ...['orange', 'grey', 'white'].flatMap(skin => [`assets/3d/native/cat-${skin}.glb`, `assets/3d/cat-shop-${skin}.png`]),
+  ...['icon', 'android-icon-foreground', 'android-icon-monochrome', 'splash-brand', 'splash-launch'].map(name => `assets/images/${name}.png`),
+];
+for (const file of requiredSources) {
+  assert.match(brandingSource[file] ?? '', /^[a-f0-9]{64}$/, `${file} needs provenance. Run npm run assets:cat-stills`);
+}
 for (const [file, expected] of Object.entries(brandingSource)) {
   assert.equal(createHash('sha256').update(fs.readFileSync(file)).digest('hex'), expected,
-    'Startup stills must be regenerated from the current shipped cat GLB');
+    `${file} is stale. Run npm run assets:cat-stills to regenerate stills from the shipped cat GLBs`);
 }
 
 // Hold the system splash before loading the rest of the React tree. Removing
@@ -40,7 +48,7 @@ assert.equal(splashOptions.duration, 0);
 const portrait = await sharp('assets/3d/cat-splash.png').ensureAlpha().raw().toBuffer();
 assert.equal(portrait.length, 192 * 192 * 4, 'Startup retains its bundled fallback portrait');
 const nativeStill = await sharp('docs/art/startup-cat-native.png').resize(192, 192).ensureAlpha().raw().toBuffer();
-assert.ok(portrait.equals(nativeStill), 'The launch fallback must preserve the actual native renderer colors');
+assert.ok(portrait.equals(nativeStill), 'The launch fallback must exactly resize the calibrated startup portrait. Run npm run assets:cat-stills');
 
 // The OS launch image must preserve the same centered branding and the empty
 // track's position, even before React can mount or decode its animation sheet.

@@ -4,7 +4,6 @@ import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { createHash } from 'node:crypto';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const out=path.join(root,'assets/images');
 await fs.mkdir(out,{recursive:true});
@@ -21,15 +20,8 @@ if (!process.argv.includes('--splash-only')) {
  await catIcon('android-icon-foreground.png',1024,true);
  await catIcon('android-icon-monochrome.png',1024,true,true);
 }
-// Captured at the idle clip's first frame in NativeCatDisplay. Blender's
-// lighting/tone mapping cannot reproduce Filament's DefaultLight exactly.
 const nativePortrait='docs/art/startup-cat-native.png';
 await sharp(path.join(root,nativePortrait)).resize(192,192).png().toFile(path.join(root,'assets/3d/cat-splash.png'));
-const sourceFile=path.join(root,'scripts/3d/branding-source.json');
-const sources=JSON.parse(await fs.readFile(sourceFile,'utf8'));
-for (const file of [nativePortrait,'assets/3d/cat-splash.png'])
- sources[file]=createHash('sha256').update(await fs.readFile(path.join(root,file))).digest('hex');
-await fs.writeFile(sourceFile,JSON.stringify(sources,null,2)+'\n');
 // Native launch branding is available before JavaScript starts. Its transparent
 // margins match the cream background rather than introducing letterbox bars.
 // A 240 pt square in both the native launch screen and React Native. Its cat
