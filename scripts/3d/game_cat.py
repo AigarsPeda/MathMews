@@ -22,7 +22,7 @@ from cat_collar import add_collar
 # still separate from the body.
 IVORY = {'white': 'FFFCF7'}
 # Share of the coat colour that is self-lit.
-COAT_FILL = .12
+COAT_FILL = .16
 # A seated hind leg keeps this share of its reach before drawing in.
 SEATED_HAUNCH = .86
 # Large, low, wide-set eyes carry the expression on the simple face.
@@ -58,9 +58,10 @@ def jump_pose(state, t, effort=1):
     impact = (0 if t <= contact else math.sin(min(1,(t-contact)/(.775-contact))*math.pi/2)
               if t <= .775 else keyed(t, [(.775, 1), (1, 0)]))
     # Negative pitch raises the nose in Blender's -Y forward convention.
+    # A long, nose-up line through the push; nose-down into the reach.
     pitch = keyed(t, [(0, 0), (.12, .02 if off else -.035),
-                      (.24, 0 if off else -.28), (.42, .12 if off else -.13),
-                      (.62, .16 if off else .025), (.80, .055), (1, 0)])
+                      (.24, -.05 if off else -.35), (.42, .12 if off else -.10),
+                      (.62, .18 if off else .09), (.80, .055), (1, 0)])
     fore_lift = keyed(t, [(0, 0), (.09, 0), (takeoff, .19 if off else .29),
                           (.40, .30), (.58, -.035 if off else .045), (contact, 0), (1, 0)])
     fore_reach = keyed(t, [(0, 0), (.10, 0), (.25, -.07), (.44, .065),
@@ -270,7 +271,7 @@ def add_face(arm, mesh):
         objects['lid.'+label] = stroke('Happy crescent eyelid '+label,
             [(x-.060, EYE['z']-.016), (x-.034, EYE['z']+.014), (x, EYE['z']+.026), (x+.034, EYE['z']+.014), (x+.060, EYE['z']-.016)], .0095, eye, .030)
         objects['brow.'+label] = stroke('Soft eyebrow '+label,
-            [(x-.034, EYE['z']+.128), (x+side*.004, EYE['z']+.141), (x+.034, EYE['z']+.128)], .0065, ink)
+            [(x-.034, EYE['z']+.128), (x+side*.004, EYE['z']+.141), (x+.034, EYE['z']+.128)], .0095, ink)
         # Two short, tapered whiskers a side. Three hair-thin strands were
         # narrower than a pixel at game size and broke up into scratchy marks;
         # these stay wider than a pixel at their roots and read as clean ticks.
@@ -288,9 +289,9 @@ def add_face(arm, mesh):
         vertex.co.x *= 1+.42*vertex.co.z
         if vertex.co.z > 0:
             vertex.co.z *= .72
-    objects['mouth.stem'] = stroke('Muzzle center', [(0, 1.196), (0, 1.160)], .0045, ink)
-    objects['mouth.smile'] = stroke('Content cat smile', [(-.078, 1.166), (-.040, 1.142), (0, 1.160), (.040, 1.142), (.078, 1.166)], .0045, ink)
-    objects['mouth.frown'] = stroke('Gentle frown', [(-.056, 1.140), (0, 1.164), (.056, 1.140)], .0045, ink)
+    objects['mouth.stem'] = stroke('Muzzle center', [(0, 1.196), (0, 1.160)], .0072, ink)
+    objects['mouth.smile'] = stroke('Content cat smile', [(-.078, 1.166), (-.040, 1.142), (0, 1.160), (.040, 1.142), (.078, 1.166)], .0072, ink)
+    objects['mouth.frown'] = stroke('Gentle frown', [(-.056, 1.140), (0, 1.164), (.056, 1.140)], .0072, ink)
     center, _ = surface(0, 1.140, .002)
     objects['mouth.open'] = ball('Soft open smile', center, (.046, .014, .040), solid_material('Mouth interior', '7A3A3C', .70), None)
     for vertex in objects['mouth.open'].data.vertices:
@@ -372,6 +373,9 @@ RESTING_STATES = ('idle', 'idle2', 'blinkIdle', 'waiting', 'sit', 'blinkSit')
 # lower joints and the upper two curl up again, so the root leaves the rump
 # in line with the back instead of kinking sideways.
 TAIL_CARRIAGE = (-.27, -.17, .20, .26)
+# ...and off to one side, so that it clears the head when the cat faces the
+# camera instead of standing above the forehead like a stalk.
+TAIL_SIDE = (.30, .24, -.04, -.16)
 TAIL_ROOT_LIMIT = .62
 
 
@@ -399,7 +403,7 @@ def tail_wave(state, t):
     # Carried as a relaxed S behind the hips, the tail no longer stands on
     # the centre line like a third ear when the cat faces the camera. Every
     # standing clip shares the carriage, so none pops as it starts or ends.
-    return [(pitch+lean, sway) for (pitch, sway), lean in zip(wave, TAIL_CARRIAGE)]
+    return [(pitch+lean, sway+aside) for (pitch, sway), lean, aside in zip(wave, TAIL_CARRIAGE, TAIL_SIDE)]
 
 
 def pose(arm, driver, state, t, idle_controls):
@@ -437,12 +441,12 @@ def pose(arm, driver, state, t, idle_controls):
         airborne = smooth_window(t,JUMP['takeoff'],JUMP['touchdown'],.10)
     rotation = Matrix.Rotation(-.55*seated+.24*eating_lean+lean, 3, 'X')
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
-    shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
+    shift = Vector((driver['body'].location.x, driver['body'].location.y-.08 if reaction else 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
     if jumping:
         # Wind up: sink and rock back onto the haunches before the push.
-        shift.z += -(.07 if state == 'jumpOff' else .16)*crouch
-        shift.y += .035*crouch
+        shift.z += -(.09 if state == 'jumpOff' else .20)*crouch
+        shift.y += .05*crouch
     if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run', 'rubLeft', 'rubRight'):
         shift.z -= .045 if state.startswith('walk') or state in ('trot', 'run') else .07
     if state in ('trot','run'):
@@ -488,8 +492,10 @@ def pose(arm, driver, state, t, idle_controls):
                        if t <= .89 else keyed(t, [(.89, 1), (1, 0)]))
         extension = keyed(t, [(0, 0), (.11, 0), (.23, 1), (.30, .65), (.42, 0), (1, 0)])
         hip_push = (0 if state == 'jumpOff' else .155)*extension*effort
-        fore_body = Matrix.Translation((0, -.045*landing, -.18*landing)) @ bend_jump('chest', .055*gather+.045*landing)
-        hind_body = Matrix.Translation((0, 0, hip_push-.10*crouch-.02*landing-.085*hind_impact*effort)) @ bend_jump('pelvis', -.09*gather-.04*crouch)
+        # The back rounds into a ball at the top of the flight, then the
+        # forequarters take the landing well before the hips settle.
+        fore_body = Matrix.Translation((0, -.045*landing, -.21*landing)) @ bend_jump('chest', .14*gather+.045*landing)
+        hind_body = Matrix.Translation((0, 0, hip_push-.12*crouch-.02*landing-.11*hind_impact*effort)) @ bend_jump('pelvis', -.17*gather-.04*crouch)
         # Blend the spine through the shoulder/hip absorption, keeping the
         # contact legs independent and the head quieter than the torso.
         body = Matrix.Translation((0, 0, hip_push*.4-.075*landing-.045*hind_impact*effort)) @ body
@@ -544,7 +550,8 @@ def pose(arm, driver, state, t, idle_controls):
         head_shift = Vector((0,-.045*airborne,-.035*crouch-.065*landing))
         # These are absolute bone targets: retain a quieter version of the
         # body's pitch, keeping the gaze toward the destination.
-        head_rotation = Matrix.Rotation(lean*.35+.10*crouch+.12*landing,3,'X')
+        # Eyes go to the target during the wind-up: up for a climb, down for a drop.
+        head_rotation = Matrix.Rotation(lean*.35+(.10 if state == 'jumpOff' else -.10)*crouch+.12*landing,3,'X')
     if state == 'wakeStretch':
         # Let the chin follow the shoulder bow and recover slightly later.
         head_stretch = keyed(t, [(0, 0), (.22, .06), (.46, 1), (.64, 1), (.90, .12), (1, 0)])
@@ -625,6 +632,8 @@ def pose(arm, driver, state, t, idle_controls):
                 fold = keyed(t, [(0, 0), (.24, 0), (.43, 1), (.62, 0), (1, 0)])
                 desired[names[2]] = joint_matrix(bones[names[2]], desired[names[2]].translation,
                     Matrix.Rotation((.32 if rear else .46)*fold*effort, 3, 'X'))
+            if acting and acting.get('wrists'):
+                desired[names[2]] = joint_matrix(bones[names[2]], desired[names[2]].translation, Matrix.Rotation(acting['wrists'][(2 if rear else 0)+i], 3, 'X'))
             if reaction and not rear and side == 'R' and reaction['wrist']:
                 desired[names[2]] = joint_matrix(bones[names[2]], desired[names[2]].translation, Matrix.Rotation(reaction['wrist'], 3, 'X'))
     # The upright hooked tail follows the pelvis.

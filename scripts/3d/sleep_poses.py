@@ -7,8 +7,10 @@ import math
 from mathutils import Matrix, Vector
 
 SLEEP_POSES = ('Loaf', 'Crescent', 'Side')
-# Height of the resting tail's centre line: its own plush radius.
-TAIL_REST = .118
+# Height of the resting tail's centre line. The runtime keeps the tail a
+# collision radius (0.105 plus a margin) clear of whatever the cat lies on and
+# swings it upright when a clip rests it any closer, so stay above that.
+TAIL_REST = .150
 
 
 def ease(t, start=0, end=1):
@@ -136,6 +138,10 @@ def sleep_pose(arm, state, t, standing, joint_matrix, limb_pose):
     # joints independently stretched the plush tube and wrung it into links.
     # Rising takes the whole wake: the tip has the farthest to travel.
     tail_amount = 1-ease(t, .04, 1) if waking else ease(p, .08, .96)
+    if waking and side:
+        # The flank sleeper keeps its tail down until the body has rolled most
+        # of the way upright; carried any sooner it points into the cushion.
+        tail_amount = 1-ease(t, .56, 1)
     names = ('tailjoint0', 'tailjoint1', 'tailjoint2', 'tailjoint3', 'tailTip')
     anchor = pelvis @ bones['tailjoint0'].head_local
     rest_points = [bones[name].head_local for name in names]+[bones['tailTip'].tail_local]
@@ -148,13 +154,16 @@ def sleep_pose(arm, state, t, standing, joint_matrix, limb_pose):
             Vector((.26, -.22, TAIL_REST))]
     if curl:
         path = [anchor, anchor+Vector((.14, .02, -.10)),
-                Vector((.55, .43, .22)), Vector((.68, .22, TAIL_REST)),
-                Vector((.65, -.05, TAIL_REST)), Vector((.47, -.25, TAIL_REST)),
-                Vector((.20, -.31, TAIL_REST))]
+                Vector((.47, .43, .22)), Vector((.575, .22, TAIL_REST)),
+                Vector((.56, -.05, TAIL_REST)), Vector((.42, -.25, TAIL_REST)),
+                Vector((.18, -.31, TAIL_REST))]
     if side:
-        path = [anchor, anchor+Vector((.10, .16, -.06)),
-                Vector((.34, .99, .19)), Vector((.58, 1.11, TAIL_REST)),
-                Vector((.84, 1.05, TAIL_REST)), Vector((1.03, .86, TAIL_REST))]
+        # Hooked round behind the rump. Every tail here stays within .58 of
+        # the spine: on a sofa that side is the backrest, and a tail reaching
+        # into it is swung upright by the runtime contact pass.
+        path = [anchor, anchor+Vector((.08, .12, -.06)),
+                Vector((.20, .84, .20)), Vector((.42, .86, TAIL_REST)),
+                Vector((.56, .70, TAIL_REST)), Vector((.58, .50, TAIL_REST))]
     for _ in range(3):
         # Corner cutting rounds the sketch into an even curve.
         path = [path[0]]+[point for a, b in zip(path, path[1:]) for point in (a.lerp(b, .25), a.lerp(b, .75))]+[path[-1]]

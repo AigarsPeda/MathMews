@@ -580,10 +580,17 @@ for(const decorationId of seatingSofas.SOFA_DECORATION_IDS.filter(seatingSofas.i
   for(const clip of ['sit','curlUp','curlSleep'])for(let sample=0;sample<12;sample++) {
     const duration=Math.max(...skeleton.animations.find(a=>a.name===clip).samplers.map(s=>skeleton.accessors[s.input].max[0]));
     const points=posedTail(clip,duration*sample/12,object.seat,heading,room.catScale);
-    const result=contact.resolveTailContact(points,room,{angle:0,axis:[0,1,0],blocked:false},1/60);
+    let result={angle:0,axis:[0,1,0],blocked:false};
+    // Contact engages over time; evaluate the converged distributed bend.
+    for(let frame=0;frame<180;frame++) {
+      const next=contact.resolveTailContact(points,room,result,1/60);
+      const settled=Math.abs(next.angle-result.angle)<1e-10;
+      result=next;
+      if(settled)break;
+    }
     assert.equal(result.blocked,false,`${decorationId}/${wallFlipped}/${itemScale}/${clip}/${sample}: tail can clear the sofa`);
     if(result.angle>0)corrected++;
-    const fixed=points.map(p=>contact.rotateTailPoint(p,points[0],result.angle,result.axis));
+    const fixed=contact.bendTailPoints(points,result);
     for(let i=1;i<fixed.length;i++)assert.ok(Math.abs(Math.hypot(...fixed[i].map((v,k)=>v-fixed[i-1][k]))-Math.hypot(...points[i].map((v,k)=>v-points[i-1][k])))<1e-8,'Contact keeps tail bone lengths');
     const again=contact.resolveTailContact(fixed,room,{angle:0,axis:[0,1,0],blocked:false},1/60);
     assert.equal(again.angle,0,'Every corrected capsule clears furniture, floor and room walls');
@@ -603,7 +610,7 @@ for (const itemScale of [.7, 1, 1.4, 1.8, 2.2]) {
   for (let frame=0; frame<240; frame++) {
     const points=posedTail('sit', frame/60, seat, room.objects[0].seatHeading, room.catScale);
     const result=contact.resolveTailContact(points,room,previous,1/60);
-    const tip=contact.rotateTailPoint(points.at(-1),points[0],result.angle,result.axis);
+    const tip=contact.bendTailPoints(points,result).at(-1);
     if(lastTip)maxTailStep=Math.max(maxTailStep,Math.hypot(...tip.map((v,k)=>v-lastTip[k])));
     if(result.blocked)blockedFrames++;
     previous=result;lastTip=tip;contactFrames++;
@@ -824,7 +831,7 @@ slots=[];contactCalls.length=0;
 render({ playback:{kind:'segment',segment:registry.getSegment('idle')},world:contactRoom,
   travel:{path:[contactSofa.seat],distance:0,duration:1,jump:false,heading:0},active:true,reduceMotion:true });
 renderFrame({timeSinceLastFrame:1/60});
-assert.deepEqual(contactCalls,['rotate','tail','skin'],'Reduce Motion still resolves tail contact before skinning');
+assert.deepEqual(contactCalls,['rotate','tail','rotate','rotate','skin'],'Reduce Motion still resolves tail contact before skinning');
 const heldProps = { playback:{kind:'segment',segment:registry.getSegment('idle')},world:contactRoom,
   travel:{path:[contactSofa.seat],distance:0,duration:1,jump:false,heading:0},active:true };
 render(heldProps);
@@ -838,7 +845,8 @@ rigMatrices=undefined;
 const wallFixture={...empty,objects:[{instanceId:'fixture',solid:false,collidable:true,movable:false,min:[-.4,.1,-.4],max:[.4,.8,-.2]}]};
 const tailPoints=[[0,.4,0],[0,.5,-.3],[0,.7,-.4],[0,.9,-.4]];
 const mounted=contact.resolveTailContact(tailPoints,wallFixture,{angle:0,axis:[0,1,0],blocked:false},1/60);
-assert.ok(mounted.angle>0&&!mounted.blocked,'Wall-mounted decorations also constrain the tail');
+assert.ok(mounted.angle>0,'Wall-mounted decorations also constrain the tail');
+assert.ok(contact.tailJointAngle(mounted.angle,0)<=35*Math.PI/180,'An uncleared wall fixture cannot force an extreme root fold');
 
 // Render updates and reroutes preserve the actual pose rather than an old UI sample.
 slots = []; applies = [];

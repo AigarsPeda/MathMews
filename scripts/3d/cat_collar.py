@@ -133,8 +133,10 @@ def add_collar(arm, mesh):
         if point is None:
             raise ValueError('Collar ray missed the neck skin')
         centers.append(point)
-    section = ((-.022, 0), (.022, 0), (.028, .005), (.028, .013),
-               (.022, .018), (-.022, .018), (-.028, .013), (-.028, .005))
+    # Wide and thick enough to stay a solid band, not a broken line, when the
+    # whole cat is only about 150 px tall.
+    section = ((-.030, 0), (.030, 0), (.038, .007), (.038, .018),
+               (.030, .025), (-.030, .025), (-.038, .018), (-.038, .007))
     vertices, faces = [], []
     for index, center in enumerate(centers):
         _, normal, _, _ = surface.sample(center)

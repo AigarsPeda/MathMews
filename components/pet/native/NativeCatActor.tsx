@@ -10,7 +10,7 @@ import { resolveCatSkinId } from '@/constants/cat-skins';
 import { FLOOR_Y, isFree, nearestFree, findCatRoomRoute, pathLength, movingCatRoute, catScreenPoint, projectWorld, hasNativeArrived, type NativeRoomWorld, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
 import type { PetPlaybackState } from '@/pet-display/types';
 import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
-import { resolveTailContact, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
+import { resolveTailContact, tailJointAngle, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
 import { pawReachWeight, pawSurfaceTarget, type PawObjectTarget } from '@/utils/native-paw-contact';
 import { limbAim, reachingElbow } from '@/utils/native-hanging-toy';
 import { buildRugSurfaces, rugSupportLift } from '@/utils/native-ground-support';
@@ -1322,14 +1322,20 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       const bathroom = journey?.bathroom;
       const contactWorld = bathroom && ['enter', 'wash', 'use', 'exit'].includes(bathroom.phase)
         ? { ...request.world, objects: request.world.objects.filter(object => object.instanceId !== bathroom.instanceId) } : request.world;
-      frameState.tailContact = resolveTailContact(points, contactWorld, frameState.tailContact, deltaSeconds);
+      const body = turningRig ? {
+        pelvis: transformManager.getWorldTransform(turningRig.legs[2].parent).translation,
+        chest: transformManager.getWorldTransform(turningRig.legs[0].parent).translation,
+        radius: .40 * contactWorld.catScale,
+      } : undefined;
+      frameState.tailContact = resolveTailContact(points, contactWorld, frameState.tailContact, deltaSeconds, body);
       if (frameState.tailContact.angle > .001) {
-        const joint = tail.joints[0];
-        const local = transformManager.getTransform(joint);
-        const origin = local.translation;
-        const axis = tailParentAxis(frameState.tailContact.axis, transformManager.getWorldTransform(tail.parent).data);
-        transformManager.setTransform(joint, local.translate(origin.map(v => -v) as Vec3)
-          .rotate(frameState.tailContact.angle, axis).translate(origin));
+        for (let index = 0; index < 3; index++) {
+          const joint = tail.joints[index], parent = index ? tail.joints[index - 1] : tail.parent;
+          const local = transformManager.getTransform(joint), origin = local.translation;
+          const axis = tailParentAxis(frameState.tailContact.axis, transformManager.getWorldTransform(parent).data);
+          transformManager.setTransform(joint, local.translate(origin.map(v => -v) as Vec3)
+            .rotate(tailJointAngle(frameState.tailContact.angle, index), axis).translate(origin));
+        }
       }
     }
     if (pawPositions) pawPositions.value = !request.reduceMotion

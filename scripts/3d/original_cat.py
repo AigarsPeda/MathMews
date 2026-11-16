@@ -227,7 +227,7 @@ def bind(mesh, arm):
         # lower face on the neck when a sleeping cat turned its head.
         # Keep the throat blend behind the jaw instead of across the face.
         head = max(head, (1-ramp(-.70, -.53, p.y))*ramp(.84, .98, p.z))
-        neck = ramp(.84, 1.00, p.z)*(1-ramp(-.12, .08, p.y))*(1-head)
+        neck = ramp(.80, 1.02, p.z)*(1-ramp(-.08, .14, p.y))*(1-head)
         # A long hand-over from rump to tail: the root bends as a thick,
         # rounded curve and never pinches into a hinge.
         tail = ramp(.50, .70, p.y)*ramp(.87, 1.12, p.z)

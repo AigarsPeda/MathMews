@@ -16,6 +16,7 @@ units and radians:
   brows         ((lift, slant), (lift, slant)), L then R
   paws          four (x, y, z) offsets: left fore, right fore, left hind, right hind
   plant         True drops the legacy paw offsets, so `paws` alone moves them
+  wrists        four paw pitches: left fore, right fore, left hind, right hind
 
 Signs verified with production-rig renders in astra-acting/signs:
   +Y is backward, -Y is toward the nose; +Z is up.

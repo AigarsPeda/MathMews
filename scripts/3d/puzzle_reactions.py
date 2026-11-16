@@ -45,10 +45,12 @@ def pose_reaction(driver, state, t, idle):
         head.location.x += .025*load
         head.rotation_euler = (-.07*lift, -.13*lift, -.09*load)
         paw = driver['feet'][1]
-        paw.location.x += .075*lift + .025*greet
-        paw.location.y -= .18*lift
-        paw.location.z += .67*lift
-        wrist = -.80*lift + .20*greet
+        # Up beside the cheek with the pad turned to the player: at puzzle
+        # size a paw held at chest height was lost against the bib.
+        paw.location.x += .44*lift + .035*greet
+        paw.location.y -= .22*lift
+        paw.location.z += .98*lift + .03*greet
+        wrist = -1.25*lift + .25*greet
         chest, roll = -.11*load, -.075*load
         happy = smooth_window(t,.22,.84,.10)
         blink = pulse(t,.72,.105)
