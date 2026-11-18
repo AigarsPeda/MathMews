@@ -35,6 +35,8 @@ for(const moving of [false,true])for(const degrees of [-90,90,180]) {
   const completions=[],props={active:true,world,playback:walking,travel:make(start,end),activityKey:'curved-turn',
     onRoomStepComplete:key=>completions.push(key)};
   render(props);
+  const airborne=[],lastLift=Array(4).fill(-Infinity);
+  let repeatLifts=0;
   let minPawGap=Infinity,minPawClearance=Infinity,maxLateralReach=0;
   let last=start,contacts=[],slip=0,firstMotion,paused=false,previousYaw=actorState().heading,largestYawStep=0;
   for(let i=0;i<fps*10;i++) {
@@ -65,6 +67,12 @@ for(const moving of [false,true])for(const degrees of [-90,90,180]) {
       const anchor=state.gaitContacts[j],paw=bones[name].slice(12,15),old=contacts[j];
       if(anchor&&old&&distance(anchor,old.anchor)<1e-7)slip=Math.max(slip,distance(paw,old.paw)/scale);
       contacts[j]=anchor?{anchor:[...anchor],paw}:null;
+      const lifted=paw[1]>home[1]+.106*scale;
+      if(lifted && !airborne[j]) {
+        if(i/fps>.25 && state.elapsed<state.routeDuration-.18 && (i-lastLift[j])/fps<.25)repeatLifts++;
+        lastLift[j]=i;
+      }
+      airborne[j]=lifted;
     }
     if(!paused&&i===Math.round(fps*.5)) {
       const frozen=bones;render({...props,active:false});drawCat(.4);
@@ -86,7 +94,8 @@ for(const moving of [false,true])for(const degrees of [-90,90,180]) {
   assert.ok(minPawGap>.24,`Paws stay on their own side through the curve: ${minPawGap}`);
   assert.ok(minPawClearance>=1,`${skin}/${fps}/${moving}/${degrees}: plush paw footprints do not overlap: ${minPawClearance}`);
   assert.ok(maxLateralReach<.23,`Shoulders never sweep far across a planted paw: ${maxLateralReach}`);
-  metrics.push({skin,fps,moving,degrees,minPawGap,minPawClearance,maxLateralReach,firstMotion,slip,largestYawStep,duration:actorState().routeDuration});
+  assert.ok(repeatLifts<=1,`${skin}/${fps}/${degrees}: repeated lifts of the same paw within a quarter-second (${repeatLifts})`);
+  metrics.push({skin,fps,moving,degrees,repeatLifts,minPawGap,minPawClearance,maxLateralReach,firstMotion,slip,largestYawStep,duration:actorState().routeDuration});
 }
 // A seated cat and Reduce Motion must not enter the new standing departure.
 for(const [clip,reduceMotion] of [['sit',false],['idle',true]]) {

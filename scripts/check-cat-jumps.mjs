@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {openSkin,resetCatActor,render,drawCat,actorState,actorBones,point,load,idle,enableActorCrossfade,sampleCatClip} from './check-cat-turning.mjs';
 const w=load('@/utils/native-room-world');
 const {buildRoomActivity}=load('@/utils/room-activities');
+const jumpProfile=load('@/constants/cat-jump.json');
 const angle=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
 const baseline=process.argv.includes('--baseline'),single=baseline||process.argv.includes('--preview'),capture=single||process.argv.includes('--poses');
@@ -42,6 +43,16 @@ for(const skin of single?['orange']:['orange','grey','white']) {
         if(previous) {
           if(action!=='sit'&&t>.22&&t<.98&&state.elapsed<native.duration)airYaw=Math.max(airYaw,Math.abs(angle(state.heading,previous.heading)));
           for(let p=0;p<4;p++)maxPawStep=Math.max(maxPawStep,distance(previous.paws[p],paws[p])/world.catScale);
+        }
+        if(!baseline && action!=='sit') for(let p=0;p<4;p++){
+          const touchdown=p<2?jumpProfile.touchdown:jumpProfile.hindTouchdown;
+          if(state.jumpPhase>=touchdown)assert.ok(Math.abs((paws[p][1]-state.position[1])/world.catScale-.10)<.002,
+            `${skin}/${action}/${fps}: pad ${p} stays on its support through compression`);
+        }
+        if(!baseline && action==='sit' && clock.value.name==='sit' && previous) for(let p=0;p<4;p++){
+          if(Math.max(previous.paws[p][1],paws[p][1])>state.position[1]+.109*world.catScale)continue;
+          const drift=Math.hypot(paws[p][0]-previous.paws[p][0],paws[p][2]-previous.paws[p][2])/world.catScale;
+          assert.ok(drift<1.6/fps+.003,`${skin}/${fps}: seated pad ${p} slides ${drift}`);
         }
         if(!baseline&&action!=='sit'&&t>.22&&t<1)assert.equal(clock.value.name,action,'Direct furnishing jumps use the requested takeoff/landing clip');
         if(!baseline&&action!=='sit'&&t>.22&&t<1)assert.ok(Math.abs(angle(state.heading,heading+(action==='jumpOff'?Math.PI:0)))<.002,'Flight and landing retain the takeoff heading');

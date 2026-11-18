@@ -51,7 +51,12 @@ for(const skin of skins)for(const fps of rates)for(const gait of ['walk','trot',
     for(const name of ['head','tailjoint0','tailTip','L.front.paw','R.rear.paw'])maxDelta=Math.max(maxDelta,distance(bones[name].slice(12,15),previous[name].slice(12,15))/scale);
     for(let k=0;k<4;k++) {
       const name=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'][k],p=bones[name].slice(12,15),anchor=state.gaitContacts[k];
-      if(anchor&&contacts[k]&&distance(anchor,contacts[k].anchor)<1e-7)slip=Math.max(slip,distance(p,contacts[k].paw)/scale);
+      if(anchor&&contacts[k]&&distance(anchor,contacts[k].anchor)<1e-7) {
+        slip=Math.max(slip,distance(p,contacts[k].paw)/scale);
+        const a=previous[name],b=bones[name];
+        const yaw=Math.atan2(a[0]*b[2]-a[2]*b[0],a[0]*b[0]+a[2]*b[2]);
+        assert.ok(Math.abs(yaw)<.012,`${skin}/${fps}/${gait}: planted mitten swivels ${yaw} radians`);
+      }
       contacts[k]=anchor?{anchor:[...anchor],paw:p}:null;
     }
     if(skin==='orange'&&fps===60&&i%6===0)recordings.push({gait,time:1.5+i/fps,nodes:bones,position:[...state.position],scale});

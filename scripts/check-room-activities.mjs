@@ -287,8 +287,13 @@ assert.equal(render().activity.plan.steps[0].animation, 'curlUp', 'After landing
 advance(render().activity.plan.steps[0].durationMs); render();
 render().returnHome(); render(); advance(0); advance(render().activity.plan.steps[0].durationMs); render();
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'wakeStretch');
-advance(2500); render();
-assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff');
+advance(1250); render();
+const jumpFromStretch = render().returnHome;
+jumpFromStretch(); render(); advance(0);
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff', 'Return during the stretch starts the descent immediately');
+const descent = render().activity;
+jumpFromStretch(); render(); advance(0);
+assert.equal(render().activity.startedAt, descent.startedAt, 'Repeated taps do not restart takeoff');
 advance(300); interaction++; render(); render(); advance(0);
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff', 'A room touch must not restart a jump down');
 advance(600); render(); advance(0);

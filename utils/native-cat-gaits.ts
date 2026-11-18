@@ -20,6 +20,29 @@ export function catSpeedGait(speed: number, previous: CatGait, maximum: CatGait)
   return speed > (previous === 'walk' ? 2.25 : 1.95) ? 'trot' : 'walk';
 }
 
+/** Match the incoming stride to the pads already on the floor. Walk, trot and
+ * run give each leg a different phase, even at the same point in a cycle. */
+export function matchCatGaitPhase(gait: CatGait, previousPhase: number, paws: { forward: number; grounded: boolean }[]) {
+  'worklet';
+  const spec = CAT_GAITS[gait];
+  let best = previousPhase, lowest = Infinity;
+  for (let frame = 0; frame < 24; frame++) {
+    const phase = previousPhase + frame / 24;
+    let error = 0;
+    for (let i = 0; i < paws.length; i++) {
+      const step = ((phase - spec.offsets[i]) % 1 + 1) % 1;
+      const swing = Math.max(0, (step - spec.stance) / (1 - spec.stance));
+      const advance = swing ** 3 * (10 - 15 * swing + 6 * swing * swing);
+      const forward = spec.stride * (spec.stance / 2 - step + advance);
+      const lift = 16 * swing * swing * (1 - swing) ** 2;
+      error += (forward - paws[i].forward) ** 2 * (paws[i].grounded ? 3 : 1)
+        + (paws[i].grounded ? .055 * lift : 0);
+    }
+    if (error < lowest) { lowest = error; best = phase; }
+  }
+  return best;
+}
+
 /** Keep a low authored paw planted through blends; release once its swing lifts.
  * Coordinates are above the room support, so rugs and platforms can lift the
  * complete pose afterward without accumulating height in the saved contact. */
@@ -34,7 +57,7 @@ export function catGaitContact(animated: Vec3, anchor: Vec3 | undefined, ground:
 
 /** A short adjustment step reconciles different footfall patterns while speeding
  * up. Lift before advancing the paw instead of dragging an overextended foot. */
-export function catGaitSwing(from: Vec3, to: Vec3, elapsed: number, scale: number, release?: { offset: Vec3; duration: number }): Vec3 {
+export function catGaitSwing(from: Vec3, to: Vec3, elapsed: number, scale: number, release?: { offset: Vec3; duration: number }, clearance?: number): Vec3 {
   'worklet';
   const t = Math.max(0,Math.min(1,elapsed/(release?.duration??.14))), blend=t*t*(3-2*t);
   // A naturally lifting paw already has an authored arc and ankle roll. Carry
@@ -42,7 +65,7 @@ export function catGaitSwing(from: Vec3, to: Vec3, elapsed: number, scale: numbe
   if(release)return to.map((value,index)=>value+release.offset[index]*(1-blend)) as Vec3;
   const lift=Math.min(.065,.03+.16*Math.hypot(to[0]-from[0],to[2]-from[2])/scale);
   return [from[0]+(to[0]-from[0])*blend,
-    from[1]+(to[1]-from[1])*blend+lift*scale*Math.sin(Math.PI*t)**2,
+    from[1]+(to[1]-from[1])*blend+lift*scale*(clearance === undefined ? Math.sin(Math.PI*t)**2 : blend*clearance),
     from[2]+(to[2]-from[2])*blend];
 }
 

@@ -3,7 +3,7 @@ import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { WorldPeriod } from '@/utils/world-clock';
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { FEED_BITES_PER_MEAL } from "@/constants/game";
-import { FLOOR_Y, nativeRoomEdge, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
+import { FLOOR_Y, nativeRoomEdge, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, planLandingWalk, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { getCatJumpMotion, getCatWalkMotion, isCatJump, isCatWalk } from "@/constants/cat-room-motion";
 import {
@@ -176,9 +176,13 @@ export function useRoomActivity(
     requestActivity('returnHome');
   }, [options.period, request, requestActivity]);
   const returnHome = useCallback(() => {
-    if (!activity || activity.plan.kind === "returnHome") return;
+    const current = running.current;
+    if (!enabled || !current) return;
+    const {plan,stepIndex} = current;
+    if (plan.kind === "returnHome" && !(plan.steps[stepIndex].animation === "wakeStretch"
+      && plan.steps[stepIndex+1]?.animation === "jumpOff")) return;
     requestActivity("returnHome");
-  }, [activity, requestActivity]);
+  }, [enabled, requestActivity]);
 
   useEffect(() => {
     if (previousInteraction.current === lastInteractionAt) return;
@@ -257,11 +261,11 @@ export function useRoomActivity(
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
         step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion && !step.hold };
         const nextStep=plan.steps[stepIndex+1];
-        if(step.native.walkAfterLanding && nextStep && !reduceMotion) {
+        if(step.native.walkAfterLanding && nextStep && !reduceMotion && !elapsed) {
           const landing=step.native.path[step.native.path.length-1];
           const next=prepareNativeStep(plan,nextStep,catScreenPoint(landing,liveWorld.current),liveWorld.current,landing[1]);
-          if(!next.native.blocked)step.native.landingLook=next.native.path.find(point=>
-            Math.hypot(point[0]-landing[0],point[2]-landing[2])>.25*liveWorld.current!.catScale);
+          step.native = planLandingWalk(step.native, next.native, liveWorld.current, step.targetInstanceId ?? plan.targetInstanceId);
+          step.moveMs = step.durationMs = step.native.duration * 1000;
         }
         nativeElapsed.current = elapsed;
         if(step.enteringRoom && !step.entryFromCurrent && !elapsed && !reduceMotion) {

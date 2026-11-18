@@ -7,7 +7,7 @@ import { steerCatPath, roundCatPath, catPacedPath, catJumpPoint, catJumpAim, cat
 import { catTurnDuration } from '@/utils/native-cat-turn';
 import { buildCatTraversalLinks, type CatTraversalLink } from '@/utils/native-cat-traversal';
 import { CURTAIN_FABRIC_BOUNDS, isBathroomLightDecorationId, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
-import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
+import { isCatSeatDecorationId, isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import type { BedPhase } from '@/constants/bedroom-activities';
 import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
@@ -175,6 +175,7 @@ export type NativeTravel = {
   /** Retain the planner's footprint for narrow aisles and open door approaches. */
   navigation?: Pick<NativeRoomWorld, 'radius' | 'kitchenNavigation' | 'fridgeDoorClearance'>;
   sleepPose?: CatSleepPose;
+  wakeToSit?: boolean;
   brushSide?: number;
   through?: boolean;
   entryMotion?: CatTravelMotion;
@@ -546,7 +547,8 @@ export function buildNativeRoomWorld(options: {
       // Sofa variants already contain their quarter turn in the exported model.
       const variant = modelId === 'sofaB' ? Math.PI / 2 : 0;
       const at = (p: Vec3) => rotate(rotate(p, variant), heading).map((v, i) => position[i] + v * scale) as Vec3;
-      object.seat = at([0, .70, .27]);
+      // Leave cushion in front of the landing paws for the sweep into a sit.
+      object.seat = at([0, .70, .16]);
       // Rest along the cushions, choosing the end that faces the camera at
       // positive X/Z. This keeps the face visible on either sofa orientation.
       const alongSeat = heading + variant + Math.PI / 2;
@@ -1075,6 +1077,27 @@ function nativeJumpArc(start: Vec3, target: Vec3, world: NativeRoomWorld, ignore
 function isNativeJumpClear(start: Vec3, target: Vec3, world: NativeRoomWorld, ignoreId?: string): boolean {
   return nativeJumpArc(start,target,world,ignoreId)!==undefined;
 }
+
+/** Face the first floor stride while the paws are still airborne. */
+export function planLandingWalk(jump: NativeTravel, walk: NativeTravel, world: NativeRoomWorld, supportId?: string): NativeTravel {
+  if (walk.blocked) return jump;
+  const from = jump.path[0], landing = jump.path[jump.path.length - 1];
+  const landingLook = walk.path.find(p => Math.hypot(p[0]-landing[0], p[2]-landing[2]) > .25*world.catScale);
+  const support = world.objects.find(object => object.instanceId === supportId);
+  if (!landingLook || !support || !(isCatSeatDecorationId(support.modelId) || isKitchenChairDecorationId(support.modelId))
+    || landing[1] > FLOOR_Y + .001 || from[1] <= landing[1]
+    || walk.legs?.[0] && (walk.legs[0].kind !== 'walk' || walk.legs[0].animation)) return { ...jump, landingLook };
+  const heading = Math.atan2(landing[0]-from[0], landing[2]-from[2]);
+  const turn = Math.atan2(landingLook[0]-landing[0], landingLook[2]-landing[2]) - heading;
+  const angle = Math.atan2(Math.sin(turn), Math.cos(turn));
+  if (Math.abs(angle) < .05) return { ...jump, landingLook };
+  const landingHeading = heading + Math.max(-Math.PI/3, Math.min(Math.PI/3, angle));
+  // Recheck the turned head against the arms, back and neighboring furniture.
+  const arcHeight = nativeJumpArc(from, landing, { ...world, ...jump.navigation }, undefined, support.instanceId, landingHeading);
+  if (arcHeight === undefined) return { ...jump, landingLook };
+  return { ...jump, landingLook, landingHeading, arcHeight, duration: catJumpDuration(from, landing, arcHeight, world.catScale) };
+}
+
 function isNativeJumpAtHeightClear(start: Vec3, target: Vec3, world: NativeRoomWorld, ignoreId: string | undefined, height: number, fromSupportId?: string, landingHeading?: number): boolean {
   // A tucked jumping cat has the same body clearance on every furnishing.
   // Floor approaches still reserve their normal walking footprint.
@@ -1137,6 +1160,8 @@ export function findSeatApproach(start: Vec3, object: NativeRoomObject, world: N
   const drawerFront = (object.drawer || object.cupboard) && object.interactionBoxes?.length ? Math.max(...object.interactionBoxes.map(box => Math.max(
     ...[box.min[0],box.max[0]].flatMap(x=>[box.min[2],box.max[2]].map(z=>(x-seat[0])*Math.sin(front)+(z-seat[2])*Math.cos(front)))))) + world.radius + .05 : undefined;
   const candidates = drawerFront === undefined ? [object.approach] : [[seat[0]+Math.sin(front)*drawerFront,FLOOR_Y,seat[2]+Math.cos(front)*drawerFront] as Vec3,object.approach];
+  const rockingChair = object.modelId === 'chairRockingOak';
+  const fartherApproaches: Vec3[] = [];
   // A dining chair faces its table, so the cat often needs a side approach.
   // Worktops and round pet beds have no backrest limiting their entry side.
   // Every candidate still needs a clear floor route and an entrance/exit arc.
@@ -1149,11 +1174,16 @@ export function findSeatApproach(start: Vec3, object: NativeRoomObject, world: N
     const x = Math.sin(angle), z = Math.cos(angle), clearance = world.radius + .04;
     const edge = Math.min(Math.abs(x) < 1e-6 ? Infinity : ((x > 0 ? object.max[0] + clearance : object.min[0] - clearance) - seat[0]) / x,
       Math.abs(z) < 1e-6 ? Infinity : ((z > 0 ? object.max[2] + clearance : object.min[2] - clearance) - seat[2]) / z);
-    // A leading head needs room to rise before crossing an armrest. Step
-    // farther back when the nearest floor point makes the arc too steep.
-    for (const extra of furniture ? [0,.5,1,1.5] : [0])
-      candidates.push([seat[0] + x * (edge+extra*world.catScale), FLOOR_Y, seat[2] + z * (edge+extra*world.catScale)]);
+    // Keep ordinary rocking-chair approaches first. In a crowded room the
+    // bowl can occupy the near end of an otherwise clear takeoff line.
+    for (const extra of furniture || rockingChair ? [0,.5,1,1.5] : [0]) {
+      const reach = edge + extra * world.catScale;
+      const fallback = rockingChair && extra > 0;
+      if (fallback && reach > 4 * world.catScale) continue;
+      (fallback ? fartherApproaches : candidates).push([seat[0] + x * reach, FLOOR_Y, seat[2] + z * reach]);
+    }
   }
+  candidates.push(...fartherApproaches);
   for (const point of candidates) {
     if (!isFree(point, world) || !isNativeJumpClear(point, seat, world, object.instanceId)
       || !isNativeJumpClear(seat, point, world, object.instanceId)) continue;
@@ -1631,9 +1661,11 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     const turn = leg.turnDuration ?? 0;
     return { ...leg, landingWalk: true, duration: turn+(leg.duration-turn)*CAT_LANDING_WALK_PHASE };
   }) };
+  // Curling and waking take their full clip time even when the paws stay on the same seat.
+  const actionMs = step.animation === 'curlUp' ? step.durationMs : step.moveMs ?? step.durationMs;
   const distance = pathLength(path), duration = route?.legs && !blocked ? route.legs.reduce((sum, leg) => sum + leg.duration, 0)
     : jump && arcHeight!==undefined && !blocked ? catJumpDuration(start,target,arcHeight,world.catScale)
-    : bedCrawl ? (step.moveMs ?? 1600) / 1000 : walking ? walkTiming!.duration : (step.moveMs ?? step.durationMs) / 1000;
+    : bedCrawl ? (step.moveMs ?? 1600) / 1000 : walking ? walkTiming!.duration : actionMs / 1000;
   const position = catScreenPoint(path.at(-1)!, world);
   let objectPath: Vec3[] | undefined;
   if (object && plan.kind === 'mouseChase' && step.objectPosition) {
@@ -1663,7 +1695,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const prepareJump=preparationArc!==undefined && object?.seat
     ? {target:object.seat,light:catJumpEffort(target,object.seat,world.catScale,preparationArc)<.8} : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking || jump ? duration * 1000 : step.durationMs, moveMs: walking || jump ? duration * 1000 : step.moveMs,
-    native: { navigation: { radius: world.radius, kitchenNavigation: world.kitchenNavigation, fridgeDoorClearance: world.fridgeDoorClearance }, sleepPose: step.sleepPose, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+    native: { navigation: { radius: world.radius, kitchenNavigation: world.kitchenNavigation, fridgeDoorClearance: world.fridgeDoorClearance }, sleepPose: step.sleepPose, wakeToSit: step.wakeToSit, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, playTargetId: plan.kind==='toyPlay'?object?.instanceId:undefined, pawTargetRadius: tree && object ? .1*object.scale : 0, targetPosition: object?.position, objectPath, objectDuration: duration * .6,

@@ -111,7 +111,13 @@ export function resolveTailContact(points: Vec3[], world: NativeRoomWorld, previ
     // soft leaves; without finer geometry they must not deflect the tail.
     if (isPlayablePlant(object.modelId) && !object.collisionBoxes?.length) continue;
     if (boxDistance(points[0], object) > reach) continue;
-    boxes.push(...(object.collisionBoxes?.length ? object.collisionBoxes : [object]));
+    // A turn next to a backrest can try many tail bends in a single frame.
+    // Read the shared bounds once, before sampling those bends.
+    for (const box of object.collisionBoxes?.length ? object.collisionBoxes : [object]) {
+      const min = box.min, max = box.max;
+      const bounds: CollisionBox = { min: [min[0], min[1], min[2]], max: [max[0], max[1], max[2]] };
+      if (boxDistance(points[0], bounds) <= reach + .008) boxes.push(bounds);
+    }
   }
   const prior = { ...previous, angle: Math.max(0, Math.min(MAX_BEND, previous.angle)) };
   const dt = Math.max(0, delta);

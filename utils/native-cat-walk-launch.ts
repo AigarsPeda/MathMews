@@ -34,7 +34,8 @@ export function catLaunchPaw(initial: Vec3, neutral: Vec3, animated: Vec3, root:
   const forward = neutral[2] + stride * (.30 + step.contact - distance);
   const target: Vec3 = [root[0] + (neutral[0] * c + forward * s) * scale,
     root[1] + neutral[1] * scale, root[2] + (forward * c - neutral[0] * s) * scale];
-  const lift = (.065 + .03 * Math.max(0, Math.min(1, (stride - .36) / .44))) * Math.sin(Math.PI * step.progress) ** 2 * scale;
+  const swing = Math.max(0, Math.min(1, (distance-step.start)/(step.end-step.start)));
+  const lift = (.065 + .03 * Math.max(0, Math.min(1, (stride - .36) / .44))) * 16*swing*swing*(1-swing)**2 * scale;
   return [initial[0] + (target[0] - initial[0]) * step.progress,
     initial[1] + (target[1] - initial[1]) * step.progress + lift,
     initial[2] + (target[2] - initial[2]) * step.progress];

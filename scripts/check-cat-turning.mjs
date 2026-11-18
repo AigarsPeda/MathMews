@@ -347,6 +347,23 @@ export function actorBones() {
   return result;
 }
 
+// Measure the rendered bones against the furniture, independently of the cat's root.
+export function readCushionPose(object, motion, scale) {
+  const yaw = object.heading;
+  const tilt = motion.chair ? motion.angle : 0;
+  function cushionPoint(p) {
+    const [dx,dy,dz] = p.map((v,k)=>(v-object.position[k]-(k===1 ? motion.lift : 0))/scale);
+    const x = dx*Math.cos(yaw)-dz*Math.sin(yaw), z = dx*Math.sin(yaw)+dz*Math.cos(yaw);
+    return [x,dy*Math.cos(tilt)+z*Math.sin(tilt),z*Math.cos(tilt)-dy*Math.sin(tilt)];
+  }
+  return { chest:cushionPoint(point('chest')), hips:cushionPoint(point('pelvis')), head:cushionPoint(point('head')), feet:pawNames.map(name=>{
+    const m = transforms.getWorldTransform(asset.getFirstEntityByName(name)).data;
+    // Ankle pivot and two points on the load-bearing underside of the GLB paw.
+    return [[0,0,0],[0,.079,-.098],[.018,.036,-.098]].map(([x,y,z])=>
+      cushionPoint([0,1,2].map(k=>m[12+k]+m[k]*x+m[4+k]*y+m[8+k]*z)));
+  }) };
+}
+
 export function enableActorCrossfade(value=true) { crossfadeEnabled=value; }
 export function deferCatNotifications() { deferredNotifications=[]; }
 export function flushCatNotifications() {

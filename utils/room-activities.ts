@@ -16,7 +16,7 @@ import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
 import { FEED_BITES_PER_MEAL, FEED_HUNGER_RESTORE } from "@/constants/game";
 import type { NativeRoomWorld, NativeTravel, Vec3 } from "@/utils/native-room-world";
-import { catFloorPoint, catScreenPoint, findFoodBowlApproach, findFurnitureTransfer, findWindowWatchPerch, findCatBrushPass, findCatCrawlPass } from "@/utils/native-room-world";
+import { FLOOR_Y, catFloorPoint, catScreenPoint, findFoodBowlApproach, findFurnitureTransfer, findWindowWatchPerch, findCatBrushPass, findCatCrawlPass } from "@/utils/native-room-world";
 import { isHomeRoomId, isRoomDoor, roomTravelDirection, type HomeRoomId, type RoomEntry, type RoomTravelDirection } from "@/constants/home-rooms";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
@@ -43,6 +43,7 @@ export type RoomActivityCommand = { id: number; kind: RoomActivityKind; instance
 export type RoomActivityStep = {
   native?: NativeTravel;
   sleepPose?: CatSleepPose;
+  wakeToSit?: boolean;
   /** Keep the same passage clearance when leaving a kitchen interaction. */
   kitchenNavigation?: boolean;
   /** The source furnishing stays attached to exit steps after a new command. */
@@ -233,7 +234,12 @@ export function routeToSofa(
     return { ...next, steps: [...exit, ...next.steps.slice(2)] };
   }
   if (sameSofa && onSofa) {
-    const supportedSeat=room.nativeWorld && room.nativeStepCompletion!==false && step?.animation!=='jumpOn' ? step?.seatPosition : undefined;
+    // A normal chair or sofa has no alternate seatPosition. Its stationary
+    // native step already holds the cushion contact in room coordinates.
+    const restingContact = step?.native && !step.native.blocked && !step.native.jump && step.native.path.length===1 && step.native.path[0][1]>FLOOR_Y+.05
+      ? step.native.path[0] : undefined;
+    const supportedSeat = room.nativeWorld && room.nativeStepCompletion!==false && step?.animation!=='jumpOn'
+      ? step?.seatPosition ?? restingContact : undefined;
     const distance = supportedSeat ? 0 : Math.hypot(position.x - seatStep.position.x, position.y - seatStep.position.y);
     if (distance <= 2) {
       let rest = next.steps.slice(2).map(item=>supportedSeat && !item.returnHome ? {...item,seatPosition:supportedSeat,
@@ -242,7 +248,7 @@ export function routeToSofa(
       if (seatStep.animation === "jumpOn" && next.steps[2]?.animation === "sit" && curled) rest = [
         { ...seatStep, ...(supportedSeat ? {seatPosition:supportedSeat,seatApproach:step!.seatApproach,
           seatHeading:step!.seatHeading,sofaApproach:step!.sofaApproach} : {}),
-          mood: "lyingDown", animation: "curlUp", sleepPose: step?.sleepPose, reverse: true, moveMs: 0, ...sleepTransitionTiming(step?.sleepPose) }, ...rest,
+          mood: "lyingDown", animation: "curlUp", sleepPose: step?.sleepPose, reverse: true, wakeToSit: true, moveMs: 0, ...sleepTransitionTiming(step?.sleepPose) }, ...rest,
       ];
       return { ...next, steps: rest };
     }

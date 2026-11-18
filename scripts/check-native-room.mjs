@@ -396,7 +396,7 @@ for (const decorationId of ['sofaA','sofaB']) for (const wallFlipped of [false,t
   const exported=matrix(orientation.translation,orientation.rotation,orientation.scale);
   const root=matrix(object.position,[0,Math.sin(object.heading/2),0,Math.cos(object.heading/2)],[object.scale,object.scale,object.scale]);
   const transform=multiply(root,exported);
-  for (const [name,local] of [['seat',[0,.70,.27]],['approach',[0,0,.85+room.radius/object.scale]]]) {
+  for (const [name,local] of [['seat',[0,.70,.16]],['approach',[0,0,.85+room.radius/object.scale]]]) {
     const expected=[0,1,2].map(axis=>transform[axis]*local[0]+transform[4+axis]*local[1]+transform[8+axis]*local[2]+transform[12+axis]);
     if(name==='approach') expected[1]=w.FLOOR_Y;
     if(name==='approach') expected.splice(0,3,...w.nearestFree(expected,room));
@@ -825,15 +825,18 @@ assert.equal(complete, 1, 'Reduced multi-step care completes in its semantic dur
 // The real renderer must apply contact after animation and before uploading skin matrices.
 const contactRoom=w.buildNativeRoomWorld({...base,decorations:[{...sofa,scale:2.2,offset:{x:0,y:0}}]});
 const contactSofa=contactRoom.objects[0];
-const contactPoints=posedTail('sit',0,contactSofa.seat,0,contactRoom.catScale);
+// Pose the cat near the front edge so a tail segment actually meets the sofa.
+const edgeSeat=[contactSofa.position[0]+Math.sin(contactSofa.heading)*.27*contactSofa.scale,contactSofa.seat[1],
+  contactSofa.position[2]+Math.cos(contactSofa.heading)*.27*contactSofa.scale];
+const contactPoints=posedTail('sit',0,edgeSeat,0,contactRoom.catScale);
 rigMatrices=new Map(contactPoints.map((p,i)=>[i===4?'tailTip':'tailjoint'+i,matrix(p)]));rigMatrices.set('spine',matrix());
 slots=[];contactCalls.length=0;
 render({ playback:{kind:'segment',segment:registry.getSegment('idle')},world:contactRoom,
-  travel:{path:[contactSofa.seat],distance:0,duration:1,jump:false,heading:0},active:true,reduceMotion:true });
+  travel:{path:[edgeSeat],distance:0,duration:1,jump:false,heading:0},active:true,reduceMotion:true });
 renderFrame({timeSinceLastFrame:1/60});
 assert.deepEqual(contactCalls,['rotate','tail','rotate','rotate','skin'],'Reduce Motion still resolves tail contact before skinning');
 const heldProps = { playback:{kind:'segment',segment:registry.getSegment('idle')},world:contactRoom,
-  travel:{path:[contactSofa.seat],distance:0,duration:1,jump:false,heading:0},active:true };
+  travel:{path:[edgeSeat],distance:0,duration:1,jump:false,heading:0},active:true };
 render(heldProps);
 const heldFrame=renderFrame;
 for(let i=0;i<20;i++) {

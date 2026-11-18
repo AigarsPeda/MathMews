@@ -790,8 +790,9 @@ export function PetStage({
     onRoomActivityChange?.(Boolean(roomActivity), returnHome);
   }, [onRoomActivityChange, roomActivity, returnHome]);
   const handleRoomTouch = useCallback(() => {
-    if (!catPresent || roomActivity?.plan.kind === "returnHome" || roomActivity?.plan.kind === "roomTravel") return;
+    if (!catPresent || roomActivity?.plan.kind === "roomTravel") return;
     returnHome();
+    if (roomActivity?.plan.kind === "returnHome") return;
     onRoomInteraction?.();
   }, [catPresent, onRoomInteraction, returnHome, roomActivity]);
   const handleCatTap = useCallback(() => {

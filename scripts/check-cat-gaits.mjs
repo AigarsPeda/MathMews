@@ -56,6 +56,11 @@ assert.ok(distance(revised.path[0],before)<1e-8&&revised.paces[0]>1,'A changed r
   assert.ok(!travel.blocked&&travel.paces.every(p=>p>=4.6/1.8-.001),'The real narrow corridor retains walking speed');
 }
 
+// Measure the actual pads even after gait contact bookkeeping ends at a stop.
+function lowPawDrift(before, after, floor, scale) {
+  return Math.max(...after.map((paw,i) => Math.max(before[i][1],paw[1]) <= floor+.108*scale
+    ? Math.hypot(paw[0]-before[i][0],paw[2]-before[i][2])/scale : 0));
+}
 const poses=[],metrics=[];
 for(const skin of process.argv.includes('--orange')?['orange']:['orange','grey','white']) {
   openSkin(skin);
@@ -92,6 +97,14 @@ for(const skin of process.argv.includes('--orange')?['orange']:['orange','grey',
         const ranks={walk:0,trot:1,run:2};
         assert.ok(ranks[state.gait]>=ranks[previous.state.gait],'Changing stride length cannot restart the first-step launch or force a walk mid-acceleration');
       }
+      if (previous && state.previous >= 0 && state.blend < 1 && state.elapsed < state.routeDuration && seen.has('trot')) {
+        const drift=lowPawDrift(previous.paws,paws,FLOOR_Y,scale);
+        assert.ok(drift < .040,`${skin}/${fps}/${gait}: low paw slides ${drift} during a gait change`);
+      }
+      if (previous && state.elapsed > state.routeDuration+1/fps && state.elapsed < state.routeDuration+.45) {
+        const drift=lowPawDrift(previous.paws,paws,FLOOR_Y,scale);
+        assert.ok(drift < .012,`${skin}/${fps}/${gait}: low paw slides ${drift} after arrival`);
+      }
       const anchors=state.gaitContacts.map(p=>p&&[...p]);
       if(previous)for(let j=0;j<4;j++) {
         const step=distance(previous.paws[j],paws[j])/scale;
@@ -115,6 +128,49 @@ for(const skin of process.argv.includes('--orange')?['orange']:['orange','grey',
     assert.ok(maxStep<18/fps+.01,`${skin}/${gait}/${fps}: no paw teleport (${maxStep}, ${JSON.stringify(maxDetail)})`);
     assert.ok(distance(actorState().position,path.at(-1))<1e-6,'The faster cat stops on its original target');
     if(fps===60&&scale===.8)metrics.push({skin,gait,duration:timing.duration,peak,slip,maxStep});
+  }
+  for(const fps of [30,60,120]) for(const stopAt of [1.55,1.66,1.765,1.87]) {
+    resetCatActor();
+    const scale=.4,home=[-1.35,FLOOR_Y,-1.35],end=[1.35,FLOOR_Y,1.35];
+    const world={width:390,height:420,catScale:scale,radius:.12,home,objects:[]};
+    render({active:true,world,playback:idle});drawCat(0);
+    const path=motion.catPacedPath([home,end],scale);
+    render({active:true,world,playback:walking,activityKey:'chase',travel:{path,...motion.catWalkTiming(path,scale,'run'),distance:distance(home,end),jump:false}});
+    for(let i=0;i<Math.round(stopAt*fps);i++){
+      if(stopAt===1.87 && i===Math.round(1.6*fps)){
+        assert.equal(actorState().gait,'run');
+        const from=[...actorState().position],target=[from[0]-.5,FLOOR_Y,1.5];
+        const bend=motion.catPacedPath([from,target],scale);
+        render({active:true,world,playback:walking,activityKey:'curve',travel:{path:bend,...motion.catWalkTiming(bend,scale,'run'),distance:distance(from,target),jump:false}});
+      }
+      drawCat(1/fps);
+    }
+    if(stopAt!==1.87)assert.equal(actorState().gait,'run');
+    const stop={active:true,world,playback:idle,activityKey:'stop'};
+    const position=[...actorState().position];
+    let last=names.map(point),lastBones=actorBones();
+    render(stop);
+    for(let i=0;i<Math.ceil(.45*fps);i++){
+      drawCat(1/fps);
+      const paws=names.map(point),drift=lowPawDrift(last,paws,FLOOR_Y,scale);
+      assert.ok(drift<.014,`${skin}/${fps}: low paw slides ${drift} on a mid-run stop`);
+      assert.ok(distance(position,actorState().position)<1e-8);
+      const bones=actorBones();
+      for(const [j,name] of names.entries()){
+        const a=lastBones[name],b=bones[name];
+        if(Math.max(a[13],b[13])<=FLOOR_Y+.108*scale && distance(last[j],paws[j])<.001*scale){
+          const yaw=Math.atan2(a[0]*b[2]-a[2]*b[0],a[0]*b[0]+a[2]*b[2]);
+          assert.ok(Math.abs(yaw)<.014,`Stopped mitten pivots ${yaw} radians without lifting`);
+        }
+      }
+      lastBones=bones;
+      if(i===Math.round(.1*fps)){
+        render({...stop,active:false});drawCat(.3);
+        assert.ok(names.every((name,j)=>distance(point(name),paws[j])<1e-8),'Pausing holds the settling feet');
+        render(stop);drawCat(0);
+      }
+      last=paws;
+    }
   }
   console.log(`Verified ${skin}: walk/trot/run, acceleration/braking, fixed contacts, continuous poses, exact arrivals and full-pose pause at 30/60/120 FPS and two sizes.`);
 }

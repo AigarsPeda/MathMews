@@ -25,6 +25,18 @@ const tipObstacle={...base,objects:[{instanceId:'fixture',solid:false,collidable
 const clearable=resolveTailContact(points,tipObstacle,rest,1/60);
 assert.ok(clearable.angle>0&&!clearable.blocked,'A free hip still allows normal tail collision correction');
 
+// The native worklet receives shared bounds. Trying more bends beside a
+// backrest should not make it fetch the same coordinates for every sample.
+const obstacle=tipObstacle.objects[0];
+let boundReads=0;
+const sharedBox={
+  get min(){boundReads++;return obstacle.min;},
+  get max(){boundReads++;return obstacle.max;},
+};
+const detailed={...base,objects:[{...obstacle,collisionBoxes:[sharedBox]}]};
+assert.deepEqual(resolveTailContact(points,detailed,rest,1/60),clearable);
+assert.equal(boundReads,2,'Read each shared bound once per tail solve');
+
 const fixture=JSON.parse(fs.readFileSync('scripts/fixtures/rocking-chair-navigation.json'));
 const names=['tailjoint0','tailjoint1','tailjoint2','tailjoint3','tailTip'];
 enableActorCrossfade();

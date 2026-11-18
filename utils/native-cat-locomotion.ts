@@ -11,6 +11,7 @@ export const CAT_LANDING_WALK_PHASE = jumpProfile.walkReady;
 export const CAT_JUMP_TAKEOFF = jumpProfile.takeoff;
 export const CAT_JUMP_PREPARE = .08;
 export const CAT_JUMP_TOUCHDOWN = jumpProfile.touchdown;
+export const CAT_JUMP_HIND_TOUCHDOWN = jumpProfile.hindTouchdown;
 
 /** A planned, small landing adjustment starts after takeoff. The head leads
  * the body; ordinary jumps retain their fixed heading throughout. */
