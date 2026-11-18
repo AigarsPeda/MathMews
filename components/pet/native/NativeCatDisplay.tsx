@@ -30,7 +30,8 @@ function PortraitScene(props: Props) {
       'worklet';
       camera.setOrthographicProjection(-1.35, 1.35, -1.35, 1.35, .1, 40);
       camera.lookAt([3.2, 4, 10], [.04, .94, 0], [0, 1, 0]);
-    }}><DefaultLight /><NativeCatActor model={model} skinId={props.skinId} playback={props.playback} loop={props.loop} active={active && props.playing !== false} reduceMotion={reduceMotion} onReady={() => { setReady(true); props.onReady?.(); }} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/></FilamentView>;
+    }}><DefaultLight /><NativeCatActor model={model} skinId={props.skinId} playback={props.playback}
+      activityKey={props.playback.kind === 'segment' ? props.playback.replayKey?.toString() : undefined} loop={props.loop} active={active && props.playing !== false} reduceMotion={reduceMotion} onReady={() => { setReady(true); props.onReady?.(); }} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/></FilamentView>;
 }
 function PortraitSurface(props: Props) {
   const [ready, setReady] = useState(false);

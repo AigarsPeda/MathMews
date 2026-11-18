@@ -1948,6 +1948,9 @@ assert.ok(Math.max(...washPaws.map(p => p[0][1])) - Math.min(...washPaws.map(p =
   'The actual washing clip visibly lifts the forepaw to wash the face');
 assert.ok(Math.max(...washPaws.map(p => p[1][1])) - Math.min(...washPaws.map(p => p[1][1])) < .025,
   'The supporting forepaw stays planted while washing');
+const lick = washPaws[12], cheek = washPaws[29];
+assert.ok((cheek[0][1]-cheek[2][1]) - (lick[0][1]-lick[2][1]) > .35,
+  'The wiping paw travels up the cheek relative to the moving head');
 const bathMaterials = new Map();
 context.renderableManager = { getMaterialInstanceAt: entity => {
   if (!bathMaterials.has(entity.name)) bathMaterials.set(entity.name, {

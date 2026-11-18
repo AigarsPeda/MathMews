@@ -14,6 +14,15 @@ assert.equal(wake.steps.at(-1).loop,false,'Waking never loops the stretch');
 enableActorCrossfade();
 for(const coat of coats)for(const fps of rates) {
   openSkin(coat);resetCatActor();
+  const defaultSleep = sampleCatClip('sleep', 0);
+  assert.ok(defaultSleep.tailTip[13] < .25, 'The default sleeping tail rests low beside the cat');
+  for (const entry of ['sleepy', 'restSleep']) {
+    const settled = sampleCatClip(entry, 2.5);
+    for (const joint of ['head', 'tailTip']) {
+      assert.ok(distance(settled[joint].slice(12,15), defaultSleep[joint].slice(12,15)) < .01,
+        `${entry} settles into default sleep without lifting the chin or tail`);
+    }
+  }
   const sleeping=sampleCatClip('curlSleep',0),curled=sampleCatClip('curlUp',1);
   assert.ok(sleeping.tailTip[13]<sleeping.tailjoint0[13]+.15,'Sleeping tail rests beside the body instead of standing upright');
   assert.ok(Math.abs(sleeping.tailTip[12]-sleeping.tailjoint0[12])>.25,'Resting tail clears the center of the back');

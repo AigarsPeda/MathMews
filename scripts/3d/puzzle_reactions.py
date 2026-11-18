@@ -4,7 +4,7 @@ from cat_model import pulse, smooth_window
 
 SUCCESS_REACTIONS = ('puzzleHighPaw', 'puzzleProud', 'puzzleBounce')
 RETRY_REACTIONS = ('puzzleOops', 'puzzleThink', 'puzzleRecover')
-PUZZLE_REACTIONS = SUCCESS_REACTIONS + RETRY_REACTIONS
+PUZZLE_REACTIONS = SUCCESS_REACTIONS + RETRY_REACTIONS + ('puzzleHighPawBrief',)
 
 
 def beat(t, keys):
@@ -34,12 +34,16 @@ def pose_reaction(driver, state, t, idle):
     eye_open = 1
     active = smooth_window(t, .04, .94, .06)
 
-    if state == 'puzzleHighPaw':
-        # Notice the player, load the supporting side, then offer and hold a
-        # paw. A small wrist greeting is followed by a satisfied slow blink.
-        load = beat(t, [(0,0),(.12,1),(.24,1),(.70,1),(.91,0),(1,0)])
-        lift = beat(t, [(0,0),(.16,0),(.34,1),(.64,1),(.86,0),(1,0)])
-        greet = pulse(t, .49, .095) - .45*pulse(t, .64, .07)
+    if state in ('puzzleHighPaw', 'puzzleHighPawBrief'):
+        brief = state == 'puzzleHighPawBrief'
+        if brief:
+            # At 32 points the held pad is the gesture. Leave time to see it.
+            lift = beat(t, [(0,0),(.28,1),(.73,1),(1,0)])
+            load, greet = lift, 0
+        else:
+            load = beat(t, [(0,0),(.12,1),(.24,1),(.70,1),(.91,0),(1,0)])
+            lift = beat(t, [(0,0),(.16,0),(.34,1),(.64,1),(.86,0),(1,0)])
+            greet = pulse(t, .49, .095) - .45*pulse(t, .64, .07)
         body.location.x -= .055*load
         body.location.z -= .035*load
         head.location.x += .025*load
@@ -47,14 +51,14 @@ def pose_reaction(driver, state, t, idle):
         paw = driver['feet'][1]
         # Up beside the cheek with the pad turned to the player: at puzzle
         # size a paw held at chest height was lost against the bib.
-        paw.location.x += .44*lift + .035*greet
+        paw.location.x += (.62 if brief else .44)*lift + .035*greet
         paw.location.y -= .22*lift
         paw.location.z += .98*lift + .03*greet
         wrist = -1.25*lift + .25*greet
         chest, roll = -.11*load, -.075*load
         happy = smooth_window(t,.22,.84,.10)
-        blink = pulse(t,.72,.105)
-        lids, mouth = .7*blink, .85*pulse(t,.44,.20)
+        blink = 0 if brief else pulse(t,.72,.105)
+        lids, mouth = .7*blink, 0 if brief else .85*pulse(t,.44,.20)
         brow_lift = [.018*lift, .025*lift]
         ears = [[-.16*lift,-.06*lift,0],[-.23*lift,.04*lift,0]]
         tail.rotation_euler = (.04*load, .10*pulse(t,.55,.23), -.12*load)

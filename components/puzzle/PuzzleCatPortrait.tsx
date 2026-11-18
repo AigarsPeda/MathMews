@@ -13,8 +13,8 @@ export function PuzzleCatPortrait({ petType, catSkinId, mood, reaction, size, br
   const [performance, setPerformance] = useState({ key: replayKey, finished: false });
   if (performance.key !== replayKey) setPerformance({ key: replayKey, finished: false });
   const playback = useMemo(() => petType === "cat" && reaction && !performance.finished
-    ? { kind: "segment" as const, segment: createPuzzleReactionSegment(reaction, brief), mood }
-    : undefined, [petType, reaction, performance, mood, brief]);
+    ? { kind: "segment" as const, segment: createPuzzleReactionSegment(reaction, brief), mood, replayKey }
+    : undefined, [petType, reaction, performance, mood, brief, replayKey]);
   return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
     <PetDisplay petType={petType} catSkinId={catSkinId} mood={performance.finished ? "idle" : mood}
       playback={playback}

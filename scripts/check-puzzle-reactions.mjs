@@ -32,6 +32,14 @@ const paws = ['L.front.paw', 'R.front.paw', 'L.rear.paw', 'R.rear.paw'];
 const coats = process.argv.includes('--preview') ? ['orange'] : ['orange', 'grey', 'white'];
 for (const coat of coats) {
   openSkin(coat);
+  const briefPaw = createPuzzleReactionSegment('puzzleHighPaw', true);
+  assert.equal(briefPaw.assetKey, 'puzzleHighPawBrief');
+  assert.equal(briefPaw.model.rate, 1);
+  const greeting = time => sampleCatClip(briefPaw.assetKey, time)['R.front.paw'];
+  const raised = greeting(.25);
+  assert.ok(raised[13] - greeting(0)[13] > .5, 'The small portrait raises the paw clear of the chest');
+  assert.ok(distance(raised, greeting(.50)) < .01, 'The small portrait holds the offered pad still');
+  assert.ok(distance(greeting(0), greeting(.75)) < .001, 'The brief high-five returns to idle');
   const signatures = [];
   for (const name of [...success, ...retry]) {
     const segment = createPuzzleReactionSegment(name);

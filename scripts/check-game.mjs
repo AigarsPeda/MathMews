@@ -94,6 +94,7 @@ const extended = [
   "check-cat-exploration",
   "check-cat-spine",
   "check-cat-restarting",
+  "check-cat-clip-handoffs",
   "check-cat-room-flow",
   "check-fraction-animation"
 ];

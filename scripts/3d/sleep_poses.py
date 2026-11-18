@@ -18,7 +18,7 @@ def ease(t, start=0, end=1):
     return u*u*(3-2*u)
 
 
-def sleep_pose(arm, state, t, standing, joint_matrix, limb_pose):
+def sleep_pose(arm, state, t, standing, joint_matrix, limb_pose, *, tail_tuck=0):
     bones = arm.data.bones
     variant = next(name for name in SLEEP_POSES if name in state)
     loop = state.endswith('Sleep')
@@ -142,6 +142,36 @@ def sleep_pose(arm, state, t, standing, joint_matrix, limb_pose):
         # The flank sleeper keeps its tail down until the body has rolled most
         # of the way upright; carried any sooner it points into the cushion.
         tail_amount = 1-ease(t, .56, 1)
+    rest_tail(bones, target, standing, pelvis, max(tail_amount, tail_tuck), joint_matrix, side=side, curl=curl)
+
+    # Facial meshes use absolute bones too; move them with the skull and close
+    # both eyes gradually as the chin/cheek approaches its support.
+    old_head = standing['head'] @ bones['head'].matrix_local.inverted()
+    face_delta = head_motion @ old_head.inverted()
+    for name in bones.keys():
+        if name.startswith(('ear.', 'eye.', 'whisker.', 'brow.', 'lid.', 'mouth.')) or name == 'nose':
+            target[name] = face_delta @ standing[name]
+        closed = 1-ease(t, .06, .42) if waking else ease(p, .40, .95)
+        if name.startswith('eye.'):
+            center = bones[name].head_local
+            # Flatten into the lid line, then vanish: a flat disc would still
+            # show as a dark ellipse whenever the head is seen from above.
+            gone = 1-ease(closed, .80, 1)
+            close = Matrix.Translation(center) @ Matrix.Diagonal((gone, gone, 1-closed, 1)) @ Matrix.Translation(-center)
+            target[name] = head_motion @ close @ bones[name].matrix_local
+        if name.startswith('lid.'):
+            # The happy crescent, turned over, is a peacefully closed eye.
+            center, shown = bones[name].head_local, ease(closed, .55, 1)
+            asleep = Matrix.Translation(center+Vector((0, 0, -.006*shown))) @ Matrix.Rotation(math.pi, 4, (bones[name].tail_local-bones[name].head_local).normalized()) @ Matrix.Diagonal((shown, shown, shown, 1)) @ Matrix.Translation(-center)
+            target[name] = head_motion @ asleep @ bones[name].matrix_local
+        if name.startswith('ear.'):
+            spread = (.17 if name.endswith('L') else -.17)*head
+            target[name] = head_motion @ joint_matrix(bones[name], bones[name].head_local, Matrix.Rotation(spread, 3, 'Y') @ Matrix.Rotation(-.10*head, 3, 'X'))
+    return target
+
+
+def rest_tail(bones, target, standing, pelvis, tail_amount, joint_matrix, *, side=False, curl=False):
+    """Wrap the tail beside the resting body, preserving the length of each joint."""
     names = ('tailjoint0', 'tailjoint1', 'tailjoint2', 'tailjoint3', 'tailTip')
     anchor = pelvis @ bones['tailjoint0'].head_local
     rest_points = [bones[name].head_local for name in names]+[bones['tailTip'].tail_local]
@@ -196,28 +226,3 @@ def sleep_pose(arm, state, t, standing, joint_matrix, limb_pose):
         target[name] = joint_matrix(bones[name], position, now.to_matrix())
         position = position+now @ rest_direction
         parent_final, parent_now, parent_standing = final, now, upright
-
-    # Facial meshes use absolute bones too; move them with the skull and close
-    # both eyes gradually as the chin/cheek approaches its support.
-    old_head = standing['head'] @ bones['head'].matrix_local.inverted()
-    face_delta = head_motion @ old_head.inverted()
-    for name in bones.keys():
-        if name.startswith(('ear.', 'eye.', 'whisker.', 'brow.', 'lid.', 'mouth.')) or name == 'nose':
-            target[name] = face_delta @ standing[name]
-        closed = 1-ease(t, .06, .42) if waking else ease(p, .40, .95)
-        if name.startswith('eye.'):
-            center = bones[name].head_local
-            # Flatten into the lid line, then vanish: a flat disc would still
-            # show as a dark ellipse whenever the head is seen from above.
-            gone = 1-ease(closed, .80, 1)
-            close = Matrix.Translation(center) @ Matrix.Diagonal((gone, gone, 1-closed, 1)) @ Matrix.Translation(-center)
-            target[name] = head_motion @ close @ bones[name].matrix_local
-        if name.startswith('lid.'):
-            # The happy crescent, turned over, is a peacefully closed eye.
-            center, shown = bones[name].head_local, ease(closed, .55, 1)
-            asleep = Matrix.Translation(center+Vector((0, 0, -.006*shown))) @ Matrix.Rotation(math.pi, 4, (bones[name].tail_local-bones[name].head_local).normalized()) @ Matrix.Diagonal((shown, shown, shown, 1)) @ Matrix.Translation(-center)
-            target[name] = head_motion @ asleep @ bones[name].matrix_local
-        if name.startswith('ear.'):
-            spread = (.17 if name.endswith('L') else -.17)*head
-            target[name] = head_motion @ joint_matrix(bones[name], bones[name].head_local, Matrix.Rotation(spread, 3, 'Y') @ Matrix.Rotation(-.10*head, 3, 'X'))
-    return target

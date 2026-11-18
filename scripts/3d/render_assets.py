@@ -6,6 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from store_furniture import STORE_FURNITURE_IDS, MODERN_KITCHEN_IDS, build_store_furniture
 from bedroom_additions import add_bed_quilt
+from cat_acting import ball_toss
 from cat_feeders import CAT_FEEDER_IDS, build_cat_feeder
 from bathroom_additions import build_bathroom_addition, add_bathroom_controls
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
@@ -195,8 +196,8 @@ def play_toy_location(state,t):
  enter=smoothstep(t/.15);leave=smoothstep((t-.85)/.15)
  right=bpy.context.scene.camera.rotation_euler.to_matrix()@Vector((1,0,0))
  if state=='ballToss':
-  across=smoothstep((t-.34)/.20)*(1-smoothstep((t-.61)/.20))
-  location=Vector((-.32+.98*across,-.65,.15+.19*pulse(t,.22,.10)+.11*pulse(t,.47,.10)))
+  _,ball=ball_toss(t)
+  location=Vector(ball)
  elif state=='yarnRoll':
   cuddle=smooth_window(t,.25,.77,.12)
   location=Vector((-.36*(1-cuddle)+.055*math.sin(t*math.tau*5)*cuddle,-.73,.18))
@@ -204,7 +205,7 @@ def play_toy_location(state,t):
   play=smooth_window(t,.15,.85,.10)
   location=Vector((-.50*math.sin((t-.22)*math.tau*2.5)*play*(1-smoothstep((t-.58)/.10)),
                    -.66,.77+.19*pulse(t,.70,.13)))
- return location+right*(-2.6*(1-enter+leave))
+ return location+right*(-(3.7 if state=='ballToss' else 2.6)*(1-enter+leave))
 
 def pose_play_props(toy,state,t):
  toy.location=play_toy_location(state,t)

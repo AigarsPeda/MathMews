@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 JUMP = __import__('json').loads((ROOT/'constants/cat-jump.json').read_text())
 from original_cat import create_cat as create_original_cat, EAR, join
 from cat_gaits import GAITS, pose_gait
+from box_play import arrival as box_arrival, build_box, pose_box, pose_box_cat
 from cat_acting import performance
 from cat_collar import add_collar
 
@@ -28,7 +29,7 @@ SEATED_HAUNCH = .86
 # Large, low, wide-set eyes carry the expression on the simple face.
 EYE = {'x': .222, 'z': 1.300, 'width': .058, 'depth': .019, 'height': .074}
 from puzzle_reactions import PUZZLE_REACTIONS, pose_reaction
-from sleep_poses import SLEEP_POSES, sleep_pose
+from sleep_poses import SLEEP_POSES, sleep_pose, rest_tail
 
 
 def keyed(t, keys):
@@ -407,6 +408,14 @@ def tail_wave(state, t):
 
 
 def pose(arm, driver, state, t, idle_controls):
+    if state in ('box1', 'box2', 'box3'):
+        a = box_arrival(state, t)
+        if .03 < a < .35:
+            phase = (a-.03)/.32
+            stance = pose(arm, driver, 'hop', phase if state == 'box1' else 1-phase, idle_controls)
+        else:
+            stance = pose(arm, driver, 'idle', 0, idle_controls)
+        return pose_box_cat(arm, state, t, stance, joint_matrix, limb_pose)
     if any(state == 'rest'+name+phase for name in SLEEP_POSES for phase in ('Enter', 'Sleep', 'Wake')):
         return sleep_pose(arm, state, t, pose(arm, driver, 'idle', 0, idle_controls), joint_matrix, limb_pose)
     # Small drops/hops use a separately solved contact pose. Blending a strong
@@ -430,7 +439,7 @@ def pose(arm, driver, state, t, idle_controls):
     bones = arm.data.bones
     # Share of reach kept before a limb draws in, for the deep bends of a
     # jump, a crawl under furniture and a cat packed into its box.
-    gathered = .86 if jumping else .80 if state == 'crawl' else .86 if state.startswith('box') else 0
+    gathered = .86 if jumping else .80 if state == 'crawl' else 0
     # Sitting lowers the pelvis around the shoulders; normal idle is standing.
     eating_time = care_action_time(state, t)
     eating_lean = smooth_window(eating_time, .03, .90, .15) if state == 'eating' else 0
@@ -476,9 +485,10 @@ def pose(arm, driver, state, t, idle_controls):
             return body @ Matrix.Translation(pivot) @ Matrix.Rotation(angle, 4, 'X') @ Matrix.Translation(-pivot)
         # Gather during the suspended recovery; lengthen into the fore landing.
         # Translation brings the haunch under the back without moving the paws.
-        fore_body = Matrix.Translation((0, .060*flex, -.015*flex)) @ bend_at('chest', .22*flex)
-        hind_body = Matrix.Translation((0, -.075*flex, .015*flex)) @ bend_at('pelvis', -.26*flex)
-        body = Matrix.Translation((0, 0, .045*flex+.020*flex*flex)) @ body
+        fore_body = Matrix.Translation((0, .072*flex, -.015*flex)) @ bend_at('chest', .25*flex)
+        hind_body = Matrix.Translation((0, -.090*flex, .015*flex)) @ bend_at('pelvis', -.30*flex)
+        # Lift the middle of the back most when the hind legs tuck under it.
+        body = Matrix.Translation((0, 0, .065*flex+.035*flex*flex)) @ body
     if jumping:
         # The short torso bends through the gathering/impact, rather than
         # travelling as one rigid block. No axial twist or airborne yaw.
@@ -557,9 +567,11 @@ def pose(arm, driver, state, t, idle_controls):
         head_stretch = keyed(t, [(0, 0), (.22, .06), (.46, 1), (.64, 1), (.90, .12), (1, 0)])
         head_shift = Vector((0, -.035*head_stretch, -.10*head_stretch))
         head_rotation = Matrix.Rotation(.20*head_stretch, 3, 'X')
+    drowsy = settle if state == 'sleepy' else t*t*(3-2*t) if state == 'restSleep' else float(state == 'sleep')
     if sleeping:
         # Rest the chin ahead of the chest instead of sinking the skull into it.
         head_shift += Vector((0, -.15, .06))*settle
+        head_shift += Vector((0, .05, -.18))*drowsy
     if state == 'crawl':
         head_shift.z -= .16
         head_rotation = Matrix.Rotation(.12, 3, 'X')
@@ -615,11 +627,12 @@ def pose(arm, driver, state, t, idle_controls):
                 toe += Vector((0,rear_reach if rear else fore_reach,rear_lift if rear else fore_lift))
                 toe.x *= 1-(.36 if rear else .28)*gather
             if state == 'wash' and not rear and side == 'R':
-                lift = smooth_window(t, .08, .88, .12)
-                wipe = math.sin(t*math.tau*2)
-                muzzle = bones['head'].head_local+chest_shift+head_shift
-                target = muzzle+Vector((.17+.05*wipe, -.25, -.19+.09*wipe))
-                toe = toe.lerp(target, lift)
+                lift = smooth_window(t, .06, .94, .18)
+                stroke = smooth_window(t, .35, .85, .23)
+                # Travel along the near cheek from lip to ear as the skull tilts.
+                face = desired['head'] @ bones['head'].matrix_local.inverted()
+                pad = Vector((.10+.30*stroke, -.94+.25*stroke, 1.05+.37*stroke))
+                toe = toe.lerp(face @ pad, lift)
             desired.update(limb_pose(bones, names, shoulder, toe, max(SEATED_HAUNCH*seated if rear else 0, .90*settle, gathered)))
             if state.startswith('walk') or state in ('trot', 'run'):
                 # Let the airborne paw curl, then open before contact. The
@@ -674,6 +687,8 @@ def pose(arm, driver, state, t, idle_controls):
             chain = chain @ Matrix.Translation(pivot) @ Matrix.Rotation(wave[i][0], 4, 'X') @ Matrix.Rotation(wave[i][1], 4, 'Y') @ Matrix.Translation(-pivot)
         chains[name] = chain
         desired[name] = tail_transform @ chain @ bones[name].matrix_local
+    if drowsy:
+        rest_tail(bones, desired, desired, hind_body, drowsy, joint_matrix)
     if jumping:
         tip_follow = keyed(t, [(0, 0), (.22, 0), (.48, -.18), (.72, -.12), (.90, .06), (1, 0)])
         pivot = bones['tailjoint2'].head_local
@@ -723,6 +738,10 @@ def pose(arm, driver, state, t, idle_controls):
     visibility = {'mouth.open': driver['mouth'].scale.x, 'mouth.smile': driver['smile'].scale.x,
                   'mouth.frown': driver['frown'].scale.x,
                   **{'lid.'+side: driver['happy_lids'][i].scale.x for side, i in (('L', 0), ('R', 1))}}
+    if state == 'wash':
+        lick = pulse(t, .26, .085)
+        visibility['mouth.open'] = lick
+        visibility['mouth.smile'] *= 1-lick
     for name in bones.keys():
         if name.startswith(('whisker.', 'brow.')) or name in ('nose', 'mouth.stem') or name in visibility:
             center = bones[name].head_local
@@ -765,7 +784,12 @@ def export_cats(scope, args, export):
         groups, categories = {}, {}
         for state in ('eating', 'box1', 'ballToss', 'yarnRoll', 'featherChase'):
             before = set(scene.objects)
-            groups[state] = scope['care_props'](state) if state in ('eating', 'box1') else scope['play_props'](state)
+            if state == 'box1':
+                groups[state] = build_box(scope)
+            elif state == 'eating':
+                groups[state] = scope['care_props'](state)
+            else:
+                groups[state] = scope['play_props'](state)
             for obj in set(scene.objects)-before:
                 categories[obj] = state
         arm, mesh = load_cat(skin)
@@ -804,8 +828,10 @@ def export_cats(scope, args, export):
                 t = frame/frames
                 driver['boxed'] = clip.startswith('box')
                 desired = pose(arm, driver, 'walk' if clip.startswith('walk') else clip, t, idle_controls)
-                if clip == 'eating' or clip.startswith('box'):
-                    scope['pose_care_props'](*groups['eating' if clip == 'eating' else 'box1'], clip, t)
+                if clip.startswith('box'):
+                    pose_box(groups['box1'], clip, t)
+                elif clip == 'eating':
+                    scope['pose_care_props'](*groups['eating'], clip, t)
                 elif clip in ('ballToss', 'yarnRoll', 'featherChase'):
                     scope['pose_play_props'](groups[clip], clip, t)
                 bpy.context.view_layer.update()

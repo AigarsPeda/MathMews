@@ -140,9 +140,9 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     else if (kind === 'roomComplete' && typeof data === 'object' && 'key' in data) {
       callbacks.current.onRoomStepComplete?.(data.key, data.position, data.motion);
     }
-    else if (kind === 'step')
-      callbacks.current.onStepComplete?.(data as number);
-    else if (kind === 'complete')
+    else if (kind === 'step' && Array.isArray(data) && data[0] === commandRevision.current.id)
+      callbacks.current.onStepComplete?.(data[1]);
+    else if (kind === 'complete' && data === commandRevision.current.id)
       callbacks.current.onAnimationComplete?.();
     else if (kind === 'ready')
       callbacks.current.onReady?.();
@@ -161,9 +161,10 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
   const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; home?: Vec3 }>({ id: 0 });
   const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
     position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1, blendSeconds: .12,
-    recoveryTime: 1, recoveryPose: [] as number[][], recoveryOffsets: [] as ReturnType<typeof catPoseCorrection>[],
+    recoveringAction: false, recoveryTime: 1, recoveryPose: [] as number[][], recoveryOffsets: [] as ReturnType<typeof catPoseCorrection>[],
     blendApplied: 1, blendEased: false, idleOffset: 0, napReverseEntry: false,
-    clipLoop: false, previousLoop: false, clipDuration: 1, previousDuration: 1,
+    interruptedFades: [] as { clip: number; time: number; progress: number; seconds: number; eased: boolean }[],
+    clipReverse: false, clipLoop: false, previousLoop: false, clipDuration: 1, previousDuration: 1,
     routePath: [] as Vec3[], routePaces: [] as number[], routeLegs: [] as CatMotionLeg[], routeDuration: 0, routeRamp: .18, routeStartRate: 0, routeEndRate: 0, routeCost: 0, entryMotionApplied: false,
     sourcePath: [] as Vec3[], sourceDuration: 0, sourceJump: false, jumpPhase: 0, jumpOffset: 0, jumpDuration: 0, jumpArcHeight: 0, jumpFrom: [0, 0, 0] as Vec3,
     preparation: 0, prepareTarget: undefined as Vec3 | undefined, preparedJump: false,
@@ -182,7 +183,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     tailContact: { angle: 0, axis: [0, 1, 0], blocked: false } as TailContact });
   useEffect(() => {
     // A replaced model needs its pose applied even when playback is paused.
-    state.value = { ...state.value, ready: false, clip: -1, previous: -1, blend: 1, recoveryTime: 1, recoveryPose: [], recoveryOffsets: [] };
+    state.value = { ...state.value, ready: false, clip: -1, previous: -1, interruptedFades: [], blend: 1, recoveryTime: 1, recoveryPose: [], recoveryOffsets: [] };
   }, [asset, state]);
   useEffect(() => {
     const previous = commandRevision.current;
@@ -263,16 +264,21 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     frameState.spinePose.chestLift ??= 0;frameState.spinePose.hipLift ??= 0;
     frameState.spinePose.chestRoll ??= 0;frameState.spinePose.hipRoll ??= 0;frameState.spinePose.scapula ??= 0;
     for(const key of ['headPitch','headYaw','headRoll','tailFollowYaw','tailFollowPitch','tailTipYaw','tailTipPitch'] as const)frameState.spinePose[key] ??= 0;
-    if (frameState.id !== request.id) {
+    frameState.interruptedFades ??= [];
+    const newCommand = frameState.id !== request.id;
+    const oldSegmentIndex = frameState.index;
+    if (newCommand) {
       if (request.recoveryPosition) frameState.position = request.recoveryPosition;
       const floorCommand=!request.travel?.jump && !request.travel?.legs?.length
         && !request.travel?.bed && !request.travel?.bathroom
         && ['walk','idle'].includes(request.segments[0]?.name);
       const stopping=request.segments[0]?.name==='idle'
         && [clips.walk?.index,clips.trot?.index,clips.run?.index].includes(frameState.clip);
-      const starting=request.segments[0]?.name==='walk' && frameState.clip===clips.idle?.index;
+      const starting=request.segments[0]?.name==='walk'
+        && ![clips.walk?.index,clips.trot?.index,clips.run?.index].includes(frameState.clip);
       const recovering=frameState.ready && !request.reduceMotion && floorCommand
         && !frameState.sourceJump && !frameState.routeLegs.length && (stopping || starting || frameState.recoveryTime<.18);
+      frameState.recoveringAction = recovering && starting && frameState.clip !== clips.idle?.index;
       frameState.recoveryPose=recovering?recoveryJoints.map(joint=>transformManager.getTransform(joint).data):[];
       frameState.recoveryOffsets=[];frameState.recoveryTime=recovering?0:1;
       // Reverse a nap from the pose actually reached, including a command
@@ -290,10 +296,15 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       // uses the authored head lift and rise instead of reversing the tuck.
       frameState.napReverseEntry = !!napSegment?.reverse && napElapsed !== undefined
         && frameState.clip === napEntry?.index && frameState.clipTime < napEntry.duration - .001;
+      const reversingAction = frameState.ready && !request.travel?.path.length && napSegment && !napSegment.loop
+        && frameState.clip === clips[napSegment.name]?.index && frameState.clipReverse !== napSegment.reverse;
+      const reversedElapsed = reversingAction
+        ? napSegment.duration * (napSegment.reverse ? 1 - frameState.clipTime / frameState.clipDuration : frameState.clipTime / frameState.clipDuration)
+        : undefined;
       const renderedElapsed = frameState.elapsed;
       frameState.id = request.id;
       frameState.lookCycle=-1;
-      frameState.elapsed = napElapsed ?? request.travel?.elapsed ?? 0;
+      frameState.elapsed = napElapsed ?? reversedElapsed ?? request.travel?.elapsed ?? 0;
       frameState.idleOffset = 0;
       frameState.index = 0;
       frameState.complete = false;
@@ -467,7 +478,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     if (!segment)
       return;
     if (!segment.loop && !frameState.complete && frameState.elapsed >= (request.reduceMotion ? .6 : segment.duration)) {
-      notify('step', frameState.index);
+      notify('step', [request.id, frameState.index]);
       if (frameState.index < request.segments.length - 1) {
         frameState.elapsed -= request.reduceMotion ? .6 : segment.duration;
         frameState.index++;
@@ -475,7 +486,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       }
       else {
         frameState.complete = true;
-        notify('complete', 0);
+        notify('complete', request.id);
       }
     }
     const scale = request.world?.catScale ?? 1;
@@ -677,10 +688,13 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     if (request.reduceMotion)
       time = hopPhase !== undefined ? hopPhase >= CAT_JUMP_TOUCHDOWN ? clip.duration : 0 : clip.duration * .25;
     if (steppingTurn && !walking) time = 0;
-    if (clip.index !== frameState.clip) {
+    const newSegment = newCommand || frameState.index !== oldSegmentIndex;
+    const replay = newSegment && clip.index === frameState.clip && !journey?.path.length
+      && Math.abs(time - frameState.clipTime) > .001;
+    if (clip.index !== frameState.clip || replay) {
       // Reversing a transition retains the mixture already on screen. Starting
       // again from the outgoing clip alone would discard its remaining source.
-      const reversing=clip.index===frameState.previous && frameState.blendApplied<1
+      const reversing=!replay && !frameState.interruptedFades.length && clip.index===frameState.previous && frameState.blendApplied<1
         && !request.reduceMotion && (walking || resting);
       const retainedTime=frameState.previousTime, retainedWeight=1-frameState.blendApplied;
       if(reversing) {
@@ -691,16 +705,30 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         else frameState.idleOffset=retainedTime-frameState.elapsed;
         time=retainedTime;
       }
-      frameState.previous = frameState.clip;
-      frameState.previousTime = frameState.clipTime;
-      frameState.previousLoop = frameState.clipLoop && !arrivedWalk;
-      frameState.previousDuration = frameState.clipDuration;
+      // Keep the visible mixture when a third action interrupts a crossfade.
+      // A command replaced before its first visible frame contributes no pose.
+      const interrupted = !reversing && !request.reduceMotion && frameState.previous >= 0 && frameState.blendApplied < 1;
+      if (!interrupted) frameState.interruptedFades = [];
+      if (interrupted && frameState.blendApplied > 0) {
+        frameState.interruptedFades = [...frameState.interruptedFades, {
+          clip: frameState.previous, time: frameState.previousTime, progress: frameState.blend,
+          seconds: frameState.blendSeconds, eased: frameState.blendEased,
+        }];
+      }
+      if (!interrupted || frameState.blendApplied > 0) {
+        frameState.previous = frameState.clip;
+        frameState.previousTime = frameState.clipTime;
+        frameState.previousLoop = frameState.clipLoop && !arrivedWalk;
+        frameState.previousDuration = frameState.clipDuration;
+      }
       frameState.clip = clip.index;
       frameState.blend = frameState.preparedJump && hopPhase!==undefined ? 1 : reversing ? retainedWeight : 0;
-      frameState.blendEased = !reversing && launching && frameState.launchFromStanding;
-      frameState.blendSeconds = launching && frameState.launchFromStanding ? .22 : clip.index === clips.wakeStretch?.index || frameState.previous === clips.wakeStretch?.index ? .22 : walking && [clips.walk?.index,clips.trot?.index,clips.run?.index].includes(frameState.previous) ? .22 : .12;
+      const gentleLaunch = frameState.recoveringAction || (launching && frameState.launchFromStanding);
+      frameState.blendEased = !reversing && (gentleLaunch || !journey?.path.length);
+      frameState.blendSeconds = gentleLaunch ? .22 : clip.index === clips.wakeStretch?.index || frameState.previous === clips.wakeStretch?.index ? .22 : walking && [clips.walk?.index,clips.trot?.index,clips.run?.index].includes(frameState.previous) ? .22 : .12;
     }
     frameState.clipTime = time;
+    frameState.clipReverse = segment.reverse && !wakingNap;
     frameState.clipLoop = (!steppingTurn || walking) && (arrivedWalk ? !journey.bed : walking || hopPhase === undefined && segment.loop);
     frameState.clipDuration = clip.duration;
     if (animationTimeValue)
@@ -747,10 +775,11 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       });
       frameState.turnCrouch = 0;
     }
-    animator.applyAnimation(clip.index, time);
     frameState.blendApplied=1;
-    // The waking bow must blend out even while first-step IK places the paws.
-    if ((!posingFeet || arrivedWalk || launching && (frameState.launchFromLanding || frameState.launchFromStanding) || frameState.previous === clips.wakeStretch?.index) && frameState.previous >= 0 && frameState.blend < 1) {
+    // Keep the outgoing body pose while IK places the first-step paws.
+    const blendWithFootPlacement = frameState.recoveringAction || frameState.previous === clips.wakeStretch?.index
+      || (launching && (frameState.launchFromLanding || frameState.launchFromStanding || frameState.previous === clips.idle?.index));
+    if ((!posingFeet || arrivedWalk || blendWithFootPlacement) && !request.reduceMotion && frameState.previous >= 0 && frameState.blend < 1) {
       // Keep the outgoing pose moving while blending instead of freezing a paw mid-stride.
       if (frameState.previousLoop) {
         const previousGait = frameState.previous === clips.run?.index ? 'run' : frameState.previous === clips.trot?.index ? 'trot' : frameState.previous === clips.walk?.index ? 'walk' : undefined;
@@ -762,7 +791,35 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       }
       const blend=frameState.blendEased?frameState.blend*frameState.blend*(3-2*frameState.blend):frameState.blend;
       frameState.blendApplied=blend;
-      animator.applyCrossFade(frameState.previous, frameState.previousTime, blend);
+      if (frameState.interruptedFades.length) {
+        // Finish earlier fades on their original clocks. Once a fade finishes,
+        // every source before it has zero weight and can be discarded.
+        let first = 0;
+        const fades = frameState.interruptedFades.map((fade, i) => {
+          const progress = Math.min(1, fade.progress + deltaSeconds / fade.seconds);
+          if (progress === 1) first = i + 1;
+          return { ...fade, progress };
+        }).slice(first);
+        frameState.interruptedFades = fades;
+        if (fades.length) {
+          animator.applyAnimation(fades[0].clip, fades[0].time);
+          for (let i = 0; i < fades.length; i++) {
+            const { progress, eased } = fades[i];
+            const weight = eased ? progress * progress * (3 - 2 * progress) : progress;
+            const next = fades[i + 1];
+            animator.applyCrossFade(next?.clip ?? frameState.previous, next?.time ?? frameState.previousTime, 1 - weight);
+          }
+          animator.applyCrossFade(clip.index, time, 1 - blend);
+        }
+      }
+      if (!frameState.interruptedFades.length) {
+        animator.applyAnimation(clip.index, time);
+        animator.applyCrossFade(frameState.previous, frameState.previousTime, blend);
+      }
+    } else {
+      frameState.recoveringAction = false;
+      frameState.interruptedFades = [];
+      animator.applyAnimation(clip.index, time);
     }
     if(frameState.preparation>0 && journey?.prepareJump && !request.reduceMotion) {
       const preparationClip=clips[journey.prepareJump.light?'jumpOnLight':'jumpOn']??clips.jumpOn;

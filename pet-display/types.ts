@@ -31,7 +31,7 @@ export type PetPlaybackState =
       scenario: PetMediaScenario;
       steps: PetMediaSegment[];
     }
-  | { kind: "segment"; segment: PetMediaSegment; mood: PetAnimationState };
+  | { kind: "segment"; segment: PetMediaSegment; mood: PetAnimationState; replayKey?: number };
 
 /** Commands sent to the pet display engine from game screens. */
 export type PetDisplayCommand =

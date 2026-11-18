@@ -64,6 +64,29 @@ def tail_pose(amount, pitches, sway=0, tip=0):
                  for index, (rest, pitch, weight) in enumerate(zip(carriage, pitches, (1, .65, .40, .22))))
 
 
+def ball_toss(t):
+    """Right mitten offset and ball centre in the Z-up rig space."""
+    release, ground, tap = .33, .58, .70
+    scoop = hold(t, .17, release, .38, .56)
+    bat = accent(t, .57, tap, .87)
+    paw = (.21*scoop+.51*bat, -.22*scoop-.26*bat, .54*scoop+.48*bat)
+    # Offset from the neutral wrist to a ball touching the outside toes.
+    contact = (.355, -.62, .15)
+    if t <= release:
+        ball = tuple(a+b for a, b in zip(contact, paw))
+    elif t <= ground:
+        u = (t-release)/(ground-release)
+        ball = (.565+.265*u, -.84-.025*u, .69-.54*u+4*1.08*u*(1-u))
+    elif t <= tap:
+        u = (t-ground)/(tap-ground)
+        ball = (.83+.035*u, -.865-.015*u, .15+.48*u*(2-u))
+    else:
+        u = min(1, (t-tap)/.12)
+        roll = min(1, max(0, (t-.82)/.16))
+        ball = (.865-.48*u-.24*roll, -.88-.12*u, .63-.48*u*u+.065*4*roll*(1-roll))
+    return paw, ball
+
+
 def performance(state, t):
     t = max(0, min(1, t))
     if t == 1 and state in ('idle', 'idle2', 'blinkIdle', 'sit', 'blinkSit', 'waiting', 'sad', 'cry', 'angryCute'):
@@ -194,20 +217,17 @@ def performance(state, t):
                     ears=((-.06*orient,-.035*orient),(.12*orient,.09*orient)),
                     squint=1-.88*accent(t,.69,.75,.86) if state in ('blinkIdle','blinkSit') else 1)
     if state == 'ballToss':
-        # Scoop low, send one paw up, then watch the invisible arc cross over
-        # the forehead. The paw stays high long enough to read at game size.
-        gather = accent(t,.025,.13,.25)
-        reach = hold(t,.17,.31,.44,.64)
-        arc = hold(t,.24,.40,.59,.84)
-        track = beat(t,[(0,0),(.23,0),(.40,-.25),(.57,.26),(.73,.16),(.96,0),(1,0)])
-        follow = hold(t,.27,.46,.65,.97)
-        return dict(plant=True,
-                    paws=((0,0,0),(.20*reach,-.17*reach,1.12*reach),(0,0,0),(0,0,0)),
-                    chest=.13*gather-.17*arc, hips=.06*arc, roll=.07*reach,
-                    lift=-.09*gather-.025*arc, back=.055*arc, side=-.045*reach,
-                    head=(.025*track,0,.075*arc), look=(-.46*arc-.10*reach,-.07*reach,track),
-                    ears=((-.17*arc,.06*arc),(-.12*arc,-.04*arc)),
-                    tail=tail_pose(follow,(-.40,.05,.25,.32),-.15*track))
+        paw, ball = ball_toss(t)
+        gather = accent(t,.04,.15,.27)
+        # Gaze follows the same arc as the ball, including the floor rebound.
+        watch = hold(t,.10,.22,.83,.98)
+        up = (ball[2]-.15)/1.35
+        return dict(plant=True, paws=((0,0,0),paw,(0,0,0),(0,0,0)),
+                    chest=.14*gather-.13*up, hips=.06*up, roll=.08*paw[2],
+                    lift=-.085*gather, side=-.035*watch,
+                    head=(.025*watch,0,.045*up), look=((.16-.59*up)*watch,-.06*up,.30*watch+.16*up),
+                    ears=((-.12*up,.06*watch),(-.12*up,-.04*watch)),
+                    tail=tail_pose(watch,(-.40,.05,.25,.32),-.10*up))
     if state == 'batToy':
         # A low hunting crouch, rear wiggle, then ONE lateral cut away from the
         # chest. Freeze the far-side follow-through before replacing the paw.
@@ -264,22 +284,6 @@ def performance(state, t):
                     look=(-.32*watch+.16*gather+.13*land,0,track),
                     ears=((-.13*watch+.20*gather,.04*watch),(-.13*watch+.20*gather,-.04*watch)),
                     tail=tail_pose(tail,(-.90,-.06,.12,.18),-.25*track))
-    if state in ('box1','box2','box3'):
-        if state == 'box1':
-            duck = hold(t,.32,.49,.69,.96)
-            peek = accent(t,.08,.19,.31)
-        elif state == 'box2':
-            duck = accent(t,.03,.12,.26)+accent(t,.72,.84,.97)
-            peek = hold(t,.19,.33,.63,.79)
-        else:
-            duck = hold(t,.02,.12,.25,.45)
-            peek = hold(t,.32,.48,.67,.93)
-        scan = accent(t,.34,.45,.55)-accent(t,.54,.65,.80)
-        return dict(chest=.12*duck-.06*peek, hips=-.04*duck,
-                    lift=-.025*duck, head=(0,-.045*duck,-.15*duck+.08*peek),
-                    look=(.20*duck-.13*peek,0,.20*scan),
-                    ears=((-.55*duck,-.30*duck),(-.55*duck,.30*duck)),
-                    tail=tail_pose(max(duck,peek),(-.40,.22,.34,.25),.04*scan))
     if state == 'eating':
         meal = hold(t,.15,.30,.71,.83)
         swallow = accent(t,.72,.79,.88)
@@ -288,10 +292,11 @@ def performance(state, t):
                     ears=((.16*meal,-.12*meal),(.12*meal,.16*meal)),
                     tail=tail_pose(meal,(-.85,.07,.17,.20),.025*swallow))
     if state == 'wash':
-        wipe = hold(t,.10,.28,.69,.93)
-        stroke = accent(t,.28,.39,.52)+accent(t,.55,.65,.79)
-        return dict(chest=.035*wipe, roll=-.035*stroke,
-                    head=(-.028*stroke,-.018*wipe,0), look=(.035*stroke,-.08*stroke,-.045*wipe),
-                    ears=((.12*wipe,-.20*stroke),(.08*wipe,.06*wipe)),
-                    tail=tail_pose(wipe,(-.65,-.08,.12,.23)))
+        lick = accent(t, .12, .26, .42)
+        stroke = hold(t, .35, .61, .65, .85)
+        fold = hold(t, .51, .64, .69, .87)
+        return dict(chest=.065*lick, roll=-.045*stroke,
+                    head=(.055*stroke,-.035*lick,-.065*lick-.10*stroke),
+                    look=(.16*lick,-.31*stroke,.09*lick),
+                    ears=((.05*stroke,0),(.32*fold,.48*fold)), squint=1-.72*stroke)
     return None

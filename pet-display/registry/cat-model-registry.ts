@@ -91,6 +91,7 @@ export function createRoomActivitySegment(animationId: CatRoomAnimation, reverse
   });
 }
 export function createPuzzleReactionSegment(animationId: PuzzleCatReaction, brief = false): PetMediaSegment {
+  if (brief && animationId === "puzzleHighPaw") return modelSegment("puzzleHighPawBrief", { loop: false });
   const segment = modelSegment(animationId, { loop: false });
   if (brief && segment.model) segment.model.rate = segment.model.duration / .75;
   return segment;
