@@ -91,6 +91,25 @@ def performance(state, t):
     t = max(0, min(1, t))
     if t == 1 and state in ('idle', 'idle2', 'blinkIdle', 'sit', 'blinkSit', 'waiting', 'sad', 'cry', 'angryCute'):
         t = 0
+    if state in ('sniff', 'lookUp'):
+        listen = hold(t, .01, .13, .62, .88)
+        reach = hold(t, .09, .34, .64, .91)
+        breaths = accent(t, .32, .39, .46) + .8*accent(t, .48, .55, .63)
+        high = state == 'lookUp'
+        return dict(plant=True, chest=(-.09 if high else .12)*reach,
+                    back=-.045*reach, head=(0, -.08*reach-.04*breaths,
+                    (.09 if high else -.16)*reach-.016*breaths),
+                    look=((-.36 if high else .31)*reach+.04*breaths, .055*reach, 0),
+                    ears=((.25*listen, 0), (.20*listen, 0)),
+                    squint=1-.85*accent(t, .72, .81, .92),
+                    tail=tail_pose(reach, (-.21, -.11, .26, .36), .08))
+    if state == 'petLean':
+        lean = hold(t, .02, .30, .63, .97)
+        blink = hold(t, .22, .43, .53, .78)
+        return dict(plant=True, side=.07*lean, chest=-.09*lean, roll=-.09*lean,
+                    head=(.10*lean, -.04*lean, .065*lean), look=(-.26*lean, -.18*lean, .10*lean),
+                    ears=((.12*lean, -.10*lean), (.09*lean, .14*lean)), squint=1-.92*blink,
+                    tail=tail_pose(lean, (-.17, -.08, .31, .40), .09))
     if state == 'sad':
         # A quiet, sustained low line. Only the long exhale moves the shoulders.
         sigh = accent(t, .10, .43, .88)

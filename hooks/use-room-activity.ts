@@ -1,3 +1,4 @@
+import type { PawObjectTarget } from '@/utils/native-paw-contact';
 import type { CatCommandAttention } from '@/utils/native-cat-expression';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { WorldPeriod } from '@/utils/world-clock';
@@ -12,6 +13,7 @@ import {
   buildRoomExit,
   buildRoomEntry,
   continueFurnitureExploration,
+  nextToyBeats,
   routeToSofa,
   roomOffsetToPoint,
   roomActivityStepKey,
@@ -100,8 +102,8 @@ export function useRoomActivity(
     }
   }, [awardMealBites]);
   const exitMotion = useRef<CatTravelMotion | undefined>(undefined);
-  const nativeAdvance = useRef<((key: string, position: Vec3, motion?: CatTravelMotion) => void) | null>(null);
-  const completeNativeStep = useCallback((key: string, position: Vec3, motion?: CatTravelMotion) => nativeAdvance.current?.(key, position, motion), []);
+  const nativeAdvance = useRef<((key: string, position: Vec3, motion?: CatTravelMotion, toy?: PawObjectTarget) => void) | null>(null);
+  const completeNativeStep = useCallback((key: string, position: Vec3, motion?: CatTravelMotion, toy?: PawObjectTarget) => nativeAdvance.current?.(key, position, motion, toy), []);
   const queuedPlan = useRef<RoomActivityPlan | null>(null);
   const latestOptions = useRef(options);
   const liveWorld = useRef(options.nativeWorld);
@@ -255,11 +257,15 @@ export function useRoomActivity(
         return;
       }
       const room = latestOptions.current;
+      const startedAt = Date.now() - elapsed * 1000;
       if (liveWorld.current) {
+        // A resumed swat keeps the identity of any impulse it already delivered.
+        const contactKey = step.toyBeat === 'firstSwat'
+          ? step.native?.contactKey ?? roomActivityStepKey({ plan, stepIndex, startedAt }) : undefined;
         step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length || step.native.brushSide !== undefined)) ? { ...step } :
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
-        step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion && !step.hold };
+        step.native = { ...step.native!, contactKey, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion && !step.hold };
         const nextStep=plan.steps[stepIndex+1];
         if(step.native.walkAfterLanding && nextStep && !reduceMotion && !elapsed) {
           const landing=step.native.path[step.native.path.length-1];
@@ -327,7 +333,7 @@ export function useRoomActivity(
         if (step.objectPosition) { objectX.set(step.objectPosition.x); objectY.set(step.objectPosition.y); }
         visibleStep = { ...step, animation: undefined };
       }
-      const next = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? visibleStep : item) }, stepIndex, startedAt: Date.now() - elapsed * 1000 };
+      const next = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? visibleStep : item) }, stepIndex, startedAt };
       running.current = next;
       setState(next);
       const eating = plan.kind === 'bowlEat' && step.mood === 'eating' && !step.native?.blocked;
@@ -345,7 +351,7 @@ export function useRoomActivity(
           }
         }
       }
-      const advanceStep = () => {
+      const advanceStep = (toy?: PawObjectTarget) => {
         if (stopped || running.current !== next) return;
         for (const biteTimer of biteTimers) clearTimeout(biteTimer);
         if (eating) awardMealBites(biteOffset + FEED_BITES_PER_MEAL);
@@ -365,6 +371,15 @@ export function useRoomActivity(
           running.current = { plan: { ...next.plan, steps: next.plan.steps.map((item, index) => index === stepIndex ? landedStep : item) }, stepIndex, startedAt: Date.now() };
           setRequest(current => ({ id: (current?.id ?? 0) + 1, ...kind }));
         } else {
+          const world = liveWorld.current;
+          if (step.toyBeat && !reduceMotion && roomVisible && world && nativePosition.current
+            && toy && toy.instanceId === plan.targetInstanceId && world.objects.some(o => o.instanceId === toy.instanceId && o.movable)) {
+            liveWorld.current = updateNativeObjectPosition(world, toy.instanceId, toy.position);
+            const extra = nextToyBeats(step, step.native?.contactKey ?? roomActivityStepKey(next), toy, nativePosition.current, liveWorld.current, room.petSize);
+            const steps = [...next.plan.steps.slice(0, stepIndex + 1), ...extra, ...next.plan.steps.slice(stepIndex + 1)];
+            runStep({ ...next.plan, steps }, stepIndex + 1);
+            return;
+          }
           const exploration = !reduceMotion && roomVisible && nativePosition.current
             ? continueFurnitureExploration({ ...latestOptions.current, nativeWorld: liveWorld.current }, next,
               nativePosition.current, turn.current) : null;
@@ -372,7 +387,7 @@ export function useRoomActivity(
           else runStep(next.plan, stepIndex + 1);
         }
       };
-      nativeAdvance.current = step.native?.awaitCompletion ? (key, position, motion) => {
+      nativeAdvance.current = step.native?.awaitCompletion ? (key, position, motion, toy) => {
         if (stopped || !running.current || roomActivityStepKey(running.current) !== key) return;
         if (!hasNativeArrived(position, step.native!.path.at(-1)!)) return;
         // Use the exact rendered arrival, rather than the last throttled UI anchor.
@@ -383,7 +398,7 @@ export function useRoomActivity(
         nativePosition.current = position;
         exitMotion.current=motion;
         nativeAdvance.current = null;
-        advanceStep();
+        advanceStep(toy);
       } : null;
       if (!step.hold && !step.native?.awaitCompletion)
         timer = setTimeout(advanceStep, reduceMotion && plan.kind !== 'bowlEat' ? 600 : Math.max(0, stepDuration - elapsed * 1000));
@@ -423,7 +438,7 @@ export function useRoomActivity(
     const startIdle = () => {
       if (reduceMotion || !roomVisible) return;
       const plan = planActivity(latestOptions.current);
-      if (plan) startPlan(plan);
+      if (plan) startPlan({ ...plan, userRequested: false });
       else timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
     };
     const current = running.current;

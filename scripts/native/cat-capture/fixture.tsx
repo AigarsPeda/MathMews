@@ -9,6 +9,7 @@ import type { PuzzleCatReaction } from '@/constants/puzzle-cat-reactions';
 import { ROOM_CAT_SIZE, ROOM_OBJECT_SCALE } from '@/constants/room-scale';
 import { moderateScale } from '@/utils/scale';
 import type { PlacedDecoration, PlacedToy } from '@/types/game';
+import type { PawObjectTarget } from '@/utils/native-paw-contact';
 import type { WorldClock } from '@/utils/world-clock';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -124,11 +125,11 @@ function Capture({ interactive = false, run, port, coat = 'orange', period = 'da
   const onContact = useCallback((position: Vec3, elapsed?: number, key?: string) => {
     controls.current.updateNativeHeight(position, elapsed, key);
   }, []);
-  const onObject = useCallback((id: string, point: { x: number; y: number }, center?: Vec3, settled?: boolean) => {
+  const onObject = useCallback((id: string, _point: { x: number; y: number }, center?: Vec3) => {
     if (center) controls.current.updateObjectPosition(id, center);
   }, []);
-  const onComplete = useCallback((key: string, position: Vec3, motion?: import('@/utils/native-cat-locomotion').CatTravelMotion) => {
-    emit('native-complete', { key, position, motion }); controls.current.completeNativeStep(key, position, motion);
+  const onComplete = useCallback((key: string, position: Vec3, motion?: import('@/utils/native-cat-locomotion').CatTravelMotion, toy?: PawObjectTarget) => {
+    emit('native-complete', { key, position, motion, toy }); controls.current.completeNativeStep(key, position, motion, toy);
   }, [emit]);
   return <View style={{ flex: 1, backgroundColor: '#FFF5EB' }}>
     <Text style={{ position: 'absolute', top: interactive ? 10 : 65, left: 18, color: '#51473D', fontSize: 13 }}>{`${interactive ? 'Cat preview' : 'Capture QA'} · ${coat} · ${period} · ${zoom}×`}</Text>

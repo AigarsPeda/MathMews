@@ -197,12 +197,15 @@ const shelfWorld=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale
  {decorationId:'livingShelvingA',instanceId:'shelf',offset:{x:0,y:0}},
  {decorationId:'sofaA',instanceId:'sofa',offset:{x:.2,y:0}}]});
 const shelf=shelfWorld.objects.find(o=>o.instanceId==='shelf');
-const pickContext={tapToMove:false,movingItem:{kind:'decoration',instanceId:'shelf'},editingObject:{value:shelf},
+const pickContext={placementDraft:undefined,tapToMove:false,movingItem:{kind:'decoration',instanceId:'shelf'},editingObject:{value:shelf},
  nativeWorld:shelfWorld,selectedRoomItemAtPoint,viewport:{width:390,height:420},zoom:1,pickNativeItem:async()=> 'sofa'};
 const pickEditing=vm.runInNewContext(ts.transpileModule(`(${pickerSource})`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText,pickContext);
 const shelfCenter=projectWorld(shelf.min.map((v,i)=>(v+shelf.max[i])/2),390);
 assert.equal(await pickEditing({x:shelfCenter.x+195,y:shelfCenter.y+210}),'shelf','The selected shelf remains draggable through the foreground sofa');
 assert.equal(await pickEditing({x:-500,y:-500}),'sofa','Touches outside selection still use native geometry');
+pickContext.placementDraft = { item: pickContext.movingItem };
+assert.equal(await pickEditing({x:-500,y:-500}), undefined, 'Tapping a destination preserves the new item, even over a different object');
+assert.equal(await pickEditing({x:shelfCenter.x+195,y:shelfCenter.y+210}), 'shelf', 'The staged item can still be dragged');
 pickContext.tapToMove=true;
 assert.equal(await pickEditing({x:shelfCenter.x+195,y:shelfCenter.y+210}),undefined,'Tap destination mode does not capture furniture');
 // Use a physically clear but visually occluded fixture. The low shelf is on

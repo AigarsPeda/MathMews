@@ -21,6 +21,7 @@ function modelSegment(animationId: CatAnimationId, options: {
 }
 const MOOD_ANIMATIONS: Record<PetAnimationState, CatAnimationId> = {
   idle: "idle",
+  petLean: "petLean",
   excited: "excited",
   dancing: "dance",
   eating: "eating",
@@ -47,6 +48,7 @@ const MOOD_OPTIONS: Partial<Record<PetAnimationState, {
   resting: { loop: true },
   lyingDown: { loop: false },
   incorrect: { loop: false },
+  petLean: { loop: false },
   excited: { loop: false },
   dancing: { loop: false },
   eating: { loop: false },
@@ -113,7 +115,7 @@ export const catModelRegistry: PetMediaRegistry = {
   petType: "cat",
   mediaKind: "model",
   oneShotStates: ONE_SHOT_ANIMATIONS,
-  pickExcitedMood: () => "excited",
+  pickPettingMood: () => "petLean",
   getSegment: mood => modelSegment(MOOD_ANIMATIONS[mood], MOOD_OPTIONS[mood]),
   getScenario: id => scenarios[id],
 };

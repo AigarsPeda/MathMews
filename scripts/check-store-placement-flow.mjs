@@ -131,3 +131,17 @@ assert.ok(render().some(node=>node.props?.accessibilityRole==='alert' && node.pr
 finishPurchase('queued');await firstTap;
 assert.equal(events.filter(event=>event[0]==='buy').length,1);
 console.log('Verified immediate purchase feedback and repeat-tap protection while persistence is pending.');
+
+setup();
+game.progress.toysUnlocked = ['blueBall'];
+game.progress.toyQuantities = { blueBall: 1 };
+game.pet.homeRooms = { bedroom: { placedToys: [{ toyId: 'blueBall', instanceId: 'bedroom-ball' }] } };
+let ball = card('toys', 'blueBall');
+assert.equal(ball.props.storedCount, 0, 'A copy placed in another room is unavailable');
+ball.props.onPreview();
+assert.equal(render().find(node => node.type === 'StorePreviewSheet').props.onPlace, undefined);
+game.progress.toyQuantities = { blueBall: 2 };
+ball = card('toys', 'blueBall');
+assert.equal(ball.props.storedCount, 1);
+render().find(node => node.type === 'StorePreviewSheet').props.onPlace();
+assert.deepEqual(events.map(event => event[0]), ['entry', 'route'], 'Placing a spare from an open preview never starts a purchase');

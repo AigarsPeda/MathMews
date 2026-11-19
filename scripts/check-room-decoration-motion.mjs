@@ -35,7 +35,7 @@ const mocks = {
   '@/hooks/use-room-camera': { useRoomCamera: () => ({ x: shared(), y: shared(), scale: shared(cameraZoom), zoom: cameraZoom, gesture: 'room-gesture', reset: () => { cameraZoom = 1; } }) },
   'react-native-gesture-handler': { GestureDetector: 'GestureDetector' },
   '@/pet-display/registry/media-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: (options, enabled, _interaction, _x, _y, _onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
+  '@/hooks/use-room-activity': { useRoomActivity: (options, _fullness, enabled, _interaction, _x, _y, _onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
     activityOptionsForTest = options;
     editingReady = onStopped;
     roomActivityEnabled = enabled;

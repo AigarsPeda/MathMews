@@ -157,48 +157,6 @@ const styles = StyleSheet.create({
   directionTextSelected: {
     color: "#FFFFFF",
   },
-  lockCard: {
-    width: "100%",
-    alignItems: "center",
-    gap: moderateScale(8),
-    padding: moderateScale(20),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.background,
-  },
-  lockEmoji: {
-    fontSize: moderateScale(40),
-  },
-  lockText: {
-    fontWeight: "600",
-    textAlign: "center",
-    color: GameColors.text,
-    fontSize: moderateScale(15),
-    lineHeight: moderateScale(22),
-  },
-  lockPrice: {
-    fontWeight: "800",
-    color: GameColors.coinText,
-    fontSize: moderateScale(18),
-  },
-  buyBtn: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: moderateScale(52),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.primary,
-  },
-  buyBtnText: {
-    color: "#FFFFFF",
-    fontWeight: "800",
-    fontSize: moderateScale(17),
-  },
-  cantBuy: {
-    fontWeight: "600",
-    textAlign: "center",
-    fontSize: moderateScale(14),
-    color: GameColors.textMuted,
-  },
   closeBtn: {
     width: "100%",
     alignItems: "center",

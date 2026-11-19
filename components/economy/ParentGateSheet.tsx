@@ -146,11 +146,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: moderateScale(4),
   },
-  choices: {
-    width: "100%",
-    gap: moderateScale(10),
-    marginTop: moderateScale(4),
-  },
   choiceBtn: {
     width: "100%",
     minHeight: moderateScale(52),
@@ -161,10 +156,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: moderateScale(16),
-  },
-  choiceBtnPressed: {
-    opacity: 0.9,
-    borderColor: GameColors.primary,
   },
   choiceText: {
     fontSize: moderateScale(20),

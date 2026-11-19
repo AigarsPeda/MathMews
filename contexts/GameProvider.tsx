@@ -1,4 +1,4 @@
-import { roomFurnitureVersion, applyRoomObjectEdits, createRoomPlacementDraft, storedRoomItems, type RoomObjectEdit, type RoomPlacementDraft } from '@/utils/room-edit';
+import { roomFurnitureVersion, applyRoomObjectEdits, createRoomPlacementDraft, houseFurnitureInventory, storedRoomItems, type RoomObjectEdit, type RoomPlacementDraft } from '@/utils/room-edit';
 import { applyLearningReview } from "@/utils/learning-review";
 import type { LearningAttemptContext } from "@/types/learning";
 import { isOpenableDecorationId } from '@/constants/item-interactions';
@@ -60,19 +60,9 @@ import {
   isRoomUnlocked,
 } from "@/utils/room-store";
 import {
-  isToyUnlocked,
-  getToyOwnedCount,
-} from "@/utils/toy-store";
-import {
-  isDecorationUnlocked,
-  getDecorationOwnedCount,
-} from "@/utils/decoration-store";
-import {
   isSkinUnlocked,
 } from "@/utils/skin-store";
 import {
-  countPlacedDecorations,
-  countPlacedToys,
   findPlacedDecorationByInstance,
   findPlacedToyByInstance,
   removeOnePlacedDecoration,
@@ -749,19 +739,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
 
     const current = saveRef.current;
-    const unlocked = current.progress.toysUnlocked as CatToyId[];
-
-    if (!isToyUnlocked(resolvedId, unlocked)) {
-      return false;
-    }
-
-    const ownedCount = getToyOwnedCount(resolvedId, current.progress);
-    const placedCount = countPlacedToys(resolvedId, current.pet.placedToys);
-    if (placedCount >= ownedCount) {
-      return false;
-    }
-
-    return true;
+    return (houseFurnitureInventory(current.pet, current.progress).get(`toy:${resolvedId}`)?.count ?? 0) > 0;
   }, []);
 
   const removeToyFromRoom = useCallback((toyId: CatToyId, instanceId?: string) => {
@@ -803,22 +781,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
 
     const current = saveRef.current;
-    const unlocked = current.progress.decorationsUnlocked as CatDecorationId[];
-
-    if (!isDecorationUnlocked(resolvedId, unlocked)) {
-      return false;
-    }
-
-    const ownedCount = getDecorationOwnedCount(resolvedId, current.progress);
-    const placedCount = countPlacedDecorations(
-      resolvedId,
-      current.pet.placedDecorations,
-    );
-    if (placedCount >= ownedCount) {
-      return false;
-    }
-
-    return true;
+    return (houseFurnitureInventory(current.pet, current.progress).get(`decoration:${resolvedId}`)?.count ?? 0) > 0;
   }, []);
 
   const removeDecorationFromRoom = useCallback(
@@ -861,7 +824,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const rotatePlacedDecoration = useCallback((instanceId: string) => {
     const current = saveRef.current;
-    const placed = findPlacedDecorationByInstance(
+    const initial = placementDraft?.draft.initial;
+    const staged = initial && 'decorationId' in initial && initial.instanceId === instanceId ? initial : undefined;
+    const placed = staged ?? findPlacedDecorationByInstance(
       current.pet.placedDecorations,
       instanceId,
     );
@@ -883,6 +848,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const currentIndex = placed.rotationIndex ?? 0;
     const nextIndex = getNextRotationIndex(currentIndex, rotationCount);
 
+    if (staged) {
+      setPlacementDraft(active => {
+        const item = active?.draft.initial;
+        if (!active || !item || !('decorationId' in item) || item.instanceId !== instanceId) return active;
+        const rotationIndex = getNextRotationIndex(item.rotationIndex ?? 0, rotationCount);
+        return { ...active, draft: { ...active.draft, initial: { ...item, rotationIndex } } };
+      });
+      return true;
+    }
+
     setSave({
       ...current,
       pet: {
@@ -896,7 +871,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, [setSave]);
+  }, [placementDraft, setSave]);
 
   const flipPlacedDecorationWall = useCallback((instanceId: string) => {
     const staged = placementDraft?.draft.initial;

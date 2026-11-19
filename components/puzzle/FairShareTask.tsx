@@ -67,7 +67,4 @@ const styles = StyleSheet.create({
   wrap: {
     gap: moderateScale(8),
   },
-  choices: {
-    gap: moderateScale(12),
-  },
 });

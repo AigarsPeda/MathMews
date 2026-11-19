@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
   wrap: { gap: moderateScale(8) },
   instructions: { fontSize: moderateScale(15), lineHeight: moderateScale(22), color: GameColors.text },
   status: { fontSize: moderateScale(16), fontWeight: "700", color: "#5D408C", textAlign: "center" },
-  goal: { fontSize: moderateScale(20), fontWeight: "800", color: GameColors.text, textAlign: "center" },
   tiles: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: moderateScale(10) },
   tile: { minWidth: moderateScale(64), minHeight: moderateScale(60), padding: moderateScale(12), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, justifyContent: "center", alignItems: "center" },
   number: { fontSize: moderateScale(23), fontWeight: "800", color: GameColors.text, textAlign: "center" },

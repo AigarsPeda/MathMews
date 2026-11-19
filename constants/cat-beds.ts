@@ -79,6 +79,10 @@ export {
 
 export const DEFAULT_BED_SCALE = 1.3;
 
+export function getBedPlacementScale(bedId: string | undefined): number {
+  return bedId && isCatPetBedId(bedId) ? .8 : DEFAULT_BED_SCALE;
+}
+
 export function getEquippedBedScale(scale: number | undefined): number {
   if (typeof scale !== "number" || !Number.isFinite(scale)) {
     return DEFAULT_BED_SCALE;

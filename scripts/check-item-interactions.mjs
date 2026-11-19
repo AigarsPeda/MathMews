@@ -100,6 +100,20 @@ for(const id of ['bedroomSlippers','poster1','booksPile','officeCalculator','car
  const plan=buildRoomActivity(options,0,'investigate','target');assert.ok(plan);
  const step=prepareNativeStep(plan,plan.steps[0],catScreenPoint(options.nativeWorld.home,options.nativeWorld),options.nativeWorld,FLOOR_Y);
  assert.equal(step.native.blocked,false,id+' can be investigated');assert.equal(isFree(step.native.path.at(-1),options.nativeWorld),true);
+ const arrival = step.native.path.at(-1);
+ const inspection = prepareNativeStep(plan, plan.steps[1], catScreenPoint(arrival, options.nativeWorld), options.nativeWorld, arrival[1]);
+ if (id === 'booksPile' || id === 'bedroomSlippers') assert.equal(inspection.animation, 'sniff', id);
+ if (id === 'poster1' || id === 'bathroomMirror') assert.equal(inspection.animation, 'lookUp', id);
+ assert.equal(inspection.native.distance, 0, 'Inspection keeps the paws at the safe approach');
+ if (id === 'booksPile') {
+   const world = options.nativeWorld, book = world.objects[0];
+   const midpoint = arrival.map((v, i) => (v + book.position[i]) / 2);
+   const blocker = {...book, instanceId:'blocker', modelId:'sofaA', solid:true, movable:false,
+     min:[midpoint[0]-.10, FLOOR_Y, midpoint[2]-.10], max:[midpoint[0]+.10, FLOOR_Y+1, midpoint[2]+.10], position:midpoint};
+   const obstructed = {...world, objects:[...world.objects, blocker]};
+   const response = prepareNativeStep(plan, plan.steps[1], catScreenPoint(arrival, world), obstructed, arrival[1]);
+   assert.equal(response.animation, 'lookUp', 'A blocked line to a low object keeps the muzzle back');
+ }
 }
 console.log('Verified passive items use a reachable floor approach without walking through furniture.');
 

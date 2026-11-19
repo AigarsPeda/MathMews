@@ -1,3 +1,4 @@
+import type { PawObjectTarget } from '@/utils/native-paw-contact';
 import { CAT_SLEEP_POSES, sleepTransitionTiming, type CatSleepPose } from '@/constants/cat-sleep';
 import type { CatGait } from '@/utils/native-cat-gaits';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
@@ -42,6 +43,7 @@ export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel" | "
 export type RoomActivityCommand = { id: number; kind: RoomActivityKind; instanceId?: string; interactionAt?: number; ambientPeriod?: WorldPeriod };
 export type RoomActivityStep = {
   native?: NativeTravel;
+  toyBeat?: 'firstSwat' | 'watch' | 'wait';
   sleepPose?: CatSleepPose;
   wakeToSit?: boolean;
   /** Keep the same passage clearance when leaving a kitchen interaction. */
@@ -142,6 +144,23 @@ function clampCatPoint(point: RoomPoint, room: RoomActivityOptions): RoomPoint {
 function walkTo(from: RoomPoint, position: RoomPoint, petSize: number): RoomActivityStep {
   const { durationMs } = getCatWalkMotion(from, position, petSize);
   return { position, mood: "idle", animation: "walk", durationMs, moveMs: durationMs };
+}
+
+// Decide once per rendered beat. Unsuccessful swats and balls still moving
+// after the second look fall through to the existing return-home step.
+export function nextToyBeats(step: RoomActivityStep, key: string, toy: PawObjectTarget,
+  cat: Vec3, world: NativeRoomWorld, petSize: number): RoomActivityStep[] {
+  const position = catScreenPoint(cat, world);
+  const watch = (toyBeat: 'watch' | 'wait', durationMs: number): RoomActivityStep =>
+    ({ position, mood: step.mood, animation: 'idle', toyBeat, durationMs });
+  if (step.toyBeat === 'firstSwat') return toy.contactKey === key ? [watch('watch', 450)] : [];
+  if (step.toyBeat !== 'watch' && step.toyBeat !== 'wait') return [];
+  const separation = Math.hypot(toy.position[0] - cat[0], toy.position[2] - cat[2]) - toy.radius;
+  const tap: RoomActivityStep = { position, mood: step.mood, animation: 'batToy', animationFps: 36, durationMs: 48 / 36 * 1000 };
+  if (separation <= .95 * world.catScale) return [tap];
+  if (!toy.settled) return step.toyBeat === 'watch' ? [watch('wait', 1000)] : [];
+  const destination = catScreenPoint([toy.position[0], FLOOR_Y, toy.position[2]], world);
+  return [{ ...walkTo(position, destination, petSize), gait: 'trot' }, { ...tap, position: destination }];
 }
 
 export function buildRoomEntry(room: RoomActivityOptions): RoomActivityPlan | null {
@@ -474,7 +493,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       const position = clampCatPoint({ x: center.x, y: center.y + size * .4 }, room);
       candidates.push({ kind: 'investigate', targetInstanceId: item.instanceId, steps: [
         walkTo(home, position, room.petSize),
-        { position, mood: 'idle', animation: 'idle2', durationMs: 4500 },
+        { position, mood: 'idle', animation: 'sniff', durationMs: 2500 },
         { ...walkTo(position, home, room.petSize), returnHome: true },
       ] });
     }
@@ -491,6 +510,12 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     const addPlay = (instanceId: string, kind: "toy" | "decoration", center: RoomPoint, yarn: boolean, rolls: boolean) => {
       const position = clampCatPoint({ x: center.x - room.petSize * 0.22, y: center.y - room.petSize * 0.28 }, room);
       const steps = [walkTo(home, position, room.petSize)];
+      if (rolls && room.nativeStepCompletion !== false && room.nativeWorld?.objects.some(o => o.instanceId === instanceId && o.movable)) {
+        candidates.push({ kind: 'toyPlay', targetInstanceId: instanceId, objectKind: kind, objectStart: center,
+          steps: [...steps, { position, mood: yarn ? 'playYarn' : 'playBall', animation: 'batToy', durationMs: 2000, toyBeat: 'firstSwat' },
+            { ...walkTo(position, home, room.petSize), returnHome: true }] });
+        return;
+      }
       let catPosition = position;
       // Each paw contact sends the placed object along the floor. Cat follows it.
       for (const direction of [1, -1, 1, -1]) {

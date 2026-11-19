@@ -18,6 +18,47 @@ const world={width:390,height:420,catScale:.5,radius:.28,home:[0,floor,0],object
   instanceId:'mouse',modelId:'toy-mouse',movable:true,solid:false,collidable:true,position:[-.5,floor,1.5],heading:0,scale:1,
   min:[-.6,floor,1.4],max:[-.4,floor+.15,1.6],
 }]};
+function checkDirectedLooks(coat) {
+  openSkin(coat);
+  const bowl = {...world.objects[0], modelId:'bowlTan', movable:false, position:[-.7,floor,.6], max:[-.6,floor+.1,.7]};
+  function trace(clip, options, frames) {
+    resetCatActor();
+    render({active:true, world:{...world, objects:[bowl]}, playback:{kind:'segment', segment:{assetKey:clip, loop:clip==='sad'}}, ...options});
+    return Array.from({length:frames}, () => {
+      drawCat(1/60);
+      const {position, attentionYaw, attentionPitch} = actorState();
+      return {position:[...position], yaw:attentionYaw, pitch:attentionPitch};
+    });
+  }
+  const hungry = trace('sad', {hungry:true}, 130);
+  assert.ok(hungry.some(frame => frame.yaw < -.15), 'Hungry cat turns toward the placed bowl');
+  assert.ok(hungry.every(frame => distance(frame.position, world.home) < 1e-7), 'Food glance keeps the paws in place');
+  for (const options of [{hungry:false}, {hungry:true, reduceMotion:true}, {hungry:true, world:{...world, objects:[]}}])
+    assert.ok(trace('sad', options, 130).every(frame => Math.abs(frame.yaw) < 1e-6), 'Food glance requires hunger, a feeder and enabled motion');
+  const landing = [0,floor+.5,1];
+  const travel = {path:[world.home,landing], duration:1, distance:1, jump:true, heading:0};
+  const ordinary = trace('jumpOn', {travel}, 75);
+  const voluntary = trace('jumpOn', {travel:{...travel, voluntaryPerch:landing}}, 75);
+  assert.ok(voluntary.slice(0,16).some((frame,i) => frame.pitch < ordinary[i].pitch-.05), 'A voluntary jump looks up during preparation');
+  assert.ok(voluntary.every((frame,i) => distance(frame.position, ordinary[i].position)<1e-7), 'The glance preserves the jump trajectory');
+  for (const reduceMotion of [false, true]) {
+    resetCatActor();
+    let completed = 0;
+    render({active:true, world, reduceMotion, onAnimationComplete:() => completed++,
+      playback:{kind:'segment', segment:{assetKey:'petLean', loop:false}}});
+    let firstEye, deepestBlink = Infinity;
+    for (let i=0; i<165; i++) {
+      drawCat(1/60);
+      const eye = determinant(actorBones()['eye.L']);
+      firstEye ??= eye;
+      deepestBlink = Math.min(deepestBlink, eye);
+      if (reduceMotion) assert.ok(Math.abs(eye-firstEye)<1e-7, 'Petting holds its expression under Reduce Motion');
+    }
+    if (!reduceMotion) assert.ok(deepestBlink < firstEye*.35, 'The lean includes a slow blink');
+    assert.equal(completed, 1, 'Petting releases the care action once');
+  }
+}
+for (const coat of coats) checkDirectedLooks(coat);
 for(const coat of coats)for(const fps of rates) {
   openSkin(coat);resetCatActor();
   const props={active:true,world,activityKey:'held-sit',playback:{kind:'segment',segment:{assetKey:'sit',loop:false}},

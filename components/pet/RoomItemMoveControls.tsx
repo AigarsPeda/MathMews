@@ -15,6 +15,12 @@ const DIRECTIONS = [
 export type RoomMoveDirection = typeof DIRECTIONS[number][0];
 
 type Props = {
+  draft?: boolean;
+  sizePercent?: number;
+  canGrow?: boolean;
+  canShrink?: boolean;
+  onDefaultSize?: () => void;
+  onQuickTurn?: () => void;
   pending?: boolean;
   placementAllowed?: boolean;
   tapToMove?: boolean;
@@ -37,7 +43,7 @@ type Props = {
 
 /** Dragging is primary; size and precise movement each get their own small tool. */
 export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDone, onRotate, onFaceWall, feedback, feedbackError,
-  pending, placementAllowed = true, tapToMove, onPlace, onCancel, onTapMove, onReplace, onPlaceAnother }: Props) {
+  draft, sizePercent, canGrow, canShrink, onDefaultSize, onQuickTurn, pending, placementAllowed = true, tapToMove, onPlace, onCancel, onTapMove, onReplace, onPlaceAnother }: Props) {
   const { t } = useTranslation();
   const [tool, setTool] = useState<"size" | "move" | null>(null);
   const bigger = actions.find(action => action.id === "size-up");
@@ -61,17 +67,18 @@ export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDo
       {tool !== "size" && picture && <View style={styles.picture} pointerEvents="none" accessible={false}
         accessibilityElementsHidden importantForAccessibility="no-hide-descendants">{picture}</View>}
       <Text style={styles.title}>{name}</Text>
+      {tool === "size" && sizePercent !== undefined && <Text style={styles.placeText}>{sizePercent}%</Text>}
       {tool === "size" ? backButton : <Pressable accessibilityRole="button" accessibilityLabel={t(pending ? "home.placeStoredItem" : "home.finishMoving", { name })}
         disabled={pending && !placementAllowed} accessibilityState={{ disabled: pending && !placementAllowed }}
         onPress={pending ? onPlace : onDone} style={({ pressed }) => [styles.place, pending && !placementAllowed && styles.disabled, pressed && styles.placePressed]}>
         <AppIcon name="check" size={20} style={{ tintColor: GameColors.card }} /><Text style={[styles.placeText, styles.placeLabel]}>{t(pending ? "home.placeHere" : "common.done")}</Text>
       </Pressable>}
     </View>
-    {tool !== "size" && <Text style={styles.hint}>{t(tapToMove ? "home.tapMoveHint" : "home.dragSelectedHint")}</Text>}
+    {tool !== "size" && <Text style={styles.hint}>{t(tapToMove ? "home.tapMoveHint" : draft ? "home.draftHint" : "home.dragSelectedHint")}</Text>}
     {feedback && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" numberOfLines={2} style={[styles.feedback, { color: feedbackError ? GameColors.primaryDark : GameColors.secondaryDark }]}>{feedback}</Text>}
     <View style={styles.actions}>
     {(pending || tapToMove) && onCancel && <Pressable accessibilityRole="button" onPress={onCancel} style={styles.back}>
-      <AppIcon name="undo" size={20}/><Text style={styles.placeText}>{t('common.cancel')}</Text>
+      <AppIcon name="undo" size={20}/><Text style={styles.placeText}>{t(draft ? 'home.keepStored' : 'common.cancel')}</Text>
     </Pressable>}
     {onReplace && <Pressable accessibilityRole="button" onPress={onReplace} style={styles.wall}>
       <AppIcon name="box" size={24}/><Text style={styles.wallText}>{t('home.replaceAction')}</Text>
@@ -89,18 +96,23 @@ export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDo
       </View>}
       <View style={styles.actions}>
         {tool === "size" ? <>
-          {smaller && button(smaller.label, "subtraction", smaller.onPress, smaller.disabled)}
-          {bigger && button(bigger.label, "addition", bigger.onPress, bigger.disabled)}
+          {smaller && button(smaller.label, "subtraction", smaller.onPress, canShrink === undefined ? smaller.disabled : !canShrink)}
+          {bigger && button(bigger.label, "addition", bigger.onPress, canGrow === undefined ? bigger.disabled : !canGrow)}
         </> : DIRECTIONS.map(([direction, icon]) => button(t("home.nudge" + direction), icon,
           () => onMove(direction), false, t("home.moveItem" + direction, { name })))}
       </View>
+      {tool === "size" && onDefaultSize && sizePercent !== undefined &&
+        <Pressable style={[styles.wall, sizePercent === 100 && styles.disabled]} accessibilityRole="button" disabled={sizePercent === 100} accessibilityState={{ disabled: sizePercent === 100 }} onPress={onDefaultSize}>
+          <Text style={styles.wallText}>{t('home.defaultSize')}</Text>
+        </Pressable>}
     </> : <View style={styles.actions}>
-      {turn && button(t("home.turnItem"), "rotate", turn)}
+      {turn && button(t(onQuickTurn ? "home.quickTurn" : "home.turnItem"), "rotate", onQuickTurn ?? turn)}
       {(bigger || smaller) && button(t("home.itemSize"), "addition", () => setTool("size"))}
-      {putAway && button(t("home.putAway"), "box", putAway.onPress, putAway.disabled)}
+      {!draft && putAway && button(t("home.putAway"), "box", putAway.onPress, putAway.disabled)}
       <RoomActionMenu style={styles.more} label={t("home.itemOptions", { name })}
         actions={[{ label: t("home.moveALittle"), icon: "arrow-right", onPress: () => setTool("move") },
-          ...(onTapMove ? [{ label: t('home.tapMove'), icon: 'arrow-right' as const, onPress: onTapMove }] : []),
+          ...(turn && onQuickTurn ? [{ label: t('home.turnPrecisely'), icon: 'rotate' as const, onPress: turn }] : []),
+          ...(onTapMove && !draft ? [{ label: t('home.tapMove'), icon: 'arrow-right' as const, onPress: onTapMove }] : []),
           ...(onPlaceAnother ? [{ label: t('home.placeAnother'), icon: 'addition' as const, onPress: onPlaceAnother }] : []), ...more]}>
         <View style={styles.action}>
           <AppIcon name="chevron-down" size={24} /><Text style={styles.actionText}>{t("home.moreItemTools")}</Text>

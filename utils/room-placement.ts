@@ -17,7 +17,7 @@ import {
   resolveDecorationPlacement,
 } from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
-import { getDefaultToyScale, getPlacedToyRotationIndex, resolveCatToyId } from "@/constants/cat-toys";
+import { getToyPlacementScale, getDefaultToyScale, getPlacedToyRotationIndex, resolveCatToyId } from "@/constants/cat-toys";
 import type { PlacedDecoration, PlacedToy, RoomItemOffset, RoomItemSupport } from "@/types/game";
 
 function normalizeSupport(value: unknown): RoomItemSupport | undefined {
@@ -235,6 +235,7 @@ export function appendPlacedToy(
     ...(placedToys ?? []),
     {
       toyId,
+      scale: getToyPlacementScale(toyId),
       instanceId: createPlacementInstanceId(),
       offset: defaultPlacementOffset((placedToys ?? []).length, "toy"),
     },

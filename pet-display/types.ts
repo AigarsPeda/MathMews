@@ -48,7 +48,7 @@ export type PetMediaRegistry = {
   petType: PetType;
   mediaKind: PetMediaKind;
   oneShotStates: readonly PetAnimationState[];
-  pickExcitedMood: () => PetAnimationState;
+  pickPettingMood: () => PetAnimationState;
   getSegment: (state: PetAnimationState) => PetMediaSegment;
   getScenario: (id: BuiltInPetScenarioId) => PetMediaScenario;
 };

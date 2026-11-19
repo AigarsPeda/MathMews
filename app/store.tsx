@@ -1,3 +1,4 @@
+import { houseFurnitureInventory } from '@/utils/room-edit';
 import { startDecorationTiming, markDecorationTiming } from '@/utils/decoration-timing';
 import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { getActiveStoreSales, type StoreSale } from "@/utils/store-catalog";
@@ -38,7 +39,6 @@ import type {
 } from "@/types/store";
 import {
   getDecorationStorePrice,
-  getDecorationOwnedCount,
   isDecorationUnlocked,
 } from "@/utils/decoration-store";
 import {
@@ -53,7 +53,6 @@ import {
 } from "@/utils/room-placement";
 import {
   getToyStorePrice,
-  getToyOwnedCount,
   isToyUnlocked,
 } from "@/utils/toy-store";
 import {
@@ -145,7 +144,22 @@ const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typ
   const equippedBedId = pet.bedId as CatBedId | undefined;
   const equippedSkinId = pet.catSkinId as CatSkinId | undefined;
   const placedToys = useMemo(() => pet.placedToys ?? [], [pet.placedToys]);
-  const { toyQuantities, decorationQuantities } = progress;
+  const { homeRoomId, homeRooms, placedToys: toys, placedDecorations: decorations, bedId } = pet;
+  const { bedsUnlocked, toysUnlocked, decorationsUnlocked, toyQuantities, decorationQuantities } = progress;
+  const inventory = useMemo(() => houseFurnitureInventory(
+    { homeRoomId, homeRooms, placedToys: toys, placedDecorations: decorations, bedId },
+    { bedsUnlocked, toysUnlocked, decorationsUnlocked, toyQuantities, decorationQuantities },
+  ), [homeRoomId, homeRooms, toys, decorations, bedId, bedsUnlocked, toysUnlocked, decorationsUnlocked, toyQuantities, decorationQuantities]);
+  const availabilityLabel = useCallback((kind: string, id: string) => {
+    const entry = inventory.get(`${kind}:${id}`);
+    if (!entry) return undefined;
+    if (entry.count > 0) return t('store.storageCount', { count: entry.count });
+    const locations = Array.from(entry.rooms, ([room, count]) => {
+      const name = t(`home.rooms.${room}`);
+      return count > 1 ? `${name} ×${count}` : name;
+    });
+    return locations.length ? t('store.roomLocation', { rooms: locations.join(', ') }) : undefined;
+  }, [inventory, t]);
   const placedDecorations = useMemo(() => pet.placedDecorations ?? [], [pet.placedDecorations]);
   const [activeTab, setActiveTab] = useState<StoreTab>(() => ({ livingRoom: "living", bedroom: "bedroom", bathroom: "bathroom", kitchen: "kitchen" } as const)[pet.homeRoomId ?? "livingRoom"]);
   const [ownedOnly, setOwnedOnly] = useState(false);
@@ -728,7 +742,8 @@ const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typ
           toyId={toyId}
           isOwned={owned}
           placedCount={countPlacedToys(toyId, placedToys)}
-          ownedCount={getToyOwnedCount(toyId, { toysUnlocked: unlockedToys, toyQuantities })}
+          storedCount={inventory.get(`toy:${toyId}`)?.count ?? 0}
+          availabilityLabel={availabilityLabel("toy", toyId)}
           canAfford={canAfford}
           onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), owned, onBuy: expectedPrice => handleBuyToy(toyId, expectedPrice) })}
           onBuy={() => handleBuyToy(toyId, price.kind === "coins" ? price.amount : 0)}
@@ -752,7 +767,8 @@ const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typ
           decorationId,
           placedDecorations,
         )}
-        ownedCount={getDecorationOwnedCount(decorationId, { decorationsUnlocked: unlockedDecorations, decorationQuantities })}
+        storedCount={inventory.get(`decoration:${decorationId}`)?.count ?? 0}
+        availabilityLabel={availabilityLabel("decoration", decorationId)}
         canAfford={canAfford}
         onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), owned, onBuy: expectedPrice => handleBuyDecoration(decorationId, expectedPrice) })}
         onBuy={() => handleBuyDecoration(decorationId, price.kind === "coins" ? price.amount : 0)}
@@ -762,7 +778,7 @@ const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typ
     );
   }, [activeTab, wallet.coins, unlockedRooms, unlockedSkins, unlockedBeds, unlockedToys,
     unlockedDecorations, equippedRoomId, equippedSkinId, equippedBedId, placedToys, placedDecorations,
-    toyQuantities, decorationQuantities, t, handleBuy, handleEquip, handleBuySkin, handleEquipSkin,
+    inventory, availabilityLabel, t, handleBuy, handleEquip, handleBuySkin, handleEquipSkin,
     handleBuyBed, handleEquipBed, handleRemoveBed, handleBuyToy, handlePlaceToy, handleRemoveToy,
     handleBuyDecoration, handlePlaceDecoration, handleRemoveDecoration]);
 
@@ -877,7 +893,14 @@ const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typ
           ))}
         </ScrollView>
       </AppBottomSheet> : null}
-      <StorePreviewSheet item={preview} pet={pet} coins={wallet.coins} onClose={() => setPreview(null)} onSaveGoal={() => {
+      <StorePreviewSheet item={preview}
+        owned={preview && ['toy', 'decoration', 'bed'].includes(preview.kind) ? inventory.has(`${preview.kind}:${preview.id}`) : preview?.owned}
+        availabilityLabel={preview ? availabilityLabel(preview.kind, preview.id) : undefined}
+        onPlace={preview && (inventory.get(`${preview.kind}:${preview.id}`)?.count ?? 0) > 0 ? () => {
+          if (preview.kind === 'toy') handlePlaceToy(preview.id as CatToyId);
+          if (preview.kind === 'decoration') handlePlaceDecoration(preview.id as CatDecorationId);
+          if (preview.kind === 'bed') handleEquipBed(preview.id as CatBedId);
+        } : undefined} pet={pet} coins={wallet.coins} onClose={() => setPreview(null)} onSaveGoal={() => {
         if (!preview) return;
         setProgress(current => ({ ...current, storeGoal: { kind: preview.kind, id: preview.id } }));
         setPreview(null);

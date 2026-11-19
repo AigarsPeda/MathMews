@@ -163,6 +163,18 @@ for (const [label, route] of [['home.a11ySolve', '/puzzles'], ['home.a11ySetting
 }
 console.log('Verified idle puzzle/shop preloading on each home focus, cancellation and navigation without a synchronous game-state update.');
 
+for (const asleep of [false, true]) {
+  const test = home({ happiness:40, asleep });
+  test.stage.onPetPress();
+  const happiness = game.pet.stats.happiness;
+  test.stage.onPetPress();
+  assert.equal(test.commands.length, 1, 'A rapid second touch cannot replay the petting action before render');
+  assert.equal(test.commands[0].type, 'petTap');
+  assert.equal(test.commands[0].wasAsleep, asleep);
+  assert.ok(happiness > 40);
+  assert.equal(game.pet.stats.happiness, happiness, 'One petting reaction earns one boost');
+}
+
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {
     const test = home({ happiness, coins });

@@ -62,7 +62,8 @@ assert.deepEqual(Array.from(buildBoxPlaySequence()), ['box1','box2','box3']);
 const boxStory = createBoxPlayScenario(buildBoxPlaySequence());
 assert.equal(boxStory.steps.length, 3);
 for (const step of boxStory.steps) assert.equal(step.loop, false);
-for (const reaction of ['correct','incorrect','eating','excited','playBall','playYarn','playFeather']) assert.equal(registry.getSegment(reaction).loop, false);
+assert.equal(registry.pickPettingMood(), 'petLean');
+for (const reaction of ['correct','incorrect','eating','excited','petLean','playBall','playYarn','playFeather']) assert.equal(registry.getSegment(reaction).loop, false);
 assert.equal(registry.mediaKind, 'model');
 assert.notEqual(registry.getSegment('correct').assetKey, registry.getSegment('incorrect').assetKey);
 for (const [id, maxDuration] of [['wakeUp',850],['standUp',700]]) {

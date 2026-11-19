@@ -1,3 +1,4 @@
+import { getBedPlacementScale } from '@/constants/cat-beds';
 import type { PetProfile, PlacedDecoration, PlacedToy, Progress, RoomItemSupport, RoomLayerItem } from '@/types/game';
 import type { RoomDecorationTarget } from '@/utils/room-decoration-entry';
 import { appendPlacedDecoration, appendPlacedToy, createPlacementInstanceId } from '@/utils/room-placement';
@@ -19,19 +20,37 @@ export function roomFurnitureVersion(room: RoomLayout) {
     room.placedToys, room.placedDecorations, room.roomLayerOrder]);
 }
 
+export function houseFurnitureInventory(
+  pet: Pick<PetProfile, 'homeRoomId' | 'homeRooms' | 'bedId' | 'placedToys' | 'placedDecorations'>,
+  progress: Pick<Progress, 'bedsUnlocked' | 'toysUnlocked' | 'decorationsUnlocked' | 'toyQuantities' | 'decorationQuantities'>,
+) {
+  const current = pet.homeRoomId ?? 'livingRoom';
+  const rooms = { ...pet.homeRooms, [current]: pet };
+  const inventory = new Map<string, { target: RoomDecorationTarget; count: number; rooms: Map<string, number> }>();
+  function add(target: RoomDecorationTarget, count: number) {
+    inventory.set(`${target.kind}:${target.id}`, { target, count, rooms: new Map() });
+  }
+  for (const id of progress.bedsUnlocked) add({ kind: 'bed', id }, 1);
+  for (const id of progress.toysUnlocked) add({ kind: 'toy', id }, getToyOwnedCount(id as CatToyId, progress));
+  for (const id of progress.decorationsUnlocked) add({ kind: 'decoration', id }, getDecorationOwnedCount(id as CatDecorationId, progress));
+  function recordPlacement(key: string, roomId: string) {
+    const entry = inventory.get(key);
+    if (!entry) return;
+    entry.count = Math.max(0, entry.count - 1);
+    entry.rooms.set(roomId, (entry.rooms.get(roomId) ?? 0) + 1);
+  }
+  // Bed styles can be equipped once per room. Toys and decorations share copies across rooms.
+  if (pet.bedId) recordPlacement(`bed:${pet.bedId}`, current);
+  for (const [roomId, room] of Object.entries(rooms)) {
+    for (const toy of room.placedToys ?? []) recordPlacement(`toy:${toy.toyId}`, roomId);
+    for (const decoration of room.placedDecorations ?? []) recordPlacement(`decoration:${decoration.decorationId}`, roomId);
+  }
+  return inventory;
+}
+
 export function storedRoomItems(pet: PetProfile, progress: Progress) {
-  const rooms = [pet, ...Object.entries(pet.homeRooms ?? {})
-    .filter(([id]) => id !== (pet.homeRoomId ?? 'livingRoom')).map(([, room]) => room)];
-  const count = (kind: 'toy' | 'decoration', id: string) => rooms.reduce((sum, room) => sum + (kind === 'toy'
-    ? room.placedToys?.filter(item => item.toyId === id).length ?? 0
-    : room.placedDecorations?.filter(item => item.decorationId === id).length ?? 0), 0);
-  return [
-    ...progress.bedsUnlocked.filter(id => id !== pet.bedId).map(id => ({ target: { kind: 'bed', id } as RoomDecorationTarget, count: 1 })),
-    ...progress.toysUnlocked.map(id => ({ target: { kind: 'toy', id } as RoomDecorationTarget,
-      count: Math.max(0, getToyOwnedCount(id as CatToyId, progress) - count('toy', id)) })),
-    ...progress.decorationsUnlocked.map(id => ({ target: { kind: 'decoration', id } as RoomDecorationTarget,
-      count: Math.max(0, getDecorationOwnedCount(id as CatDecorationId, progress) - count('decoration', id)) })),
-  ].filter(item => item.count > 0);
+  return [...houseFurnitureInventory(pet, progress).values()].filter(item => item.count > 0)
+    .map(({ target, count }) => ({ target, count }));
 }
 
 export function createRoomPlacementDraft(target: RoomDecorationTarget, room?: RoomLayout): RoomPlacementDraft {
@@ -48,7 +67,7 @@ export function withRoomPlacementDraft<T extends RoomLayout>(room: T, draft?: Ro
   if (!draft) return room;
   const item = draft.item, offset = { x: 0, y: 0 };
   if (item.kind === 'bed') return { ...room, bedId: draft.target.id, roomBedOffset: offset,
-    bedFlipped: undefined, bedScale: undefined, bedRotationDegrees: undefined };
+    bedFlipped: undefined, bedScale: getBedPlacementScale(draft.target.id), bedRotationDegrees: undefined };
   if (item.kind === 'toy') return { ...room, placedToys: [...(room.placedToys ?? []), { ...item, offset, ...draft.initial } as PlacedToy] };
   return { ...room, placedDecorations: [...(room.placedDecorations ?? []), { ...item, offset, ...draft.initial } as PlacedDecoration] };
 }

@@ -15,9 +15,10 @@ import { getCompletedPuzzleIds, getSolvedCounts } from "@/utils/game-operations"
 import { normalizeChallengeAttempt, settleChallengeTimeout } from "@/utils/timed-challenge";
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveCatSkinId } from "@/constants/cat-skins";
-import { DEFAULT_BED_SCALE, resolveCatBedId, canFlipBed, clampBedScale } from "@/constants/cat-beds";
+import { DEFAULT_BED_SCALE, getBedPlacementScale, resolveCatBedId, canFlipBed, clampBedScale } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
-import type { CatToyId } from "@/constants/cat-toys";
+import { getToyPlacementScale, type CatToyId } from "@/constants/cat-toys";
+import { getDecorationDefaultPlacementScale } from "@/constants/decoration-variants";
 import {
   migrateLegacyPlacedDecorations,
   migrateLegacyPlacedToys,
@@ -55,14 +56,19 @@ import { normalizeCoinTransactions } from "@/utils/coin-ledger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function createStarterFoodBowl() {
-  return { decorationId: "bowlBlue", instanceId: "starter-bowl", offset: { x: 0.25, y: 0.15 } };
+  return { decorationId: "bowlBlue", instanceId: "starter-bowl", scale: getDecorationDefaultPlacementScale("bowlBlue"), offset: { x: 0.25, y: 0.15 } };
 }
 
 export function createDefaultGameSave(): GameSave {
   return {
     version: GAME_SAVE_VERSION,
     worldClock: createWorldClock(),
-    pet: { ...DEFAULT_PET, lastCareAt: Date.now(), lastInteractionAt: Date.now(), bedId: "brown", placedDecorations: [createStarterFoodBowl()], placedToys: [{ toyId: "orangeBall", instanceId: "starter-ball", offset: { x: 0.5, y: 0.4 } }] },
+    pet: {
+      ...DEFAULT_PET, lastCareAt: Date.now(), lastInteractionAt: Date.now(),
+      bedId: "brown", bedScale: getBedPlacementScale("brown"),
+      placedDecorations: [createStarterFoodBowl()],
+      placedToys: [{ toyId: "orangeBall", instanceId: "starter-ball", scale: getToyPlacementScale("orangeBall"), offset: { x: 0.5, y: 0.4 } }],
+    },
     wallet: DEFAULT_WALLET,
     progress: { ...DEFAULT_PROGRESS, bedsUnlocked: ["brown"], toysUnlocked: ["orangeBall"], toyQuantities: { orangeBall: 1 }, decorationsUnlocked: ["bowlBlue"], decorationQuantities: { bowlBlue: 1 }, completedPuzzleIds: [], processedAttemptIds: [] },
     hasCompletedOnboarding: false,

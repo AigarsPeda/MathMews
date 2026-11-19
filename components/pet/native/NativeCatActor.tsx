@@ -11,6 +11,7 @@ import { FLOOR_Y, isFree, nearestFree, findCatRoomRoute, pathLength, movingCatRo
 import type { PetPlaybackState } from '@/pet-display/types';
 import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
 import { resolveTailContact, tailJointAngle, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
+import { isCatFeederDecorationId } from '@/constants/cat-supplies-decorations';
 import { pawReachWeight, pawSurfaceTarget, type PawObjectTarget } from '@/utils/native-paw-contact';
 import { limbAim, reachingElbow } from '@/utils/native-hanging-toy';
 import { buildRugSurfaces, rugSupportLift } from '@/utils/native-ground-support';
@@ -43,6 +44,7 @@ type Props = {
   travel?: NativeTravel;
   activityKey?: string;
   commandAttention?: CatCommandAttention;
+  hungry?: boolean;
   loop?: boolean;
   active: boolean;
   reduceMotion?: boolean;
@@ -64,14 +66,14 @@ type Props = {
   plantLeaf?: ISharedValue<Vec3 | undefined>;
   pawPositions?: ISharedValue<Vec3[]>;
   onContactPosition?: (position: Vec3, elapsed?: number, activityKey?: string) => void;
-  onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion) => void;
+  onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion, toy?: PawObjectTarget) => void;
   initialPosition?: Vec3;
 };
 /** Keep a room's asset prepared while its cat is elsewhere, outside the scene. */
 export function useCatModel(skinId?: string, present = true) {
   return useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false, addToScene: present });
 }
-export function NativeCatActor({ model, playback, world, travel, activityKey, commandAttention, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, floorToy, plantLeaf, pawPositions, initialPosition, registerPickEntities, reduceMotion = false }: Props) {
+export function NativeCatActor({ model, playback, world, travel, activityKey, commandAttention, hungry = false, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, floorToy, plantLeaf, pawPositions, initialPosition, registerPickEntities, reduceMotion = false }: Props) {
   'use no memo';
   const { transformManager } = useFilamentContext();
   const asset = model.state === 'loaded' ? model.asset : undefined;
@@ -131,7 +133,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
   }, [asset, transformManager]);
   const callbacks = useRef({ onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, activityKey });
   useEffect(() => { callbacks.current = { onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, activityKey }; }, [onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, activityKey]);
-  const receive = useCallback((kind: 'position' | 'complete' | 'step' | 'ready' | 'roomComplete', data: number[] | number | { key: string; position: Vec3; motion?: CatTravelMotion }) => {
+  const receive = useCallback((kind: 'position' | 'complete' | 'step' | 'ready' | 'roomComplete', data: number[] | number | { key: string; position: Vec3; motion?: CatTravelMotion; toy?: PawObjectTarget }) => {
     if (kind === 'position' && Array.isArray(data)) {
       // RN may receive a sleeping report after the wake command has started.
       // Its old elapsed time must not fast-forward the new rise on refresh.
@@ -140,7 +142,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       callbacks.current.onContactPosition?.([data[2], data[3], data[4]], data[5], callbacks.current.activityKey);
     }
     else if (kind === 'roomComplete' && typeof data === 'object' && 'key' in data) {
-      callbacks.current.onRoomStepComplete?.(data.key, data.position, data.motion);
+      callbacks.current.onRoomStepComplete?.(data.key, data.position, data.motion, data.toy);
     }
     else if (kind === 'step' && Array.isArray(data) && data[0] === commandRevision.current.id)
       callbacks.current.onStepComplete?.(data[1]);
@@ -152,13 +154,20 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
   // This registers a deferred RN callback; createRunOnJS never executes it during render.
   // eslint-disable-next-line react-hooks/refs
   const notify = useMemo(() => Worklets.createRunOnJS(receive), [receive]);
+  const bowlTarget = useMemo(() => {
+    if (!hungry || !world) return undefined;
+    const bowls = world.objects.filter(object => isCatFeederDecorationId(object.modelId));
+    const distance = (p: Vec3) => Math.hypot(p[0] - world.home[0], p[2] - world.home[2]);
+    const bowl = bowls.sort((a, b) => distance(a.position) - distance(b.position))[0];
+    return bowl ? [bowl.position[0], bowl.max[1], bowl.position[2]] as Vec3 : undefined;
+  }, [hungry, world]);
   const segments = useMemo(() => (playback.kind === 'scenario' ? playback.steps : [playback.segment]).map(segment => {
     const meta = CLIPS[segment.assetKey] ?? CLIPS.idle;
     return { name: segment.assetKey.startsWith('walk') ? 'walk' : segment.assetKey,
       duration: segment.model ? segment.model.duration / segment.model.rate : meta[0] / meta[1], reverse: segment.reverse ?? false,
       loop: segment.loop ?? loop ?? false };
   }), [loop, playback]);
-  const command = useSharedValue({ id: 0, activityKey, commandAttention, segments, travel, world, active, reduceMotion, rugSurfaces,
+  const command = useSharedValue({ id: 0, activityKey, commandAttention, bowlTarget, segments, travel, world, active, reduceMotion, rugSurfaces,
     recoveryPosition: undefined as Vec3 | undefined, steering: undefined as ReturnType<typeof movingCatRoute> });
   const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; home?: Vec3 }>({ id: 0 });
   const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
@@ -226,8 +235,8 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       && frame.turnElapsed>=frame.turnDuration && (previousClip==='idle' || previousClip==='walk'&&frame.elapsed>=frame.routeDuration);
     const landed=changed && frame.ready && frame.sourceJump && frame.landingPending && frame.jumpPhase>=CAT_LANDING_WALK_PHASE;
     const steering=(moving||departing||landed)&&!reduceMotion && !recoveryPosition ? movingCatRoute(travel,frame.position,frame.heading,(departing?0:frame.gaitSpeed)*(world?.catScale??1),world,departing||landed,landed) : undefined;
-    command.value = { id, activityKey, commandAttention, segments, travel: nextTravel, world, active, reduceMotion, rugSurfaces, recoveryPosition, steering };
-  }, [activityKey, active, command, commandAttention, initialPosition, reduceMotion, rugSurfaces, segments, state, travel, world]);
+    command.value = { id, activityKey, commandAttention, bowlTarget, segments, travel: nextTravel, world, active, reduceMotion, rugSurfaces, recoveryPosition, steering };
+  }, [activityKey, active, command, commandAttention, bowlTarget, initialPosition, reduceMotion, rugSurfaces, segments, state, travel, world]);
   const clips = useMemo(() => {
     if (!animator)
       return {};
@@ -738,7 +747,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     if (segment.reverse && !wakingNap)
       time = clip.duration - time;
     if (request.reduceMotion)
-      time = hopPhase !== undefined ? hopPhase >= CAT_JUMP_TOUCHDOWN ? clip.duration : 0 : clip.duration * .25;
+      time = hopPhase !== undefined ? hopPhase >= CAT_JUMP_TOUCHDOWN ? clip.duration : 0 : clip.duration * (clipName === 'petLean' ? .48 : .25);
     if (steppingTurn && !walking) time = 0;
     // A tucked hind paw pushes off from its actual spot on the seat.
     if (hopPhase === undefined || hopPhase >= CAT_JUMP_TAKEOFF+.18) {
@@ -1464,7 +1473,8 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       const rest=catRestExpression(frameState.expressionTime,frameState.elapsed);
       const idleExpressionWeight=resting||walking&&(!posingFeet||launching&&!frameState.launchFromLanding)&&!crawling?frameState.restExpressionWeight:0;
       const cycle=Math.floor(frameState.expressionTime/7.3);
-      if(resting && cycle!==frameState.lookCycle) {
+      const food = !journey && (segment.name === 'sad' || resting) ? request.bowlTarget : undefined;
+      if (resting && !food && cycle !== frameState.lookCycle) {
         frameState.lookCycle=cycle;
         const choices:Vec3[]=[];
         for(const object of request.world?.objects ?? []) {
@@ -1476,7 +1486,14 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         }
         frameState.lookTarget=choices.length?choices[cycle%choices.length]:undefined;
       }
-      const target=frameState.lookTarget,head=transformManager.getWorldTransform(turningRig.head);
+      const perch = journey?.voluntaryPerch;
+      const perchWeight = perch && !posingFeet
+        ? hopPhase !== undefined ? Math.max(0, 1 - hopPhase / .24)
+          : Math.max(0, Math.min(1, (frameState.elapsed - frameState.routeDuration + .48) / .32)) : 0;
+      const watchingToy = journey?.watchToy && floorTarget;
+      const target = watchingToy ? floorTarget.position : perchWeight ? perch : food ?? frameState.lookTarget;
+      const gazeWeight = watchingToy ? 1 : perchWeight || (resting || food ? rest.look : 0);
+      const head=transformManager.getWorldTransform(turningRig.head);
       const angle=target?Math.atan2(target[0]-head.translation[0],target[2]-head.translation[2])-frameState.heading:0;
       const noticeTarget=request.commandAttention?.target;
       const noticeAngle=noticeTarget?Math.atan2(noticeTarget[0]-head.translation[0],noticeTarget[2]-head.translation[2])-frameState.heading:0;
@@ -1485,8 +1502,14 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       // Airborne balance, contact performances and supported turns own the
       // head. Ears can acknowledge a queued tap without disturbing those poses.
       const noticeHead=!posingFeet && !crawling && (resting || walking || hopPhase!==undefined && hopPhase>=CAT_LANDING_WALK_PHASE);
-      const yaw=noticeHead&&notice.look>0?notice.yaw:resting?Math.max(-.16,Math.min(.16,Math.atan2(Math.sin(angle),Math.cos(angle))))*rest.look:0;
-      const pitch=noticeHead&&notice.look>0?notice.pitch:resting&&target?Math.max(-.07,Math.min(.07,-Math.atan2(target[1]-head.translation[1],Math.hypot(target[0]-head.translation[0],target[2]-head.translation[2]))))*rest.look:0;
+      const yawLimit = watchingToy || food ? .38 : .16;
+      const pitchLimit = watchingToy || food || perchWeight ? .24 : .07;
+      const gazeYaw = Math.atan2(Math.sin(angle), Math.cos(angle));
+      const gazePitch = target ? -Math.atan2(target[1] - (perchWeight ? frameState.position[1] : head.translation[1]),
+        Math.hypot(target[0] - head.translation[0], target[2] - head.translation[2])) : 0;
+      const acknowledge = noticeHead && notice.look > 0;
+      const yaw = acknowledge ? notice.yaw : Math.max(-yawLimit, Math.min(yawLimit, gazeYaw)) * gazeWeight;
+      const pitch = acknowledge ? notice.pitch : Math.max(-pitchLimit, Math.min(pitchLimit, gazePitch)) * gazeWeight;
       const blend=1-Math.exp(-deltaSeconds*(noticeHead&&frameState.noticeTime<1.6?8:resting?7:35));
       frameState.attentionYaw+=(yaw-frameState.attentionYaw)*blend;
       frameState.attentionPitch+=(pitch-frameState.attentionPitch)*blend;
@@ -1504,7 +1527,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       }
       const reaction=catEarReaction(frameState.expressionTime,target?Math.atan2(Math.sin(angle),Math.cos(angle)):0,
         steppingTurn?Math.max(-.22,Math.min(.22,frameState.turnAngle))*(1-(turnPhase??1)):0,
-        walking?frameState.gaitSpeed:0,resting);
+        walking?frameState.gaitSpeed:0,resting || !!food);
       const earBlend=1-Math.exp(-deltaSeconds*14);
       frameState.earYaw+=(Math.max(-.35,Math.min(.35,reaction.yaw+notice.earYaw))-frameState.earYaw)*earBlend;
       for(let i=0;i<ears.length;i++) {
@@ -1661,6 +1684,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       && hasNativeArrived(frameState.position, request.travel.path[request.travel.path.length - 1])) {
       frameState.roomComplete = true;
       notify('roomComplete', { key: request.activityKey, position: [frameState.position[0], frameState.position[1], frameState.position[2]],
+        toy: request.travel.playTargetId ? floorTarget : undefined,
         motion:request.travel.through&&!request.reduceMotion ? {
           speed:!frameState.routeLegs.length && frameState.routeCost>0 ? frameState.routeEndRate*frameState.routeCost/((frameState.routePaces[frameState.routePaces.length-1]??1)*scale) : frameState.gaitSpeed,phase:frameState.distance/(frameState.walkStride*scale)+frameState.walkOffset,
           gait:frameState.gait,tailYaw:frameState.tailYaw.map(v=>v),tailPitch:frameState.tailPitch.map(v=>v),

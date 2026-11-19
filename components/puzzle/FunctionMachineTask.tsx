@@ -134,7 +134,4 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: GameColors.text,
   },
-  choices: {
-    gap: moderateScale(12),
-  },
 });

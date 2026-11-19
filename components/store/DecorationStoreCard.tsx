@@ -14,7 +14,8 @@ type DecorationStoreCardProps = {
   decorationId: CatDecorationId;
   isOwned: boolean;
   placedCount: number;
-  ownedCount: number;
+  storedCount: number;
+  availabilityLabel?: string;
   canAfford: boolean;
   onPreview: () => void;
   onBuy: () => void;
@@ -26,7 +27,8 @@ export function DecorationStoreCard({
   decorationId,
   isOwned,
   placedCount,
-  ownedCount,
+  storedCount,
+  availabilityLabel,
   canAfford,
   onPreview,
   onBuy,
@@ -38,10 +40,7 @@ export function DecorationStoreCard({
   const previewSize = moderateScale(getDecorationStorePreviewSize(decorationId));
   const decorationLabel = t(`store.decorationName.${decorationId}`);
   const decorationLabelInline = decorationLabel.replace(/\n/g, " ");
-  const canPlace = isOwned && placedCount < ownedCount;
-  const canBuyAgain =
-    price.kind === "free" || (price.kind === "coins" && canAfford);
-  const showBuy = !isOwned ? price.kind !== "iap" : canBuyAgain;
+  const canPlace = storedCount > 0;
 
   return (
     <View style={[styles.card, placedCount > 0 && styles.cardEquipped]}>
@@ -51,28 +50,38 @@ export function DecorationStoreCard({
           size={previewSize}
           flipHorizontal={getDecorationStorePreviewWallFlipped(decorationId)}
         />
-        {placedCount > 0 ? (
-          <View style={styles.equippedBadge}>
-            <Text style={styles.equippedBadgeText}>
-              {t("store.inRoomCount", { count: placedCount })}
-            </Text>
-          </View>
-        ) : null}
       </Pressable>
 
       <View style={styles.titleWrap}>
         <Text style={styles.title}>{decorationLabel}</Text>
       </View>
 
+      {!!availabilityLabel && <Text style={styles.availability}>{availabilityLabel}</Text>}
       <StorePromotion price={price} />
       <View style={styles.actions}>
-        {showBuy ? (
+        {canPlace ? (
+          <Pressable
+            onPress={onPlace}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionEquip,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yPlaceDecoration", {
+              name: decorationLabelInline,
+            })}
+          >
+            <Text style={styles.actionText}>{t("store.placeSpare")}</Text>
+          </Pressable>
+        ) : null}
+        {price.kind !== "iap" ? (
           <Pressable
             onPress={onBuy}
             disabled={price.kind === "coins" && !canAfford}
             style={({ pressed }) => [
               styles.actionBtn,
-              styles.actionBuy,
+              canPlace ? styles.secondaryBuy : styles.actionBuy,
               price.kind === "coins" && !canAfford && styles.actionDisabled,
               pressed &&
                 (price.kind !== "coins" || canAfford) &&
@@ -95,12 +104,12 @@ export function DecorationStoreCard({
                     })
             }
           >
-            <Text style={styles.actionText}>
+            <Text style={canPlace ? styles.secondaryText : styles.actionText}>
               {!isOwned && price.kind === "free"
                 ? t("store.free")
                 : isOwned
                   ? price.kind === "free"
-                    ? t("store.buyAnother")
+                    ? t("store.claimAnother")
                     : t("store.buyAnotherFor", {
                         cost: price.kind === "coins" ? price.amount : 0,
                       })
@@ -109,28 +118,11 @@ export function DecorationStoreCard({
                     })}
             </Text>
           </Pressable>
-        ) : price.kind === "iap" ? (
+        ) : (
           <View style={[styles.actionBtn, styles.actionDisabled]}>
             <Text style={styles.actionTextMuted}>{t("store.comingSoon")}</Text>
           </View>
-        ) : null}
-
-        {canPlace ? (
-          <Pressable
-            onPress={onPlace}
-            style={({ pressed }) => [
-              styles.actionBtn,
-              styles.actionEquip,
-              pressed && styles.actionPressed,
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={t("store.a11yPlaceDecoration", {
-              name: decorationLabelInline,
-            })}
-          >
-            <Text style={styles.actionText}>{t("store.place")}</Text>
-          </Pressable>
-        ) : null}
+        )}
 
         {placedCount > 0 ? (
           <Pressable
@@ -145,7 +137,7 @@ export function DecorationStoreCard({
               name: decorationLabelInline,
             })}
           >
-            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+            <Text style={styles.actionRemoveText}>{t("home.putAway")}</Text>
           </Pressable>
         ) : null}
       </View>
@@ -176,20 +168,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: moderateScale(8),
   },
-  equippedBadge: {
-    position: "absolute",
-    top: moderateScale(6),
-    right: moderateScale(6),
-    backgroundColor: "#23766F",
-    borderRadius: moderateScale(8),
-    paddingHorizontal: moderateScale(8),
-    paddingVertical: moderateScale(3),
-  },
-  equippedBadgeText: {
-    fontSize: moderateScale(11),
-    fontWeight: "700",
-    color: "#FFFFFF",
-  },
+  availability: { color: GameColors.textMuted, textAlign: "center", fontSize: moderateScale(13) },
+  secondaryBuy: { backgroundColor: GameColors.background },
+  secondaryText: { color: GameColors.text, textAlign: "center", fontWeight: "700", fontSize: moderateScale(14) },
   titleWrap: {
     minHeight: moderateScale(48),
     justifyContent: "center",
@@ -220,7 +201,7 @@ const styles = StyleSheet.create({
   actionRemove: {
     backgroundColor: GameColors.background,
     borderWidth: 2,
-    borderColor: GameColors.primary,
+    borderColor: GameColors.cardBorder,
   },
   actionDisabled: {
     opacity: 0.55,
@@ -229,6 +210,7 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   actionText: {
+    textAlign: "center",
     fontSize: moderateScale(14),
     fontWeight: "700",
     color: "#FFFFFF",
@@ -241,6 +223,6 @@ const styles = StyleSheet.create({
   actionRemoveText: {
     fontSize: moderateScale(14),
     fontWeight: "700",
-    color: GameColors.primary,
+    color: GameColors.text,
   },
 });

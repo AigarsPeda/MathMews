@@ -1,6 +1,6 @@
 import type { Vec3 } from '@/utils/native-room-world';
 
-export type PawObjectTarget = { instanceId: string; position: Vec3; radius: number };
+export type PawObjectTarget = { instanceId: string; position: Vec3; radius: number; settled?: boolean; contactKey?: string };
 
 function ease(a: number, b: number, value: number) {
   'worklet';

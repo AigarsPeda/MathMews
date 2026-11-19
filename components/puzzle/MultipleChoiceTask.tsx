@@ -62,8 +62,4 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     gap: moderateScale(12),
   },
-  answerChoices: { gap: moderateScale(12) },
-  compactChoices: { flexDirection: "row", flexWrap: "wrap" },
-  twoColumnChoice: { width: "48%", flexGrow: 1 },
-  threeColumnChoice: { width: "30%", flexGrow: 1 },
 });

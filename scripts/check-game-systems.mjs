@@ -382,7 +382,7 @@ const otherPost = { ...post, instanceId: 'other-post' };
 assert.equal(getPlacedToyScale(post), 2, 'Unresized posts use the red reference size');
 for (const toyId of ['scratchPostGreen','scratchPostBlue','scratchPostPurple','scratchPostRed']) {
   const bought = appendPlacedToy([], toyId)[0];
-  assert.equal(getPlacedToyDisplaySize(bought), 96, 'Every newly placed post starts at the larger default');
+  assert.equal(getPlacedToyScale(bought), 1.3, 'New posts use the room cat proportions');
 }
 assert.equal(getPlacedToyScale({...post,toyId:'orangeBall'}),1,'Small toys retain their existing default');
 assert.equal(getPlacedToyDisplaySize(normalizePlacedToys([{...post,scale:1}])[0]),48,'A deliberately reduced post keeps its smaller custom size');

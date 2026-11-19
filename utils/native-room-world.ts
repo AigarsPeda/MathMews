@@ -190,6 +190,9 @@ export type NativeTravel = {
   landingLook?: Vec3;
   /** The final walking step can load the haunches for this supported jump. */
   prepareJump?: { target: Vec3; light: boolean };
+  voluntaryPerch?: Vec3;
+  watchToy?: boolean;
+  contactKey?: string;
   gait?: CatGait;
   ramp?: number;
   legs?: CatMotionLeg[];
@@ -1466,7 +1469,11 @@ export function findInvestigateApproach(start: Vec3, object: NativeRoomObject, w
   for (let i = 0; i < 24; i++) {
     const angle = object.heading + i * Math.PI / 12, x = Math.sin(angle), z = Math.cos(angle);
     const distance = Math.min(Math.abs(x) < 1e-6 ? Infinity : hx / Math.abs(x), Math.abs(z) < 1e-6 ? Infinity : hz / Math.abs(z));
-    points.push([cx + x * distance, FLOOR_Y, cz + z * distance]);
+    const px = cx + x * distance, pz = cz + z * distance;
+    const edgeX = Math.max(object.min[0], Math.min(px, object.max[0]));
+    const edgeZ = Math.max(object.min[2], Math.min(pz, object.max[2]));
+    const outward = (world.radius + .08) / Math.hypot(px - edgeX, pz - edgeZ);
+    points.push([edgeX + (px - edgeX) * outward, FLOOR_Y, edgeZ + (pz - edgeZ) * outward]);
   }
   points.sort((a,b) => pathLength([start,a]) - pathLength([start,b]));
   return points.find(point => isFree(point,world) && hasNativeArrived(findRoomPath(start,point,world).at(-1)!,point))
@@ -1556,7 +1563,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     ? object && findKitchenFloorApproach(start, object, world, plan.kind === 'fridgeInvestigate') : undefined;
   const investigateApproach = !step.returnHome && walking && plan.kind === 'investigate' && object
     ? findInvestigateApproach(start, object, world) : undefined;
-  if (investigateApproach) target = investigateApproach;
+  if (plan.kind === 'investigate' && walking && !step.returnHome) target = investigateApproach ?? start;
   if (kitchenFloor) target = kitchenFloor;
   if (step.returnHome) target = nearestFree(world.home, world);
   if (step.leavingRoom) target = nativeRoomEdge(world, step.travelDirection ?? 1);
@@ -1577,7 +1584,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     bowlPath = findFoodBowlApproach(start, object, world);
     target = bowlPath?.at(-1) ?? start;
   }
-  else if ((plan.kind === 'toyPlay' || plan.kind === 'mouseChase') && object && step.animation?.startsWith('walk')) {
+  else if ((plan.kind === 'toyPlay' && !step.returnHome || plan.kind === 'mouseChase') && object && walking) {
     const meta = NATIVE_MODEL_CATALOG[object.modelId];
     const centerY = FLOOR_Y + (meta.max[1] + meta.min[1]) / 2 * object.scale;
     const screen = plan.kind === 'mouseChase' ? step.objectPosition : undefined;
@@ -1617,7 +1624,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     && Math.abs(Math.hypot(start[0] - object.position[0], start[2] - object.position[2])
       - foodBowlReach(object, world, Math.atan2(object.position[0] - start[0], object.position[2] - start[2]))) > .08) blocked = true;
   if (step.bathroomPhase && (!object?.bathroom || !bathroomApproach)) { blocked = true; path = [start]; }
-  if (plan.kind === 'investigate' && !step.returnHome && (!object || walking && !investigateApproach)
+  if (plan.kind === 'investigate' && !step.returnHome && !object
     || plan.kind === 'cupboardHide' && (!object?.cupboard || !object.cupboardFits || !object.opened)
     || plan.kind === 'drawerHide' && (!object?.drawer || !object.opened)) { blocked = true; path = [start]; }
   if (seating && !seatApproach) { blocked = true; path = [start]; }
@@ -1662,6 +1669,16 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     return { ...leg, landingWalk: true, duration: turn+(leg.duration-turn)*CAT_LANDING_WALK_PHASE };
   }) };
   // Curling and waking take their full clip time even when the paws stay on the same seat.
+  if (plan.kind === 'investigate' && (step.animation === 'sniff' || step.animation === 'lookUp') && object) {
+    // Only lean toward a low edge close to the nose. A wall item or a
+    // furnishing behind a blocker can still be inspected from a safe spot.
+    const edge: Vec3 = [Math.max(object.min[0], Math.min(start[0], object.max[0])), start[1],
+      Math.max(object.min[2], Math.min(start[2], object.max[2]))];
+    const near = Math.hypot(edge[0] - start[0], edge[2] - start[2]) <= world.radius + .20;
+    const clear = near && clearLine(start, edge, { ...world, radius: .04 * world.catScale,
+      objects: world.objects.filter(other => other.instanceId !== object.instanceId) });
+    step = { ...step, animation: clear && object.wallAxis === undefined && object.max[1] < FLOOR_Y + 1.45 * world.catScale ? 'sniff' : 'lookUp' };
+  }
   const actionMs = step.animation === 'curlUp' ? step.durationMs : step.moveMs ?? step.durationMs;
   const distance = pathLength(path), duration = route?.legs && !blocked ? route.legs.reduce((sum, leg) => sum + leg.duration, 0)
     : jump && arcHeight!==undefined && !blocked ? catJumpDuration(start,target,arcHeight,world.catScale)
@@ -1695,7 +1712,10 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const prepareJump=preparationArc!==undefined && object?.seat
     ? {target:object.seat,light:catJumpEffort(target,object.seat,world.catScale,preparationArc)<.8} : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking || jump ? duration * 1000 : step.durationMs, moveMs: walking || jump ? duration * 1000 : step.moveMs,
-    native: { navigation: { radius: world.radius, kitchenNavigation: world.kitchenNavigation, fridgeDoorClearance: world.fridgeDoorClearance }, sleepPose: step.sleepPose, wakeToSit: step.wakeToSit, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+    native: { watchToy: step.toyBeat === 'watch' || step.toyBeat === 'wait',
+      voluntaryPerch: !blocked && plan.userRequested === false && (plan.kind === 'sofaSit' || plan.kind === 'islandSit')
+        ? prepareJump?.target ?? (step.animation === 'jumpOn' ? target : undefined) : undefined,
+      navigation: { radius: world.radius, kitchenNavigation: world.kitchenNavigation, fridgeDoorClearance: world.fridgeDoorClearance }, sleepPose: step.sleepPose, wakeToSit: step.wakeToSit, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, playTargetId: plan.kind==='toyPlay'?object?.instanceId:undefined, pawTargetRadius: tree && object ? .1*object.scale : 0, targetPosition: object?.position, objectPath, objectDuration: duration * .6,

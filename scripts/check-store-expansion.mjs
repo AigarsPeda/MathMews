@@ -309,7 +309,7 @@ for (const width of [320,390,414,768]) {
       assert.equal(variants.getPlacedDecorationScale(restored),variants.getPlacedDecorationScale(old),`${id}: existing dimensions stay intact`);
     }
   }
-  for (const id of beds.CAT_BED_IDS) measure({bedId:id},`bed/${id}`);
+  for (const id of beds.CAT_BED_IDS) measure({bedId:id,bedScale:beds.getBedPlacementScale(id)},`bed/${id}`);
   for (const id of toys.CAT_TOY_IDS) measure({toys:placements.appendPlacedToy([],id)},`toy/${id}`);
 }
 // Compare related items at the baseline room size, rather than sprite framing.
@@ -318,6 +318,13 @@ const dimensions = id => {
     decorations:appendPlacedDecoration([],id)}).objects[0];
   return object.max.map((value,axis) => value-object.min[axis]);
 };
+const diningHeight = dimensions('kitchenDiningTable')[1], chairHeight = dimensions('kitchenChairMint')[1];
+assert.ok(diningHeight > .70 && diningHeight < .82 && chairHeight > diningHeight && chairHeight < .95,
+  'Dining surfaces and chair backs use compatible human dimensions in the baseline room');
+const starter = createDefaultGameSave().pet;
+assert.equal(starter.bedScale, beds.getBedPlacementScale(starter.bedId));
+assert.equal(starter.placedToys[0].scale, toys.getToyPlacementScale(starter.placedToys[0].toyId));
+assert.equal(starter.placedDecorations[0].scale, variants.getDecorationDefaultPlacementScale(starter.placedDecorations[0].decorationId));
 for (const id of ['doorOakPanel','doorMintGlass','doorBarnSliding','japaneseDoorAni','japaneseSlidingDoorAni']) {
   assert.ok(dimensions(id)[1]>=1.8 && dimensions(id)[1]<=2.3,`${id}: doors have standing height`);
 }

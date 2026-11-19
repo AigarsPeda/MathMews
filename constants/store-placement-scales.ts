@@ -4,10 +4,19 @@ import type { CatDecorationId } from "@/constants/cat-decorations";
  * These do not replace omitted scale values in existing saves.
  */
 export const STORE_PLACEMENT_SCALES = {
+  // Match dining-chair backs and dining surfaces to the standing-height doors.
+  kitchenDiningTable: 1.2, officeKitchenTable: 1.2,
+  kitchenChairWindsor: 1.2, kitchenChairMint: 1.2,
+  kitchenChairUpholstered: 1.2, kitchenChairBistro: 1.2,
+  chairClassicA: 1.2, chairOfficeA: 1.2, chairOfficeMain: 1.2,
+  deskOffice: 1.1, deskWoodA: 1.1, officeDrawingTable: 1.4,
+
   // Seating leaves a usable cushion without filling the room.
   sofaA: 1.3, sofaB: 1.3,
   sofaBlueClassic: 1.3, sofaRoseTufted: 1.3,
   sofaTanLeather: 1.3, sofaCreamCloud: 1.3, sofaCornerSage: 1.2,
+  bowlTan: .7, bowlBlue: .7, bowlPurple: .7, bowlPink: .7,
+  feedingTile: .7, feedingPebble: .7, lickingPad: .7,
   catTreeTan: 1.6, catTreeBlue: 1.6, catTreePink: 1.6,
 
   // Tall furniture follows the fridge and human-bed proportions.

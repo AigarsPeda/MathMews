@@ -193,15 +193,6 @@ const styles = StyleSheet.create({
     padding: moderateScale(8),
     gap: moderateScale(8),
   },
-  startRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: moderateScale(6),
-    paddingBottom: moderateScale(4),
-    borderBottomWidth: 1,
-    borderBottomColor: GameColors.cardBorder,
-  },
   startLabel: {
     fontSize: moderateScale(14),
     fontWeight: "700",

@@ -168,7 +168,7 @@ export function usePetDisplayEngine(pet: PetProfile, clock?: WorldClock): PetDis
           beginCareAction();
           break;
         case "petTap":
-          playAction(command.wasAsleep, registry.pickExcitedMood());
+          playAction(command.wasAsleep, registry.pickPettingMood());
           break;
         case "playAction":
           playAction(command.wasAsleep, command.mood);

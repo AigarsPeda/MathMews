@@ -91,7 +91,4 @@ const styles = StyleSheet.create({
     color: GameColors.text,
     fontVariant: ["tabular-nums"],
   },
-  choices: {
-    gap: moderateScale(12),
-  },
 });

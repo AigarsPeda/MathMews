@@ -74,6 +74,7 @@ type Props = {
   travel?: NativeTravel;
   activityKey?: string;
   commandAttention?: CatCommandAttention;
+  hungry?: boolean;
   playingId?: string;
   playContact?: boolean;
   paused?: boolean;
@@ -92,7 +93,7 @@ type Props = {
     headY?: number;
   }) => void;
   onContactPosition?: (position: Vec3, elapsed?: number, activityKey?: string) => void;
-  onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion) => void;
+  onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion, toy?: PawObjectTarget) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (index: number) => void;
 };
@@ -370,13 +371,13 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
       const impulse=pawIndex>=0?pawContactImpulse(position,paws[pawIndex],
         prior && pawIndex<prior.paws.length?prior.paws[pawIndex]:undefined,
         Math.max(0,Math.min(1/15,timeSinceLastFrame)),radius):undefined;
-      if(!chase && !s.contact && impulse) {
-        body.applyCentralImpulse(...impulse);
+      const swatted = !chase && !s.contact && impulse;
+      if (swatted) {
+        body.applyCentralImpulse(...swatted);
         s.still=0;s.settled=false;
       }
       s.contact=pawIndex>=0 && (s.contact || !!impulse);
       previousContact.value={ball:position,paws};
-      if(floorToy && playingId===object.instanceId)floorToy.value={instanceId:object.instanceId,position,radius};
       const meta = modelMetadata;
       const localCenter = meta.max.map((v, i) => (v + meta.min[i]) / 2);
       const matrix = transformManager.getTransform(entity).data;
@@ -390,6 +391,11 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
       s.lastPosition = [position[0], position[1], position[2]];
       const landed = !chase && !s.settled && s.still >= .4;
       if (landed) s.settled = true;
+      if (floorToy && playingId === object.instanceId) {
+        const previous = floorToy.value;
+        floorToy.value = { instanceId: object.instanceId, position, radius, settled: s.settled,
+          contactKey: swatted ? travel?.contactKey ?? activityKey : previous?.instanceId === object.instanceId ? previous.contactKey : undefined };
+      }
       s.report += timeSinceLastFrame;
       if (s.report > .1 || landed) {
         s.report = 0;
@@ -486,7 +492,7 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [reportDragFrame, motionActive, modelMetadata, editingObject, previewReset, appliedPreview, appliedReset, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, floorToy, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [activityKey, reportDragFrame, motionActive, modelMetadata, editingObject, previewReset, appliedPreview, appliedReset, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, floorToy, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   const interaction = asset && (modelMetadata.interactionParts?.length || itemInteraction(object.modelId)?.power)
     ? <NativeItemInteraction asset={asset} object={object} active={lightingActive} reduceMotion={reduceMotion}/> : null;
@@ -661,7 +667,7 @@ function Scene(props: Props) {
   {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} previewReset={props.previewReset} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={objectMotion} lightingActive={lightingActive && hasLightingUpdates(object)} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} editingObject={props.editingObject} active={visible && !reduceMotion}/>)}
   {eatingFeeder && !reduceMotion && <NativeFoodSpill key={`${props.activityKey}:${eatingFeeder.instanceId}:${eatingFeeder.modelId}`} object={eatingFeeder} active={visible} animationTime={catAnimationTime}/>}
-  {renderCat && <NativeCatActor model={catModel} registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} commandAttention={props.commandAttention} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
+  {renderCat && <NativeCatActor model={catModel} registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} commandAttention={props.commandAttention} hungry={props.hungry} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
  </FilamentView>;
 }
 export const NativeRoomSurface = memo(function NativeRoomSurface(props: Props) {

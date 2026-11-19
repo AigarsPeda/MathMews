@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
   missingBar: { height: 100, width: '75%', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderStyle: 'dashed', borderColor: C.textMuted, borderTopLeftRadius: 10, borderTopRightRadius: 10, backgroundColor: C.progressTrack },
   unknown: { fontSize: 26, fontWeight: '900', color: C.text },
   shapes: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
-  shape: { width: 140, height: 140 },
   spatialGrid: { width: '100%', maxWidth: 240, gap: 2, padding: SPATIAL_FRAME.padding, borderWidth: SPATIAL_FRAME.border, borderColor: C.cardBorder, borderRadius: SPATIAL_FRAME.radius, backgroundColor: C.progressTrack },
   gridRow: { flexDirection: 'row', gap: 2 },
   cell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.cardBorder, backgroundColor: C.card, borderRadius: insetRadius(SPATIAL_FRAME.radius, SPATIAL_FRAME.padding + SPATIAL_FRAME.border) },

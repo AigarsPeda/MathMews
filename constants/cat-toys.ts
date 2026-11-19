@@ -78,6 +78,12 @@ export function getDefaultToyScale(toyId: string | undefined): number {
   return resolved && isLargeToyId(resolved) ? 2 : 1;
 }
 
+/** New toys are sized to the room cat. Older placements keep their saved or legacy scale. */
+export function getToyPlacementScale(id: string): number {
+  if (isLargeToyId(id)) return 1.3;
+  return id === 'mouse' ? 1 : .7;
+}
+
 export function getPlacedToyScale(placed: PlacedToy): number {
   return typeof placed.scale === "number" && Number.isFinite(placed.scale)
     ? clampDecorationScale(placed.scale) : getDefaultToyScale(placed.toyId);

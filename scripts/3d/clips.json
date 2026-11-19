@@ -10,6 +10,9 @@
     96,
     24
   ],
+  "sniff": [60, 24],
+  "lookUp": [60, 24],
+  "petLean": [60, 24],
   "sit": [96, 24],
   "wakeStretch": [60, 24],
   "restLoafEnter": [48, 24],

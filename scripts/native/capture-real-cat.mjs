@@ -85,7 +85,8 @@ function send(kind, data = {}) {
   return until(() => active.events.find(e => e.type === 'command' && e.id === commandId), `${kind} acknowledgement`);
 }
 function stepSince(time, animation, extra = () => true) {
-  return until(() => active.events.find(e => e.at >= time && e.type === 'step' && e.animation === animation && extra(e)), `step ${animation}`, 60000);
+  const names = Array.isArray(animation) ? animation : [animation];
+  return until(() => active.events.find(e => e.at >= time && e.type === 'step' && names.includes(e.animation) && extra(e)), `step ${animation}`, 60000);
 }
 function windowAt(label, event, seconds = 1.5, offset = 0) {
   active.windows.push({ label, at: event.at + offset * 1000, seconds });
@@ -126,13 +127,13 @@ async function capture(scenario) {
         const back = await send('turn', { heading: Math.PI / 4 });
         windowAt('stationary-turn-front', back, 2); await sleep(3500);
       } else if (scenario.type === 'locomotion') {
-        await action('investigate', 'left', 'idle2', 1500);
-        await action('investigate', 'bowl', 'idle2', 1500);
+        await action('investigate', 'left', ['sniff', 'lookUp'], 1500);
+        await action('investigate', 'bowl', ['sniff', 'lookUp'], 1500);
         await send('returnHome'); await sleep(5000);
         await send('investigate', { target: 'left' }); await sleep(800);
         const redirect = await send('investigate', { target: 'bowl' });
         windowAt('walking-direction-change', redirect, 2);
-        await stepSince(redirect.at, 'idle2');
+        await stepSince(redirect.at, ['sniff', 'lookUp']);
         await send('investigate', { target: 'left' }); await sleep(1000);
         const stop = await send('stop'); windowAt('stop-command', stop, 2); await sleep(4000);
       } else if (scenario.type === 'sofa') {

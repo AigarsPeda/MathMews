@@ -81,7 +81,4 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
     textAlign: "center",
   },
-  choices: {
-    gap: moderateScale(10),
-  },
 });

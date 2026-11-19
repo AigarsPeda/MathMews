@@ -70,7 +70,7 @@ export function BedStoreCard({
               name: t(`store.bedName.${bedId}`),
             })}
           >
-            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+            <Text style={styles.actionRemoveText}>{t("home.putAway")}</Text>
           </Pressable>
         ) : (
           <Pressable
@@ -81,11 +81,11 @@ export function BedStoreCard({
               pressed && styles.actionPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel={t("store.a11yEquipBed", {
+            accessibilityLabel={t("home.placeStoredItem", {
               name: t(`store.bedName.${bedId}`),
             })}
           >
-            <Text style={styles.actionText}>{t("store.equip")}</Text>
+            <Text style={styles.actionText}>{t("store.placeSpare")}</Text>
           </Pressable>
         )
       ) : price.kind === "free" ? (

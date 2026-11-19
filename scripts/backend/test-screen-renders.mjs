@@ -611,6 +611,38 @@ test(`placement diagnostics do not leave a duplicate furniture footprint behind 
   } finally { await h.close(); }
 });
 
+test(`tap placement keeps the selected item, turn and size until confirmed (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const edits = [];
+    await h.setStage({ catPresent: false, bedId: undefined, placedToys: [],
+      roomToolbar: { decorating: true, onDecoratingChange() {} },
+      placedDecorations: [{ decorationId: 'kitchenChairMint', instanceId: 'chair', offset: { x: 0, y: 0 }, scale: 1.2 }],
+      onSetRoomItemRotation() {}, onScalePlacedDecoration() {},
+      onCommitRoomEdit: change => { edits.push(change); return true; } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    const dock = () => h.props('RoomItemMoveControls');
+    await h.update(() => editor().select('chair'));
+    await h.update(() => editor().select(undefined));
+    await h.update(() => editor().tap({ x: 210, y: 215 }));
+    await h.update(() => dock().onQuickTurn());
+    await h.update(() => dock().actions.find(action => action.id === 'size-up').onPress());
+    assert.ok(dock().sizePercent > 100, 'The dock measures the visible preview');
+    await h.update(() => dock().onDefaultSize());
+    assert.equal(dock().sizePercent, 100);
+    assert.equal(edits.length, 0, 'Editing a pending placement keeps it uncommitted');
+    await h.advance(300);
+    assert.equal(dock().placementAllowed, true);
+    await h.update(() => dock().onPlace());
+    assert.equal(edits.length, 1);
+    assert.equal(edits[0][0].instanceId, 'chair');
+    assert.ok(Math.abs(edits[0][0].rotationDegrees - 90) < .001);
+    assert.ok(Math.abs(edits[0][0].scale - 1.2) < .001);
+    assert.ok(Math.abs(edits[0][0].offset.x) > .01);
+  } finally { await h.close(); }
+});
+
 test(`native drag motion updates independently of React diagnostics (${mode})`, async () => {
   const h = await harness('stage', compiled);
   try {

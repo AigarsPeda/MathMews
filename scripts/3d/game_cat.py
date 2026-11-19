@@ -423,7 +423,7 @@ def pose(arm, driver, state, t, idle_controls):
     effort = .58 if state.endswith('Light') else 1
     state = state.removesuffix('Light')
     jumping = state in ('jumpOn', 'jumpOff', 'hop')
-    pose_controls(driver, 'idle' if jumping or state in PUZZLE_REACTIONS else 'walk' if state in ('crawl', 'trot', 'run', 'rubLeft', 'rubRight') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
+    pose_controls(driver, 'idle' if jumping or state in PUZZLE_REACTIONS else 'walk' if state in ('crawl', 'trot', 'run', 'rubLeft', 'rubRight') else 'idle' if state in ('sit', 'wakeStretch', 'petLean', 'sniff', 'lookUp') else state, 0 if jumping or state in ('wakeStretch', 'petLean', 'sniff', 'lookUp') else t)
     reaction = pose_reaction(driver, state, t, idle_controls) if state in PUZZLE_REACTIONS else None
     # Whole-body acting for the emotional clips; see cat_acting.performance.
     acting = None if reaction else performance(state, t)

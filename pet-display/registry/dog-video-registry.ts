@@ -39,6 +39,7 @@ export const DOG_VIDEO_SOURCES: Record<
 
 const MOOD_ASSET_KEYS: Record<PetAnimationState, DogVideoAssetKey> = {
   idle: "idle",
+  petLean: "happy_bounce",
   excited: "happy_bounce",
   dancing: "victory_spin",
   eating: "eating",
@@ -83,7 +84,7 @@ function segmentFromMood(mood: PetAnimationState): PetMediaSegment {
     };
   }
 
-  const anim = MOOD_ANIMATION[mood];
+  const anim = MOOD_ANIMATION[mood === "petLean" ? "excited" : mood];
   return {
     assetKey: MOOD_ASSET_KEYS[mood],
     loop: anim.loop,
@@ -131,7 +132,7 @@ export const dogVideoRegistry: PetMediaRegistry = {
   petType: "dog",
   mediaKind: "video",
   oneShotStates: ONE_SHOT_ANIMATIONS,
-  pickExcitedMood: () => "excited",
+  pickPettingMood: () => "excited",
   getSegment: segmentFromMood,
   getScenario: (id) => DOG_SCENARIOS[id],
 };

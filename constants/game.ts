@@ -155,6 +155,7 @@ export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
 
 /** One-shot clips that return to the base mood when finished. */
 export const ONE_SHOT_ANIMATIONS: PetAnimationState[] = [
+  "petLean",
   "excited",
   "eating",
   "dancing",

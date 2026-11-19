@@ -305,11 +305,12 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
       return;
     }
     if (isCareAnimationPlaying || careActionPendingRef.current) return;
-
+    careActionPendingRef.current = true;
     const wasAsleep = pet.isAsleep === true;
 
     recordInteraction();
-    playActionMood(wasAsleep, "excited");
+    triggerHaptic();
+    sendPetCommand({ type: "petTap", wasAsleep });
     showSpeech(t(pickPetTapSpeechKey(), { name: pet.name }));
     wakePet((stats) => ({
       ...stats,
@@ -319,7 +320,7 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
     isCareAnimationPlaying,
     pet.isAsleep,
     pet.name,
-    playActionMood,
+    sendPetCommand,
     recordInteraction,
     showSpeech,
     t,

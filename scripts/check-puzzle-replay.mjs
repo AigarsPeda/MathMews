@@ -22,6 +22,17 @@ const renderer = Reconciler({
   supportsMicrotasks: true, scheduleMicrotask: queueMicrotask,
 });
 
+function enterCorrectAnswer(task) {
+  const { response, correctIndex } = task.puzzle;
+  if (!response) return task.onSelectChoice(correctIndex);
+  switch (response.kind) {
+    case 'choose': return task.onResponseChange(String(response.correctIndex));
+    case 'judge': return task.onResponseChange(response.isCorrect);
+    case 'write': return task.onResponseChange(response.answer);
+    default: assert.fail(`Unknown response kind: ${response.kind}`);
+  }
+}
+
 function harness() {
   const cache = new Map(), probes = new Map(), components = new Map(), routes = [];
   const gameContext = React.createContext(null);
@@ -49,11 +60,9 @@ function harness() {
     'expo-font': { useFonts: () => [true, null] },
     'expo-haptics': { ImpactFeedbackStyle: { Light: 'light', Medium: 'medium' }, impactAsync() {} },
     'expo-router': { useRouter: () => router, useLocalSearchParams: () => params, Redirect: view('Redirect') },
-    'react-native': { View: view('View'), Pressable: view('Pressable'), ActivityIndicator: view('ActivityIndicator'),
+    'react-native': { View: view('View'), ScrollView: view('ScrollView'), Pressable: view('Pressable'), ActivityIndicator: view('ActivityIndicator'),
       StyleSheet: { create: x => x }, Platform: { OS: 'ios' } },
     'react-native-safe-area-context': { SafeAreaView: view('SafeAreaView') },
-    'react-native-reanimated': { __esModule: true, default: { ScrollView: view('ScrollView') },
-      FadeInRight: { duration: () => ({ easing: () => ({ withInitialValues: () => ({ reduceMotion: () => ({}) }) }) }) }, Easing: { cubic: 'cubic', out: x => x }, ReduceMotion: { System: 'system' } },
     '@react-native-async-storage/async-storage': {},
   };
   function load(id) {
@@ -110,12 +119,13 @@ function harness() {
       await act(() => probes.get('TimedChallengeActions').onModeChange(mode));
       await act(() => probes.get('TimedChallengeActions').onStart());
     },
-    async answer(correct = true) {
+    async answer(enterAnswer = enterCorrectAnswer) {
       const task = probes.get('PuzzleTaskView');
       assert.ok(task, 'The next task stays playable');
-      await act(() => task.onSelectChoice(correct ? task.puzzle.correctIndex : (task.puzzle.correctIndex + 1) % task.puzzle.choices.length));
-      const press = probes.get('PuzzleButton').onPress;
-      await act(() => { press(); press(); });
+      await act(() => enterAnswer(task));
+      const button = probes.get('PuzzleButton');
+      assert.equal(button.disabled, false, `Check Answer is enabled for ${task.puzzle.id}`);
+      await act(() => { button.onPress(); button.onPress(); });
     },
     async next() { assert.ok(probes.get('ResultOverlay'), 'A completed task holds its result'); await act(() => probes.get('ResultOverlay').onContinue()); },
     async advance(ms) { now += ms; await act(render); },
@@ -229,6 +239,7 @@ for (const replay of [false, true]) for (const mode of ['timed', 'untimed']) tes
     else {
       assert.equal(h.props('PuzzleTaskView').answered, false, 'Every next task starts with empty answer state');
       assert.equal(h.props('PuzzleTaskView').selectedIndex, null);
+      assert.equal(h.props('PuzzleTaskView').responseValue, null);
     }
   }
   assert.equal(h.props('PuzzleTaskView').puzzle.id, second.levels[0].puzzleIds[0]);
@@ -260,7 +271,10 @@ test('wrong answers in a timed replay retain the task and clock', async () => {
   const h = harness(), [lesson] = h.paths.getTopicPaths('easy', 'cat-plans');
   complete(h, lesson); await h.enter(lesson, lesson.levels[7], true); await h.start();
   const deadline = h.save.progress.challengeAttempt.deadlineAt;
-  await h.answer(false);
+  await h.answer(task => {
+    assert.equal(task.puzzle.response.kind, 'judge');
+    task.onResponseChange(!task.puzzle.response.isCorrect);
+  });
   assert.equal(h.props('ResultOverlay'), undefined);
   assert.equal(h.save.progress.lives.current, 2, 'A duplicate wrong tap costs only one life');
   assert.equal(h.save.progress.challengeAttempt.deadlineAt, deadline);
