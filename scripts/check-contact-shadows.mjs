@@ -108,6 +108,17 @@ for (let i=0;i<60;i++) frame();
 assert.equal(poses.length, pausedWrites, 'Hidden rooms stop shadow callbacks');
 cleanup(); assert.equal(scene.size, 0);
 
+// On the simulator, a cat crossing a lit hearth projects away from the logs.
+const hearth = {...chair, modelId:'livingFireplaceCream',instanceId:'fire',scale:1,heading:0,position:[0,w.FLOOR_Y,0],poweredOn:true};
+const catPosition = { value:[0,w.FLOOR_Y,.8] };
+const fireRoom = {...room,objects:[hearth]};
+const catShadow = NativeContactShadows({world:fireRoom, catPosition, active:true}).props.children.find(child => child.props.catPosition);
+catShadow.type(catShadow.props); frame();
+assert.ok(poses.at(-1).position[2]>.8 && poses.at(-1).scale[2]>poses.at(-1).scale[0], 'Firelight stretches the cat shadow away from the source');
+catPosition.value=[0,w.FLOOR_Y,-1];frame();
+assert.equal(poses.at(-1).scale[0],0, 'The fire casts no shadow through the back of the surround');
+cleanup();
+
 const bytes = fs.readFileSync('assets/3d/native/room-contact-shadow.glb');
 const gltf = JSON.parse(bytes.subarray(20, 20+bytes.readUInt32LE(12)));
 assert.equal(gltf.materials[0].alphaMode, 'BLEND');

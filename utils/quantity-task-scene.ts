@@ -16,8 +16,40 @@ export function getQuantityTaskHeight(model: QuantityTaskModel): number {
   return Math.max(92, 62 + (Math.max(groupRows, resultRows) - 1) * 28);
 }
 
+/** The mouse sprite is a landscape cutout. Size it for both the loose pile and
+ * the finished array so sorting moves each toy without changing its size. */
+function mouseArray(model: Extract<QuantityTaskModel, { kind: 'array' }>, built: boolean): PracticeToken[] {
+  const count = model.rows * model.columns;
+  const pileColumns = Math.min(count, 10, Math.ceil(Math.sqrt(count * 1.5)));
+  const maxColumns = Math.max(model.columns, pileColumns);
+  const maxRows = Math.max(model.rows, Math.ceil(count / pileColumns));
+  const boardHeight = getQuantityTaskHeight(model);
+  const cellWidth = 288 / maxColumns;
+  const cellHeight = (boardHeight - 12) / maxRows;
+  const width = Math.min(96, cellWidth * .90, cellHeight * 1.22);
+  const height = width * 2 / 3;
+  const columns = built ? model.columns : pileColumns;
+  const rows = Math.ceil(count / columns);
+  const pitchX = Math.min(cellWidth, width * (built ? 1.32 : 1.12));
+  const pitchY = Math.min(cellHeight, height * 1.25);
+  const clearance = rows === 1 ? (boardHeight - height) / 2 : Math.max(0, (pitchY - Math.max(height, 12)) / 2);
+  return Array.from({ length: count }, (_, i) => {
+    const row = Math.floor(i / columns), col = i % columns;
+    const inRow = Math.min(columns, count - row * columns);
+    const x = 150 + (col - (inRow - 1) / 2) * pitchX;
+    const stagger = built ? 0 : (col % 2 ? 1 : -1) * Math.min(height * .32, clearance * .70);
+    const y = boardHeight / 2 + (row - (rows - 1) / 2) * pitchY + stagger;
+    // Start each row as a group, then let neighbours arrive a little apart.
+    const delayMs = built ? Math.round(row * Math.min(210, 700 / Math.max(1, rows - 1))
+      + col * Math.min(80, 140 / Math.max(1, columns - 1))) : 0;
+    const arc = -Math.min(13, height * .22, Math.max(0, clearance * .30));
+    return { ...counter(i, x, y), object: model.object, width, height, arc, delayMs };
+  });
+}
+
 /** Stable identities let counters travel between the pool and their destinations. */
 export function getQuantityTaskTokens(model: QuantityTaskModel, step: number, dealtCount?: number): PracticeToken[] {
+  if (model.kind === "array" && model.object === "mouse") return mouseArray(model, step > 0);
   const tokens = buildQuantityTaskTokens(model, step, dealtCount);
   if (!model.object) return tokens;
   return tokens.map(token => token.id.startsWith("counter-") ? {

@@ -1,5 +1,6 @@
 """Small meal effects authored in each feeder's local coordinates."""
 import math
+from cat_acting import BITE_CONTACTS
 
 FEEDING_EFFECT_IDS = ('feedingTile', 'feedingPebble', 'foodTrailTray', 'kibbleDispenser', 'lickingPad')
 
@@ -21,7 +22,8 @@ def pose_feeding_effect(id, pieces, t, h):
     contact = h['care_action_time']('eating', t)
     cleanup = 1 - h['smoothstep']((t - .875) / .125)
     for i, obj in enumerate(pieces):
-        born = .27 + (i - 4) * .16 if id == 'lickingPad' and i >= 4 else .17 + i * (.13 if id == 'lickingPad' else .065)
+        group = i * len(BITE_CONTACTS) // len(pieces)
+        born = BITE_CONTACTS[group] + .012 * (i % 3)
         flight = max(0, min(1, (contact - born) / .12))
         appear = h['smoothstep']((contact - born) / .012) * cleanup
         angle = (-2.7, -.4, -1.6, -2.3, -.8, -2.9, -1.2, -.15, 1.4)[i]

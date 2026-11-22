@@ -47,10 +47,11 @@ type DraggableRoomPetProps = {
   /** Validate the final position after grid snapping, returning the accepted anchor. */
   onDragEnd?: (position: { x: number; y: number }) => { x: number; y: number };
   onDragStart?: () => void;
-  onPetTap?: () => void;
+  onPetTap?: (point?: RoomPetOffset) => void;
   layerZIndex?: number;
   /** Ground contact below the sprite center, as a fraction of its size. */
   depthAnchor?: number;
+  supportDepth?: number;
   depthScale?: SharedValue<number>;
   depthY?: SharedValue<number>;
   menuActions?: RoomItemMenuAction[];
@@ -114,7 +115,7 @@ export function DraggableRoomPet(props: DraggableRoomPetProps) {
   const onDragPositionChange = useCallback((point: RoomPetOffset) => latest.current.onDragPositionChange?.(point), []);
   const onDragEnd = useCallback((point: RoomPetOffset) => latest.current.onDragEnd?.(point) ?? point, []);
   const onDragStart = useCallback(() => latest.current.onDragStart?.(), []);
-  const onPetTap = useCallback(() => latest.current.onPetTap?.(), []);
+  const onPetTap = useCallback((point?: RoomPetOffset) => latest.current.onPetTap?.(point), []);
   const x = props.externalPosition?.x, y = props.externalPosition?.y;
   const externalPosition = useMemo(() => x !== undefined && y !== undefined ? { x, y } : undefined, [x, y]);
   const offsetX = props.initialOffset?.x, offsetY = props.initialOffset?.y;
@@ -152,6 +153,7 @@ function DraggableRoomPetView({
   onPetTap,
   layerZIndex = 1,
   depthAnchor,
+  supportDepth,
   depthScale,
   depthY,
   menuActions,
@@ -256,10 +258,11 @@ function DraggableRoomPetView({
           liveX.set(next.x); liveY.set(next.y);
           onPositionChangeRef.current?.(next);
         },
-        onPanResponderRelease: () => {
+        onPanResponderRelease: event => {
           dragging.set(false);
           if (!gestureMovedRef.current) {
-            onPetTapRef.current?.();
+            onPetTapRef.current?.({ x: positionRef.current.x + event.nativeEvent.locationX - resolvedHitSize / 2,
+              y: positionRef.current.y + event.nativeEvent.locationY - resolvedHitSize / 2 });
             return;
           }
           setPosition(positionRef.current);
@@ -273,7 +276,7 @@ function DraggableRoomPetView({
           }
         },
       }),
-    [allowDrag, constrainToRoom, dragScale, hasTap, interactive, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
+    [allowDrag, constrainToRoom, dragScale, hasTap, interactive, commitOffset, petSize, resolvedHitSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
   );
 
   const halfPet = petSize / 2;
@@ -295,8 +298,8 @@ function DraggableRoomPetView({
   }));
   const depthStyle = useAnimatedStyle(() => ({
     zIndex: (depthAnchor === undefined && depthY === undefined) || layerZIndex >= ROOM_MENU_OPEN_Z_INDEX ? layerZIndex
-      : getRoomDepthZIndex(depthY?.get() ?? ((animatedPosition && !dragging.get() ? animatedPosition.y.get() : externalPosition && !dragging.get() ? externalPosition.y : liveY.get())
-          + petSize * (depthAnchor ?? 0) * (depthScale?.get() ?? 1)), layerZIndex),
+      : getRoomDepthZIndex(Math.max(supportDepth ?? -Infinity, depthY?.get() ?? ((animatedPosition && !dragging.get() ? animatedPosition.y.get() : externalPosition && !dragging.get() ? externalPosition.y : liveY.get())
+          + petSize * (depthAnchor ?? 0) * (depthScale?.get() ?? 1))), layerZIndex),
   }));
 
   return (

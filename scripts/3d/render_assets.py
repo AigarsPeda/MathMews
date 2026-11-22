@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from store_furniture import STORE_FURNITURE_IDS, MODERN_KITCHEN_IDS, build_store_furniture
 from bedroom_additions import add_bed_quilt
-from cat_acting import ball_toss
+from cat_acting import ball_toss, feather_location, BITE_CONTACTS, meal_motion
 from cat_feeders import CAT_FEEDER_IDS, build_cat_feeder
 from bathroom_additions import build_bathroom_addition, add_bathroom_controls
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
@@ -125,28 +125,58 @@ def cat_pose(rig,state,t):
 def bowl(color='teal',loc=(0,-.85,.08)):
  cylinder('Bowl base',loc,.36,.13,color);torus('Bowl rim',(loc[0],loc[1],loc[2]+.08),.30,.065,color);cylinder('Food',(loc[0],loc[1],loc[2]+.085),.27,.035,'brown')
 
-def eating_food():
- # Small pieces in the bowl and eight deterministic spills, saved as keyframes.
+def bowl_kibble(center_y, height):
+ pieces=[]
  for i in range(14):
   angle=i*2.4;radius=.055+.012*i
-  sphere('Bowl kibble',(radius*math.cos(angle),-.85+radius*math.sin(angle),.193),(.037,.032,.026),'brown' if i%2 else 'gold')
+  piece=sphere('Bowl kibble',(radius*math.cos(angle),center_y+radius*math.sin(angle),height),
+               (.037,.032,.026),'brown' if i%2 else 'gold')
+  piece['kibble_index']=i
+  pieces.append(piece)
+ return pieces
+
+def eating_food():
+ bowl_kibble(-.85,.193)
  return [sphere(f'Spilled kibble {i+1}',(0,-.85,.19),(.04,.033,.028),
                 'brown' if i%2 else 'gold') for i in range(8)]
 
-def pose_eating_food(pieces,t):
+def pose_bowl(parts,center_y,t,refill=0):
+ bite,chew,eaten=meal_motion(t)
+ # Rock around the bottom edge. Kibble jostles, then sinks in mouthfuls.
+ angle=.065*bite-.027*chew
+ c,s=math.cos(angle),math.sin(angle)
+ for obj in parts:
+  if 'meal_rest' not in obj:obj['meal_rest']=list(obj.location)
+  x,y,z=obj['meal_rest']
+  if obj.name.startswith('Food'):
+   portion=1-.30*eaten*(1-refill)
+   obj.scale=(portion,portion,1)
+   z-=.023*eaten*(1-refill)
+  if 'kibble_index' in obj:
+   i=obj['kibble_index']
+   portion=1-smoothstep(3*eaten-i%3)*(1-refill)
+   obj.scale=(.037*portion,.032*portion,.026*portion)
+   x+=.025*chew*math.cos(i*2.4)
+   z+=.038*chew*(.65+.35*math.sin(i))
+  y-=center_y
+  obj.location=(x+.023*bite,center_y+y*c-z*s-.028*bite,y*s+z*c+.36*abs(s))
+  obj.rotation_euler.x=angle
+
+def pose_eating_food(pieces,t,center_y=-.85):
  for i,piece in enumerate(pieces):
-  born=.18+i*.065
-  flight=max(0,min(1,(t-born)/.18))
-  angle=-2.85+i*.37
-  radius=.10+(.38+.025*(i%3))*flight
-  # Arc clears the rim, followed by one diminishing bounce on the floor.
-  bounce=math.sin(math.pi*max(0,min(1,(t-born-.18)/.10)))
-  z=.19*(1-flight)+.035*flight+.32*math.sin(math.pi*flight)
-  if flight==1:z+=.075*bounce
-  piece.location=(radius*math.cos(angle),-.85+radius*math.sin(angle),z)
-  appear=smoothstep((t-born)/.025)
+  group=i//3
+  born=BITE_CONTACTS[group]+.006*(i%3)
+  flight=max(0,min(1,(t-born)/.145))
+  angle=(-2.7,-.4,-1.6,-2.3,-.8,-2.9,-1.2,-.15)[i]
+  reach=.28+.037*(i%3)
+  bounce=max(0,min(1,(t-born-.145)/.090))
+  radius=.18+reach*flight+.05*bounce
+  z=.193*(1-flight)+.035*flight+(.28+.025*(i%3))*4*flight*(1-flight)
+  z+=.052*math.sin(math.pi*bounce)
+  piece.location=(radius*math.cos(angle),center_y+radius*math.sin(angle),z)
+  appear=smoothstep((t-born)/.014)
   piece.scale=(.04*appear,.033*appear,.028*appear)
-  piece.rotation_euler=(flight*2.4,flight*3.1,angle)
+  piece.rotation_euler=(2.4*flight+.7*bounce,3.1*flight,angle)
 
 def care_props(state):
  # Keep the moving prop separate from the cat and the spilled floor pieces.
@@ -167,7 +197,9 @@ def pose_care_props(slide,food,state,t):
  right=bpy.context.scene.camera.rotation_euler.to_matrix()@Vector((1,0,0))
  slide.location=right*(-2.4*(1-enter+leave))
  if food:
-  pose_eating_food(food,care_action_time(state,t))
+  contact=care_action_time(state,t)
+  pose_bowl(slide.children,-.85,contact)
+  pose_eating_food(food,contact)
   for piece in food:piece.scale*=1-leave
 
 PLAY_CLIPS=('ballToss','yarnRoll','featherChase')
@@ -202,16 +234,15 @@ def play_toy_location(state,t):
   cuddle=smooth_window(t,.25,.77,.12)
   location=Vector((-.36*(1-cuddle)+.055*math.sin(t*math.tau*5)*cuddle,-.73,.18))
  else:
-  play=smooth_window(t,.15,.85,.10)
-  location=Vector((-.50*math.sin((t-.22)*math.tau*2.5)*play*(1-smoothstep((t-.58)/.10)),
-                   -.66,.77+.19*pulse(t,.70,.13)))
+  location=Vector(feather_location(t))
  return location+right*(-(3.7 if state=='ballToss' else 2.6)*(1-enter+leave))
 
 def pose_play_props(toy,state,t):
  toy.location=play_toy_location(state,t)
  toy.rotation_euler=((0,t*math.tau*3,0) if state=='ballToss' else
                      (0,0,.18*math.sin(t*math.tau*5)) if state=='yarnRoll' else
-                     (0,.24*math.sin(t*math.tau*4),.15*math.sin(t*math.tau*3)))
+                     (0,-1.9*(feather_location(t)[0]-feather_location(max(0,t-.035))[0]),
+                      .15*math.sin(t*math.tau*3)))
 
 def sample():
  branding()

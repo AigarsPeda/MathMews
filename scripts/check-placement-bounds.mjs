@@ -1,7 +1,7 @@
 /** Audit placement data against every shipped mesh, including the room edges. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { readModel } from './3d/build-placement-bounds.mjs';
+import { readModel, itemSupportSurfaces } from './3d/build-placement-bounds.mjs';
 import { placementPrisms, compactPrisms } from './3d/placement-shapes.mjs';
 const catalog=JSON.parse(fs.readFileSync('assets/3d/native/catalog.json'));
 const data=JSON.parse(fs.readFileSync('constants/room-placement-bounds.json'));
@@ -47,15 +47,9 @@ for(const [id,meta] of Object.entries(catalog)) {
       assert.ok(p.every(Number.isFinite)&&Math.hypot(p[0]-next[0],p[1]-next[1])>1e-8,`${id}: rounded placement polygons have finite, nonzero collision axes`);
     });
   }
-  const boards = meshes.filter(mesh=>/^(Rounded tabletop|Wall shelf(?:\.\d+)?|Shelf(?:\.\d+)?|Broad fireplace mantel|Thick stone worktop(?:\.\d+)?)$/.test(mesh.name));
-  assert.equal(derived.supportSurfaces?.length ?? 0,boards.length,`${id}: support surfaces match authored boards`);
-  boards.forEach((board,i)=>{
-    const surface=derived.supportSurfaces[i];
-    for(const k of [0,1,2]) {
-      assert.ok(Math.abs(surface.min[k]-Math.min(...board.points.map(p=>p[k])))<1e-6);
-      assert.ok(Math.abs(surface.max[k]-Math.max(...board.points.map(p=>p[k])))<1e-6);
-    }
-  });
+  const surfaces = itemSupportSurfaces(id, meshes);
+  assert.deepEqual(derived.supportSurfaces ?? [], JSON.parse(JSON.stringify(surfaces, (_k, v) =>
+    typeof v === 'number' ? Math.round(v * 1e6) / 1e6 : v)), `${id}: supports match the shipped model`);
   const backplate=meshes.find(mesh=>mesh.name==='Wall backplate');
   if(backplate) for(const k of [0,1,2]) {
     assert.ok(Math.abs(derived.wallMountBounds.min[k]-Math.min(...backplate.points.map(p=>p[k])))<1e-6);
@@ -71,7 +65,7 @@ for(const [id,meta] of Object.entries(catalog)) {
   }
   if(meta.collisionBoxes || meta.animated) assert.equal(derived.collisionBoxes,undefined,`${id}: keep authored shapes/animation envelope`);
   else {
-    const physicalMeshes=meshes.filter(mesh=>!/^Interaction (water|power LED)/.test(mesh.name));
+    const physicalMeshes=meshes.filter(mesh=>!/^(Interaction (water|power LED)|Soft teardrop flame|Grate penumbra)/.test(mesh.name));
     assert.equal(derived.collisionBoxes.length,physicalMeshes.length,`${id}: physical parts collide; water and status lights do not`);
     physicalMeshes.forEach((mesh,i)=>{
       const box=derived.collisionBoxes[i];parts++;
@@ -88,7 +82,7 @@ for(const [id,meta] of Object.entries(catalog)) {
       }
     });
   }
-  const physical=meshes.filter(mesh=>!/^(Interaction (water|power LED)|Flowing water|Bath water glint|Bathroom (wash ripple|water drop)|Recessed bath water)/.test(mesh.name));
+  const physical=meshes.filter(mesh=>!/^(Interaction (water|power LED)|Soft teardrop flame|Grate penumbra|Flowing water|Bath water glint|Bathroom (wash ripple|water drop)|Recessed bath water)/.test(mesh.name));
   const selected=meta.leaves||/^(catTree(Tan|Blue|Pink)|toy-scratchPost)/.test(id)
     ? physical.filter(mesh=>meta.collisionBoxes.some(box=>[0,1,2].every(k=>
       Math.abs(Math.min(...mesh.points.map(p=>p[k]))-box.min[k])<1e-5&&Math.abs(Math.max(...mesh.points.map(p=>p[k]))-box.max[k])<1e-5))) : physical;

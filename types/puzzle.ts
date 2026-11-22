@@ -164,13 +164,18 @@ export type FractionMatchPayload = {
   pairs: FractionMatchPair[];
 };
 
+export type PercentageExample = { whole: number; percent: number; kind: "amount" | "sale" };
+
 type PuzzleBase = {
+  percentageExample?: PercentageExample;
   /** Alternate interaction over the same mathematical givens and stable puzzle ID. */
   response?:
     | { kind: "write"; answer: string; format: "number" | "clock" | "fraction"; denominator?: number; prompt?: string }
     | { kind: "choose"; options: string[]; correctIndex: number; prompt?: string }
     | { kind: "judge"; proposed: string; isCorrect: boolean; prompt?: string };
   learning?: { skillId: string; prerequisiteSkillIds: string[]; role: "practice" | "review" | "application"; representation: string; reasoningSteps: number };
+  /** Equal parts for fraction questions whose interaction is a choice or a claim. */
+  fractionExample?: { numerator: number; denominator: number; whole?: number; compareTo?: [number, number] };
   taskVisual?: QuantityTaskModel;
   contextObjects?: { object: PuzzleObject; count?: number; role?: "start" | "add" | "remove"; primary?: boolean }[];
   /** Selects an independent worked example, never an answer to this task. */

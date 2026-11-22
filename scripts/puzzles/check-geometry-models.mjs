@@ -5,7 +5,8 @@ import { GEOMETRY_PILOT_LESSONS } from './geometry-pilot.mjs';
 
 export function checkGeometryModels({load}) {
  const clone=v=>JSON.parse(JSON.stringify(v));
- const {geometryTarget,checkGeometryAnswer,appendGeometryDigit,rectangleEdges}=load('@/utils/geometry-models');
+ const {geometryTarget,checkGeometryAnswer,appendGeometryDigit,rectangleEdges,geometryMeasurement,measureStops,perimeterPoint}=load('@/utils/geometry-models');
+ const {distanceAtStops}=load('@/utils/puzzle-motion');
  const {checkPuzzleAnswer}=load('@/utils/puzzle-type');
  const {getPuzzleDraftAnswer,getPuzzleAttemptHint}=load('@/utils/puzzle-attempt');
  const {getVisualExplanation}=load('@/constants/visual-explanations');
@@ -19,6 +20,24 @@ export function checkGeometryModels({load}) {
   assert.ok([w,h].every(n=>Number.isInteger(n)&&n>0&&n<=9));
   const target=mode==='area'?w*h:mode==='perimeter'?2*w+2*h:mode.startsWith('missing')?h:w+h===other.width+other.height?2:w+h>other.width+other.height?0:1;
   assert.equal(geometryTarget(p),target);
+  const reveal = geometryMeasurement(p);
+  const end = Math.max(reveal.total, reveal.otherTotal);
+  for (const marked of [0, 1, end - 1, end]) {
+   const stops = measureStops(p, marked);
+   assert.equal(stops[0], marked);
+   assert.equal(stops.at(-1), end);
+   let last = marked;
+   for (let clock = marked; clock <= end; clock += .125) {
+    const distance = distanceAtStops(clock, stops, .55);
+    assert.ok(last <= distance && distance <= end);
+    last = distance;
+   }
+   for (const stop of stops.slice(1)) assert.equal(distanceAtStops(stop - .1, stops, .55), stop);
+  }
+  assert.equal(reveal.total, ['area','missing_area'].includes(mode) ? w*h : 2*(w+h));
+  if (mode === 'compare') assert.equal(reveal.otherTotal, 2*(other.width + other.height));
+  else assert.ok(reveal.equation.endsWith(' = ' + target));
+
   assert.equal(getPuzzleDraftAnswer(p,{geometry:null}),null);
   assert.equal(checkPuzzleAnswer(p,{kind:'choice',index:target}),false);
   for(let value=-1;value<=100;value++)assert.equal(checkPuzzleAnswer(p,{kind:'geometry',value}),value===target);
@@ -37,6 +56,12 @@ export function checkGeometryModels({load}) {
  assert.deepEqual([...comparisons].sort(),[0,1,2],'All comparison answers occur, including equal perimeters');
  for(let w=1;w<=9;w++)for(let h=1;h<=9;h++){
   const edges=rectangleEdges(w,h);assert.equal(edges.length,2*(w+h));
+  for (let step=0; step<edges.length; step++) {
+   const a=perimeterPoint(w,h,step), b=perimeterPoint(w,h,step+1), edge=edges[step];
+   assert.equal(Math.abs(a.x-b.x) + Math.abs(a.y-b.y), 1);
+   assert.equal(Math.min(a.x,b.x), edge.x); assert.equal(Math.min(a.y,b.y), edge.y);
+  }
+  assert.deepEqual(clone(perimeterPoint(w,h,edges.length)), { x:0, y:0 });
   assert.equal(new Set(edges.map(e=>`${e.x},${e.y},${e.horizontal}`)).size,edges.length);
   assert.ok(edges.every(e=>e.horizontal?(e.y===0||e.y===h)&&e.x>=0&&e.x<w:(e.x===0||e.x===w)&&e.y>=0&&e.y<h),'Only outside unit edges are traced');
  }

@@ -53,19 +53,100 @@ export function insideWeatherPane(pane: WeatherPane, x: number, y: number, margi
   return true;
 }
 
-/** Real-time fall speed stays readable even when the world clock runs fast. */
-export function weatherParticle(kind: Exclude<WeatherKind, 'clear'>, index: number, seconds: number, pane: WeatherPane) {
+function particleNoise(n: number) {
+  'worklet';
+  const value = Math.sin(n * 127.1 + 23.7) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+/** Clip a moving streak against the actual glass so it enters and leaves tip first. */
+function rainStreak(index: number, seconds: number, pane: WeatherPane, windowSeed: number) {
   'worklet';
   const width = pane.max[0] - pane.min[0], height = pane.max[1] - pane.min[1];
-  const seed = ((index + 1) * .61803398875) % 1;
-  const speed = kind === 'rain' ? .85 : kind === 'snow' ? .13 : .09;
-  const phase = (seed + seconds * speed * (1 + (index % 3) * .12)) % 1;
-  const sway = kind === 'rain' ? -.055 * phase : Math.sin(seconds * (kind === 'snow' ? .8 : 1.2) + index * 2.4) * (kind === 'snow' ? .055 : .12);
-  const x = pane.min[0] + width * (.08 + (((index + 1) * .38196601125) % 1) * .84 + sway);
-  const y = pane.max[1] - height * phase;
-  const sx = width * (kind === 'rain' ? .004 : kind === 'snow' ? .018 : .056);
-  const sy = height * (kind === 'rain' ? .075 : kind === 'snow' ? .018 : .0392);
-  const rotation = kind === 'rain' ? -.16 : kind === 'snow' ? 0 : Math.sin(seconds * 1.6 + index) * .9;
-  return { x, y, z: pane.z + .004, sx, sy, rotation,
-    visible: insideWeatherPane(pane, x, y, Math.max(sx, sy) * .55) };
+  const depth = index % 3, seed = index + windowSeed;
+  const progress = particleNoise(seed + 13) + seconds * (.63 + .27 * depth + .21 * particleNoise(seed + 41));
+  const pass = Math.floor(progress), phase = progress - pass;
+  const length = height * (.058 + .035 * depth + .028 * particleNoise(seed + 31));
+  const sx = Math.min(width, height) * (.0052 + .0026 * depth);
+  const wind = .18 + .068 * Math.sin(seconds * .94 + .3 * Math.sin(seconds * .63)) + .023 * particleNoise(seed);
+  const rotation = -Math.atan(wind), ax = -Math.sin(rotation), ay = Math.cos(rotation);
+  // Each new drop starts in a fresh lane. Its height and lane have independent seeds.
+  const x = pane.min[0] + width * particleNoise(seed * 3 + pass * 73 + 9) - (phase - .5) * height * wind;
+  const y = pane.max[1] + length / 2 - phase * (height + length);
+  let low = -length / 2, high = length / 2;
+  for (let i = 0; i < pane.polygon.length; i++) {
+    const a = pane.polygon[i], b = pane.polygon[(i + 1) % pane.polygon.length];
+    const dx = b[0] - a[0], dy = b[1] - a[1];
+    const clearance = dx * (y - a[1]) - dy * (x - a[0]) - Math.abs(dx * ax + dy * ay) * sx / 2;
+    const slope = dx * ay - dy * ax;
+    if (Math.abs(slope) < 1e-8) {
+      if (clearance < 0) { high = low; break; }
+    } else if (slope > 0) low = Math.max(low, -clearance / slope);
+    else high = Math.min(high, -clearance / slope);
+    if (high <= low) break;
+  }
+  const middle = (low + high) / 2;
+  return { x: x + ax * middle, y: y + ay * middle, z: pane.z + .003 + depth * .0005,
+    sx, sy: Math.max(0, high - low), rotation, visible: high - low > .0006 };
+}
+
+/** Let snow and leaves appear gradually along the rim, including on round windows. */
+function driftingParticle(pane: WeatherPane, x: number, y: number, sx: number, sy: number, rotation: number, z: number) {
+  'worklet';
+  let clearance = Infinity;
+  for (let i = 0; i < pane.polygon.length; i++) {
+    const a = pane.polygon[i], b = pane.polygon[(i + 1) % pane.polygon.length];
+    const dx = b[0] - a[0], dy = b[1] - a[1];
+    clearance = Math.min(clearance, (dx * (y - a[1]) - dy * (x - a[0])) / Math.hypot(dx, dy));
+  }
+  const edge = Math.max(0, Math.min(1, clearance / Math.max(.0001, .7 * Math.max(sx, sy))));
+  return { x, y, z: pane.z + z, sx: sx * edge, sy: sy * edge, rotation, visible: edge > .035 };
+}
+
+/** A leaf briefly shows its narrow edge as it rolls through the broad swing. */
+function tumblingLeaf(pane: WeatherPane, x: number, y: number, size: number, swing: number, roll: number) {
+  'worklet';
+  const face = .18 + .82 * Math.abs(Math.cos(roll));
+  return driftingParticle(pane, x, y, size * .70 * face, size, .22 + .92 * Math.sin(swing) + .28 * Math.sin(roll), .005);
+}
+
+/** Real-time fall speed stays readable even when the world clock runs fast. */
+export function weatherParticle(kind: Exclude<WeatherKind, 'clear'>, index: number, seconds: number, pane: WeatherPane, windowSeed = 0) {
+  'worklet';
+  if (kind === 'rain') return rainStreak(index, seconds, pane, windowSeed);
+  const width = pane.max[0] - pane.min[0], height = pane.max[1] - pane.min[1];
+  const unit = Math.min(width, height), seed = windowSeed + index * 11;
+  const depth = index % 3;
+  const snow = kind === 'snow';
+  const speed = (snow ? .083 : .095) + (snow ? .046 : .031) * depth + .024 * particleNoise(seed + 2);
+  const progress = particleNoise(seed + 7) + seconds * speed;
+  const pass = Math.floor(progress), phase = progress - pass;
+  const lane = .06 + .88 * particleNoise(seed + pass * 53 + 31);
+  const gust = Math.sin(seconds * .72 + particleNoise(windowSeed) * 6);
+  const swing = seconds * (.94 + .32 * depth) + 6.28 * particleNoise(seed + 3);
+  const across = snow
+    ? lane + .13 * (phase - .5) + .042 * gust + .032 * Math.sin(swing)
+    : lane + .26 * (phase - .5) + .063 * gust + .135 * Math.sin(swing);
+  const x = pane.min[0] + width * across;
+  const y = pane.max[1] - height * (phase + (snow ? 0 : .046 * Math.sin(2 * swing) * Math.sin(Math.PI * phase)));
+  if (snow) {
+    const size = unit * (.018 + .012 * depth + .009 * particleNoise(seed + 4));
+    return driftingParticle(pane, x, y, size, size, .32 * Math.sin(swing), .003 + .0006 * depth);
+  }
+  const size = unit * (.064 + .022 * depth + .018 * particleNoise(seed + 4));
+  return tumblingLeaf(pane, x, y, size, swing, 1.58 * swing + index);
+}
+
+/** A single leaf crosses the glass, drops out of view and leaves a pause before the next pass. */
+export function windowWatchLeaf(seconds: number, pane: WeatherPane) {
+  'worklet';
+  const pass = Math.floor(seconds / 6);
+  const t = Math.min(1, (seconds % 6) / 3.8);
+  const width = pane.max[0] - pane.min[0], height = pane.max[1] - pane.min[1];
+  const across = pass % 2 ? 1 - t : t;
+  const swing = t * 7 + pass;
+  const x = pane.min[0] + width * across;
+  const y = pane.max[1] - height * (.18 + .60 * t + .095 * Math.sin(swing) * Math.sin(Math.PI * t));
+  const leaf = tumblingLeaf(pane, x, y, Math.min(width, height) * .145, swing, swing * 1.58);
+  return { ...leaf, visible: t < 1 && leaf.visible };
 }

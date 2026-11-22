@@ -2,6 +2,20 @@
   "loading": {
     "label": "Загрузка игры"
   },
+  "cookieShare": {
+    "goal": "Разложи {{cookies}} поровну по {{plates}} тарелкам.",
+    "cookies_one": "{{count}} печенье",
+    "cookies_few": "{{count}} печенья",
+    "cookies_many": "{{count}} печений",
+    "cookies_other": "{{count}} печенья",
+    "tray": "Поднос с печеньем",
+    "watch": "Показать, как делить",
+    "playing": "Раскладываем…",
+    "replay": "Посмотреть ещё раз",
+    "ask": "Выбери, сколько будет на каждой тарелке и сколько останется.",
+    "result": "На каждой тарелке по {{each}}. На подносе осталось {{left}}.",
+    "diagram": "Печенья на подносе — {{items}}. Тарелок — {{plates}}."
+  },
   "common": {
     "back": "Назад",
     "close": "Закрыть",
@@ -160,7 +174,9 @@
     "extinguishFire": "Потушить огонь",
     "makeBigger": "Больше",
     "makeSmaller": "Меньше",
+    "featherDragHint": "Веди перо пальцем",
     "catCommands": {
+      "scratchPost": "Поточить когти",
       "bowlEat": "есть",
       "chairSit": "Сядьте на кресло-качалку",
       "furnitureSit": "Подпрыгни и сядь",
@@ -215,6 +231,7 @@
       "feather": "Возьми эти перья, {{name}}!"
     },
     "decorateStart": "Давайте украшать!",
+    "surfaceMoveHint": "Коснись пола или подходящей поверхности, затем нажми «Поставить здесь». Можно также перетащить предмет и отпустить.",
     "dragSelectedHint": "Коснись свободного места, чтобы примерить предмет. Можно также перетащить его и отпустить.",
     "placeHere": "Разместите здесь",
     "turnItem": "Поворот",
@@ -1292,6 +1309,7 @@
     "a11yGotIt": "Понятно"
   },
   "play": {
+    "seeResult": "Посмотреть результат",
     "puzzleOf": "Головоломка {{number}} из {{total}}",
     "backToPath": "Вернуться к пути",
     "adjustAnswer": "Не совсем. Скорректируйте свой ответ и проверьте еще раз.",
@@ -1773,15 +1791,36 @@
     "parts": "{{count}} частей",
     "partitionResets": "Новые части сбросят закраску.",
     "yourStrip": "Твоя полоска",
+    "piecesCounted": "{{count}} из {{total}} равных частей",
     "shaded": "Заштрихованные части: {{count}} из {{total}}.",
     "remove": "Убрать закраску одной части",
     "add": "Закрасить одну часть",
     "reset": "Начать эту полосу снова"
   },
+  "percentageSolution": {
+    "whole": "100% = {{whole}}",
+    "amount": "{{percent}}% от {{whole}} = {{amount}}",
+    "saved": "Скидка {{percent}}% = {{amount}}",
+    "sale": "{{whole}} − {{amount}} = {{price}}",
+    "budget": "Остаток: {{budget}} − {{prices}} = {{remaining}}",
+    "coins_one": "{{count}} монета",
+    "coins_few": "{{count}} монеты",
+    "coins_many": "{{count}} монет",
+    "coins_other": "{{count}} монеты"
+  },
   "decimalModels": {
     "tenthsGuide": "Квадрат представляет собой одно целое. Каждая из его 10 равных полосок составляет одну десятую часть, или 0,1.",
     "hundredthsGuide": "100 клеток = 1 целое.\n1 клетка = 0,01 · 1 ряд = 0,10 = 0,1",
+    "eachWhole": "Каждый квадрат — одно целое.",
     "oneWhole": "1 целое",
+    "countTenths_one": "{{count}} десятая",
+    "countTenths_few": "{{count}} десятых",
+    "countTenths_many": "{{count}} десятых",
+    "countTenths_other": "{{count}} десятых",
+    "countHundredths_one": "{{count}} сотая",
+    "countHundredths_few": "{{count}} сотых",
+    "countHundredths_many": "{{count}} сотых",
+    "countHundredths_other": "{{count}} сотых",
     "gridLabel": "Десятичная сетка",
     "shaded": "{{count}} из {{total}} частей заштриховано",
     "tapGrid": "Нажмите на сетку, чтобы начать.",
@@ -1832,6 +1871,7 @@
     "eraseShort": "Стереть"
   },
   "bridge": {
+    "litreSquare": "1 клетка = 1 литр",
     "sameBottles": "В каждой бутылке одинаковое количество воды.",
     "bottles": "Бутылки",
     "totalLitres": "Всего литров",
@@ -1867,6 +1907,31 @@
     "moveBy": "Измени x на {{x}}, а y на {{y}}.",
     "linkedLinesTitle": "Связанные величины"
   },
+  "moneyReveal": {
+    "price": "Цена",
+    "paid": "Оплачено",
+    "change": "Сдача",
+    "total": "Сумма монет",
+    "each": "Цена за штуку",
+    "sale": "Цена со скидкой",
+    "budget": "Бюджет",
+    "left": "Остаток",
+    "itemCount": "Можно купить · {{value}} шт."
+  },
+  "jugSolution": {
+    "ml": "{{value}} мл",
+    "litres": "{{value}} л",
+    "left": "Остаток {{volume}}",
+    "cup": "Полных чашек · {{value}}",
+    "bowl": "Полных мисок · {{value}}",
+    "bottle": "Нужно бутылок · {{value}}"
+  },
+  "clockSolution": {
+    "minutes": "{{value}} мин",
+    "hours": "{{value}} ч",
+    "nextDay": "следующий день",
+    "previousDay": "предыдущий день"
+  },
   "everyday": {
     "cats": "Коты",
     "toys": "Игрушки",
@@ -1885,6 +1950,20 @@
     },
     "catCount": "Число котов",
     "toyCount": "Число игрушек",
+    "boxCubes_one": "{{count}} кубик",
+    "boxCubes_other": "{{count}} кубика",
+    "boxCubes_few": "{{count}} кубика",
+    "boxCubes_many": "{{count}} кубиков",
+    "boxLength": "{{n}} см",
+    "boxVolume": "{{n}} см³",
+    "boxLayer": "Готовые слои  {{layer}} / {{height}}",
+    "boxBase": "Кубиков в слое  {{w}} × {{d}} = {{area}}",
+    "gridSquare": "Клетка {{number}}",
+    "shapeCount": {
+      "sides": "Стороны",
+      "corners": "Вершины",
+      "symmetry": "Оси симметрии"
+    },
     "ribbonPerCorner": "Коврики: 1 лента на каждый угол",
     "priceEach": "Цена за штуку",
     "packPrice": "Цена всего набора",
@@ -1923,6 +2002,11 @@
   "developer": {
     "title": "Режимы разработчика",
     "enabled": "Тестовый режим включён",
+    "nextTopic": "Следующая тема",
+    "topicList": "Темы задач ({{total}})",
+    "taskFits": "Помещается без прокрутки",
+    "taskScroll": "Прокрутка на {{distance}} пт",
+    "repeatPuzzle": "Повторить задачу",
     "sessionHint": "Выбери тестовый экран. Все режимы выключаются при перезапуске приложения.",
     "choose": "Выбрать тестовый экран",
     "open": "Открыть тестовый экран",

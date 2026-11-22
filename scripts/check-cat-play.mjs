@@ -316,7 +316,7 @@ console.log('Verified cross-room object requests, departure before arrival, late
 // Run the actual Home bedtime effect and cross-room command handoff.
 home();
 game.pet = { ...game.pet, homeRoomId: 'livingRoom', catHomeRoomId: 'kitchen',
-  homeRooms: { bedroom: { bedId: 'houseA', placedDecorations: [] } } };
+  homeRooms: { kitchen: { bedId: 'houseA', placedDecorations: [] } } };
 game.worldClock = { worldMs: 21*3600000, realMs: TestDate.now(), speed: 1 };
 game.visitHomeRoom = destination => { game.pet = switchHomeRoom(game.pet, destination); };
 game.sendCatToRoom = (destination, follow) => { game.pet = sendCatToRoom(game.pet, destination, follow); };
@@ -326,19 +326,14 @@ function renderBedtimeHome() {
   effects.forEach(fn => fn()); return tree;
 }
 renderBedtimeHome(); house = renderBedtimeHome();
-assert.equal(stageIn(house, 'kitchen').roomCommand.kind, 'roomTravel');
-assert.equal(stageIn(house, 'kitchen').roomCommand.ambientPeriod, 'night');
-assert.equal(stageIn(house, 'kitchen').roomCommand.instanceId, 'bedroom');
-stageIn(house, 'kitchen').onSendCatToRoom('bedroom', 'night'); house = renderBedtimeHome();
-assert.equal(game.pet.homeRoomId, 'livingRoom', 'Automatic arrival does not change the view');
-assert.equal(game.pet.catHomeRoomId, 'bedroom');
-const bedtime = stageIn(house, 'bedroom').roomCommand;
+const bedtime = stageIn(house, 'kitchen').roomCommand;
 assert.equal(bedtime.kind, 'bedSnuggle'); assert.equal(bedtime.instanceId, 'bed');
 assert.equal(bedtime.ambientPeriod, 'night');
-assert.ok(stageIn(house, 'bedroom').roomEntry, 'Automatic travel still enters the bedroom visibly');
-stageIn(house, 'bedroom').onRoomCommandAccepted(bedtime.id); house = renderBedtimeHome();
+assert.equal(game.pet.homeRoomId, 'livingRoom', 'Browsing an empty room does not redirect bedtime or the view');
+assert.equal(stageIn(house, 'bedroom').roomCommand, undefined);
+stageIn(house, 'kitchen').onRoomCommandAccepted(bedtime.id); house = renderBedtimeHome();
 assert.ok(house.filter(node => node.type === 'PetStage').every(node => !node.props.roomCommand));
 visibleStage(house).props.onRequestRoomCommand('livingRoom', 'sofaSleep', 'manual-sofa'); house = renderBedtimeHome();
 game.worldClock = { ...game.worldClock, worldMs: 30*3600000 }; renderBedtimeHome(); house = renderBedtimeHome();
-assert.equal(stageIn(house, 'bedroom').roomCommand.instanceId, 'livingRoom', 'Morning preserves a later manual journey');
-console.log('Verified actual Home nighttime travel, hidden bedroom entry, exact bed handoff, independent browsing, one-shot acknowledgment and morning manual-command priority.');
+assert.equal(stageIn(house, 'kitchen').roomCommand.instanceId, 'livingRoom', 'Morning preserves a later manual journey');
+console.log('Verified local Home bedtime, exact bed selection, independent browsing, one-shot acknowledgment and morning manual-command priority.');

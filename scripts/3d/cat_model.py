@@ -4,6 +4,7 @@ All dimensions are Blender units. Front is -Y and up is +Z. Current character
 geometry comes from original_cat.py and game_cat.py; see DESIGN.md for visual guidance.
 """
 import math
+from cat_acting import meal_motion
 import bpy
 import bmesh
 from mathutils import Vector
@@ -406,7 +407,7 @@ def pose_face(rig, state, t, eye_height):
     elif state in ('sad', 'cry', 'angryCute'):
         sad = .70 + .12 * math.sin(t * math.tau)
     surprised = math.sin(math.pi * t) if state == 'surprised' else 0
-    eating = smooth_window(t, .03, .90, .15) if state == 'eating' else 0
+    eating = .80 * meal_motion(t)[1] if state == 'eating' else 0
     play = smooth_window(t, .14, .88, .10) if state in ('ballToss', 'yarnRoll', 'featherChase') else 0
     yawn = math.sin(math.pi * t) ** 4 if state in ('sleepy', 'restSleep') else 0
     box = float(rig['root'].get('box_activity', 0)) if state.startswith('box') else 0

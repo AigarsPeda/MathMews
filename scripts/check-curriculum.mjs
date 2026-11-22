@@ -88,6 +88,15 @@ const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-sto
 const { getPuzzleCoinReward } = load('@/constants/game');
 const tiers = ['easy','medium','hard'];
 const en = tiers.flatMap(tier=>getPuzzlesByDifficulty('en',tier));
+const { getTopicPreviews } = load('@/scripts/native/puzzle-variants/catalog');
+for (const locale of ['en', 'lv', 'ru']) {
+  const previews = Array.from(getTopicPreviews(locale));
+  assert.deepEqual(previews.map(item => item.topic.id), Array.from(curriculum.LEARNING_CATALOG.topics, topic => topic.id),
+    'The explorer offers exactly one example for each curriculum topic, in order');
+  assert.equal(new Set(previews.map(item => item.puzzle.id)).size, previews.length);
+  assert.ok(previews.every(({ topic, session, puzzle }) => session.lesson.topicId === topic.id
+    && session.level.puzzleIds[session.phase] === puzzle.id));
+}
 const animatedTasks = en.filter(puzzle => puzzle.taskVisual);
 assert.ok(animatedTasks.length >= 10, 'At least ten arithmetic tasks have authored quantity models');
 for (const puzzle of animatedTasks) {

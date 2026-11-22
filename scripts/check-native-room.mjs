@@ -525,17 +525,20 @@ const cornerHeading = Math.atan2(cornerBowl.position[0] - cornerArrival[0], corn
 const cornerPaws = posedTail('eating', eatingDuration * .5, cornerArrival, cornerHeading, cornerWorld.catScale, eatingJoints.slice(1));
 for (const paw of cornerPaws)
   assert.ok(Math.abs(paw[0]) < 2.32 && Math.abs(paw[2]) < 2.32, 'The shipped eating pose keeps every paw on the floor at the corner bowl');
-for (const fraction of [0, .35, .5, .65, 1]) {
-  const joints = posedTail('eating', eatingDuration * fraction, [0, 0, 0], 0, 1, eatingJoints);
-  for (let i = 1; i < joints.length; i++)
-    assert.ok(Math.hypot(...joints[i].map((value, axis) => value - standingJoints[i][axis])) < .003, 'Eating keeps each paw planted');
-  const nose = joints[0];
-  if (fraction === 0 || fraction === 1)
-    assert.ok(Math.hypot(...nose.map((value, axis) => value - standingJoints[0][axis])) < .003, 'Eating starts and ends standing');
-  else {
-    assert.ok(nose[1] > .2 && nose[1] < .4 && standingJoints[0][1] - nose[1] > .75, 'Eating lowers the muzzle to bowl height');
-    assert.ok(Math.abs(nose[2] - w.CAT_EATING_REACH) < .04, 'The meal approach matches the lowered muzzle');
-  }
+function eatingNose(fraction) {
+  const [nose, ...paws] = posedTail('eating', eatingDuration * fraction, [0, 0, 0], 0, 1, eatingJoints);
+  for (const [i, paw] of paws.entries())
+    assert.ok(Math.hypot(...paw.map((value, axis) => value - standingJoints[i + 1][axis])) < .003, 'Eating keeps each paw planted');
+  return nose;
+}
+for (const fraction of [0, 1])
+  assert.ok(Math.hypot(...eatingNose(fraction).map((v, i) => v - standingJoints[0][i])) < .003, 'Eating starts and ends standing');
+for (const bite of [.17, .405, .655]) {
+  const nose = eatingNose(.125 + .75 * bite);
+  assert.ok(nose[1] > .2 && nose[1] < .4 && standingJoints[0][1] - nose[1] > .75, 'Each bite lowers the muzzle to bowl height');
+  assert.ok(Math.abs(nose[2] - w.CAT_EATING_REACH) < .04, 'The meal approach matches the lowered muzzle');
+  const chew = eatingNose(.125 + .75 * (bite + .085));
+  assert.ok(chew[1] > nose[1] + .12, 'The cat lifts its muzzle to chew between bites');
 }
 // Sample the exported paw pivots during stance. Their backward motion must
 // cancel the distance-driven runtime stride instead of sliding on the floor.
@@ -667,6 +670,36 @@ for (const fps of [30, 60, 120]) {
   assert.deepEqual(Array.from(scale), [empty.catScale, empty.catScale, empty.catScale]);
   const last = applies.at(-1);assert.equal(last.name, 'walk');assert.ok(Math.abs(last.time - (1 / (.8 * empty.catScale) % 1)) < .001, 'Paw phase follows actual traveled distance');
 }
+
+for (const fps of [30, 60, 120]) {
+  slots = []; applies = [];
+  let completed = 0;
+  const pointer = { value: undefined }, feather = { value: undefined };
+  const props = { playback: { kind: 'segment', segment: registry.getSegment('playFeather') },
+    world: empty, active: true, featherTouch: pointer, featherPosition: feather, onAnimationComplete: () => completed++ };
+  render(props);
+  const tick = () => renderFrame({ timeSinceLastFrame: 1 / fps });
+  tick();
+  assert.equal(applies.at(-1).name, 'featherChase', 'One tap plays the authored chase');
+  const offset = empty.catScale * .76 * Math.SQRT1_2;
+  const front = w.projectWorld([empty.home[0]+offset, empty.home[1]+.25*empty.catScale, empty.home[2]+offset], empty.width);
+  pointer.value = { x: front.x - 40, y: front.y };
+  tick();
+  assert.equal(applies.at(-1).name, 'lookUp');
+  pointer.value = front;
+  for (let frame = 0; frame < fps * .3; frame++) tick();
+  assert.equal(applies.at(-1).name, 'batToy');
+  for (let frame = 0; frame < 6 * fps; frame++) tick();
+  assert.equal(applies.at(-1).name, 'batToy');
+  assert.ok(feather.value);
+  assert.equal(completed, 0, 'The cat keeps playing while the pointer is held');
+  pointer.value = undefined;
+  for (let frame = 0; frame < 2 * fps; frame++) tick();
+  assert.equal(feather.value, undefined);
+  assert.equal(applies.at(-1).name, 'featherChase');
+  assert.equal(completed, 1);
+}
+console.log('Verified one-tap feather playback, native tracking, swatting, holding and release at 30/60/120 FPS.');
 
 // A paused portrait still applies its first pose when its model is replaced.
 slots = []; applies = []; let pausedReady = 0;
@@ -993,6 +1026,7 @@ mocks['./NativeLightning'] = { NativeLightning: 'Lightning' };
 mocks['./NativeWorldLighting'] = { NativeWorldLighting: 'WorldLighting' };
 mocks['./NativeWindowPane'] = { NativeWindowPane: 'WindowPane' };
 mocks['./NativeWindowWeather'] = { NativeWindowWeather: 'WindowWeather' };
+mocks['@/components/pet/native/NativeGuidedFeather'] = { NativeGuidedFeather: 'GuidedFeather' };
 const preparedCat = {state:'loaded',asset:{},rootEntity:{}};
 const preparedCatRequests = [];
 mocks['./NativeCatActor'] = { NativeCatActor: 'Cat', useCatModel:(skin,present)=>{preparedCatRequests.push({skin,present});return preparedCat;} };
@@ -1015,10 +1049,20 @@ function sceneChildren(props) {
   const scene = NativeRoomScene(props).props.children.props.children;
   return scene.type(scene.props).props.children.flat(Infinity).filter(Boolean);
 }
+const featherPlayback = { kind: 'segment', segment: registry.getSegment('playFeather') };
+const pointer = { value: undefined };
+const featherScene = sceneChildren({ world: empty, playback: featherPlayback, featherTouch: pointer });
+const guide = featherScene.find(child => child.type === 'GuidedFeather');
+const playingCat = featherScene.find(child => child.type === 'Cat');
+assert.equal(playingCat.props.featherTouch, pointer);
+assert.equal(playingCat.props.featherPosition, guide.props.position);
+assert.ok(!sceneChildren({ world: empty, playback: featherPlayback }).some(child => child.type === 'GuidedFeather'));
 const sceneMeal = { ...mealProps, world: bowlRoom, playingId: 'meal', activityKey: 'meal-one' };
 let children = sceneChildren(sceneMeal), spill = children.find(c => c.type === 'FoodSpill'), cat = children.find(c => c.type === 'Cat');
 assert.equal(spill.props.object, bowlRoom.objects[0]); assert.equal(spill.key, 'meal-one:meal:bowlBlue');
 assert.equal(spill.props.animationTime, cat.props.animationTimeValue, 'Scene shares the actual cat clock with the spill');
+assert.equal(children.find(c => c.props.object === bowlRoom.objects[0] && c.type !== 'FoodSpill').props.mealClock,
+  cat.props.animationTimeValue, 'The placed bowl samples the same clock as its spill and the cat');
 assert.equal(sceneChildren({ ...sceneMeal, paused: true }).find(c => c.type === 'FoodSpill').props.active, false);
 for (const patch of [{ playingId: 'missing' }, { travel: undefined }, { playback: { kind: 'segment', segment: registry.getSegment('idle') } }])
   assert.ok(!sceneChildren({ ...sceneMeal, ...patch }).some(c => c.type === 'FoodSpill'), 'Spill is removed when the selected-bowl meal ends');
@@ -1275,7 +1319,9 @@ for (const [modelId, itemScale, angle, fps] of [
     positionValue: renderedPosition, onRoomStepComplete: (key, point) => completions.push(point),
     onContactPosition: point => reportedHeights.push(point[1]),
     travel: { path: route, distance: w.pathLength(route), duration: 4, jump: false, awaitCompletion: true } });
-  let contacts = 0, highest = w.FLOOR_Y, lastHeight = w.FLOOR_Y;
+  let contacts = 0, deepest = 0, interiorDepth = 0, highest = w.FLOOR_Y, lastHeight = w.FLOOR_Y;
+  const thickness = surface.height - w.FLOOR_Y;
+  const compression = Math.min(thickness * .40, .055 * room.catScale);
   for (let frame = 0; frame < fps * 4 + 1; frame++) {
     renderFrame({ timeSinceLastFrame: 1 / fps });
     highest = Math.max(highest, catRoot[13]);
@@ -1284,10 +1330,18 @@ for (const [modelId, itemScale, angle, fps] of [
     if (frame % Math.max(1, fps / 30) !== 0) continue;
     for (const point of transformedPawVertices()) if (onRug(point, surface)) {
       contacts++;
-      assert.ok(point[1] >= surface.height - .003, `${modelId}/${fps}: a toe pad cannot sink into the rug (${point[1]} < ${surface.height})`);
+      deepest = Math.max(deepest, surface.height - point[1]);
+      const inside = onRug(point, { ...surface, halfX: surface.halfX - .2*room.catScale, halfZ: surface.halfZ - .2*room.catScale });
+      if (inside) {
+        interiorDepth = Math.max(interiorDepth, surface.height - point[1]);
+        assert.ok(point[1] >= surface.height - compression - .004, `${modelId}/${fps}: only the bottom of the pad sinks into the pile`);
+      }
+      assert.ok(point[1] >= w.FLOOR_Y - .004, 'The rug cannot pull a toe below the bare floor');
     }
   }
-  assert.ok(contacts > 100 && highest >= surface.height, 'The walk really crosses the raised rug surface');
+  assert.ok(contacts > 100 && highest > w.FLOOR_Y && deepest > .001, `${modelId}: loaded toe pads visibly compress the rug (${deepest})`);
+  if (Math.min(surface.halfX, surface.halfZ) > .36 * room.catScale)
+    assert.ok(interiorDepth > .001, 'Loaded pads stay embedded in the pile after clearing the edge');
   assert.equal(completions.length, 1, 'Rug support cannot prevent arrival completion');
   assert.ok(w.pathLength([completions[0], route.at(-1)]) < 1e-6);
   assert.ok(reportedHeights.every(y => y === w.FLOOR_Y), 'Rendering support never feeds back into route planning');
@@ -1302,15 +1356,15 @@ for (const [modelId, itemScale, angle, fps] of [
       renderFrame({ timeSinceLastFrame: 1 / 60 });
       if (frame % 15 !== 0) continue;
       const minimum = Math.min(...transformedPawVertices().filter(point => onRug(point, surface)).map(point => point[1]));
-      assert.ok(minimum >= surface.height - .003, `${modelId}/${clip}/${frame}: resting and Reduce Motion retain toe-pad clearance ${JSON.stringify({minimum,height:surface.height,root:catRoot[13],paws:pawJointIds.map(i=>jointWorld(skeleton.nodes[catSkin.joints[i]].name))})}`);
+      assert.ok(minimum >= surface.height - compression - .004, `${modelId}/${clip}/${frame}: resting and Reduce Motion limit toe-pad compression ${JSON.stringify({minimum,height:surface.height,root:catRoot[13],paws:pawJointIds.map(i=>jointWorld(skeleton.nodes[catSkin.joints[i]].name))})}`);
     }
   }
   const airborne = [rug.position[0], surface.height + .3, rug.position[2]];
-  assert.equal(groundSupport.rugSupportLift(airborne, [airborne], [surface], room.catScale), 0, 'Airborne and perched cats keep their authored height');
+  assert.equal(groundSupport.rugPawLift(airborne[1], airborne, [surface], room.catScale), 0, 'Airborne and perched cats keep their authored height');
 }
 const roundSurface = groundSupport.buildRugSurfaces(w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: 'carpetRound', instanceId: 'round', offset: { x: 0, y: 0 } }] }))[0];
 const cornerPoint = [roundSurface.position[0] + roundSurface.halfX, w.FLOOR_Y, roundSurface.position[2] + roundSurface.halfZ];
-assert.equal(groundSupport.rugSupportLift(cornerPoint, [cornerPoint], [roundSurface], .1), 0, 'Empty corners of a round rug bounding box cannot lift the cat');
+assert.equal(groundSupport.rugPawLift(cornerPoint[1], cornerPoint, [roundSurface], .1), 0, 'Empty corners of a round rug bounding box cannot lift the cat');
 console.log('Verified real animated toe pads on round, rotated and resized rugs, edge transitions, floor return, arrival, standing and Reduce Motion.');
 // Run the actual object and cat callbacks in their scene order with shipped GLBs.
 sceneReduced = false;
@@ -1607,7 +1661,7 @@ sceneReduced = false;
 for (const fps of [30, 60, 120]) {
   const ballLayout = { ...base, toys: [{ toyId: 'blueBall', instanceId: 'loose-ball', offset: { x: 0, y: .3 }, scale: 1.2 }] };
   const ballWorld = w.buildNativeRoomWorld(ballLayout), ballObject = ballWorld.objects[0];
-  const radius = Math.max((ballObject.max[0] - ballObject.min[0]) / 2, (ballObject.max[2] - ballObject.min[2]) / 2);
+  const radius = (ballObject.max[1] - ballObject.min[1]) / 2;
   const positions = [], reports = [];
   const body = { position: [0, w.FLOOR_Y + radius, 0],
     setPosition(...p) { this.position = p; positions.push(p); },
@@ -1640,6 +1694,52 @@ for (const fps of [30, 60, 120]) {
   assert.equal(body.position[1], w.FLOOR_Y + radius);
 }
 console.log('Verified landed balls stay put after play, save/reload at the same floor position, and recover locally at boundaries at 30/60/120 FPS.');
+
+// Exercise the native ball worklet across the saved support-to-floor transition.
+{
+  const layout = { ...base, petSize: 48, sizeScale: 1.15, homeOffset: { x: 0, y: .12 },
+    decorations: [{ decorationId: 'sofaA', instanceId: 'seat', offset: { x: 0, y: 0 }, scale: 1.3 }],
+    toys: [{ toyId: 'blueBall', instanceId: 'ball', scale: .7, offset: { x: .3, y: .3 } }] };
+  const [owner, original] = w.buildNativeRoomWorld(layout).objects;
+  const top = w.NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces[0], meta = w.NATIVE_MODEL_CATALOG[original.modelId];
+  layout.toys[0].support = { parentId: 'seat', heading: 0, position: [
+    (top.min[0]+top.max[0])/2, top.max[1]+(.002-meta.min[1]*original.scale)/owner.scale, (top.min[2]+top.max[2])/2] };
+  const room = w.buildNativeRoomWorld(layout), ball = room.objects[1];
+  const { roll } = w.findSofaBallPlay(ball, room);
+  const floorToy = { value: undefined }, paws = { value: [] }, requests = [];
+  const child = sceneChildren({ world: room, catPresent: true }).find(c => c.props.object?.instanceId === 'ball' && c.type.name === 'RoomObject');
+  const body = { position: roll.end, setPosition(...p) { this.position = p; }, setKinematic() {}, applyCentralImpulse() {} };
+  mocks['react-native-filament'].useRigidBody = () => body;
+  transformManager.updateTransformByRigidBody = () => { toyRoot = matrix(body.position); };
+  toyRoot = matrix(); toyNodes = new Map(); slots = [];
+  const props = { ...child.props, floorToy, pawPositions: paws, playContact: true, playingId: 'ball',
+    travel: { sofaBallRoll: roll }, onReleaseBall: key => { requests.push(key); return key === 'strike'; } };
+  const paint = patch => {
+    cursor = 0; effects = []; child.type({ ...props, ...patch }); effects.forEach(fn => fn());
+  };
+  const draw = () => renderFrame({ timeSinceLastFrame: 1/60 });
+  const paw = delta => { paws.value = [[roll.start[0]+delta, roll.start[1], roll.start[2]]]; draw(); };
+  paint({ activityKey: 'stale' });
+  paw(.18); paw(.02); draw();
+  assert.equal(requests.join(), 'stale');
+  assert.deepEqual(Array.from(floorToy.value.position), Array.from(roll.start), 'Rejected contact leaves the ball on its cushion');
+  paint({ activityKey: 'strike' });
+  paw(.18); paw(.02); draw();
+  assert.equal(requests.join(), 'stale,strike');
+  assert.ok(w.pathLength([roll.start, floorToy.value.position]) > .001, 'Accepted contact starts the visible roll');
+  layout.toys[0].offset = w.nativeObjectPlacementOffset(room, ball, roll.end);
+  delete layout.toys[0].support;
+  const loose = w.buildNativeRoomWorld(layout).objects[1];
+  paint({ object: loose, activityKey: 'interrupted', travel: undefined, playingId: undefined, playContact: false });
+  draw();
+  const center = meta.min.map((v, i) => (v + meta.max[i])/2);
+  const renderedCenter = () => [0,1,2].map(i => toyRoot[12+i] + center.reduce((sum,v,k) => sum + v*toyRoot[k*4+i],0));
+  assert.ok(w.pathLength([renderedCenter(), roll.end]) > .2, 'An interruption keeps the in-flight model visible');
+  for (let frame=0; frame<180; frame++) draw();
+  assert.ok(w.pathLength([renderedCenter(), roll.end]) < .025, 'The rendered ball reaches its saved floor body');
+  assert.equal(requests.length, 2);
+}
+console.log('Verified the native ball model stays on the cushion after rejected contact and rolls to its saved floor body after interruption.');
 
 // Couple the production floor-toy callback to the actual cat rig.
 for(const fps of [30,60,120]) {

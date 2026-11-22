@@ -199,7 +199,7 @@ function capacityTask(tier, focus, n) {
   const volumeHint = T('A box volume is length × width × height. Think of equal layers of unit cubes.', 'Kastes tilpums ir garums × platums × augstums. Iedomājies vienādus vienības kubu slāņus.', 'Объём коробки равен длине × ширине × высоте. Представь одинаковые слои единичных кубиков.');
   if (tier === 2 && [0, 4].includes(focus)) {
     const width = 2 + n % 7, height = 2 + Math.floor(n / 7) % 5, depth = 2 + Math.floor(n / 3) % 4;
-    const model = { kind: 'solid', width, height, depth, label: T(`Box: ${width} cm × ${height} cm × ${depth} cm.`, `Kaste: ${width} cm × ${height} cm × ${depth} cm.`, `Коробка: ${width} см × ${height} см × ${depth} см.`) };
+    const model = { kind: 'solid', ...(focus === 4 ? { answerUnit: 'cubes' } : {}), width, height, depth, label: T(`Box: ${width} cm × ${height} cm × ${depth} cm.`, `Kaste: ${width} cm × ${height} cm × ${depth} cm.`, `Коробка: ${width} см × ${height} см × ${depth} см.`) };
     const answer = width * height * depth;
     const question = focus === 0 ? T('What is the volume of this box in cm³?', 'Kāds ir šīs kastes tilpums cm³?', 'Каков объём этой коробки в см³?')
       : T('A second box must hold the same volume. How many unit cubes must it hold?', 'Otrai kastei vajadzīgs tāds pats tilpums. Cik vienības kubu tai jāietilpina?', 'Вторая коробка должна иметь такой же объём. Сколько единичных кубиков она должна вмещать?');

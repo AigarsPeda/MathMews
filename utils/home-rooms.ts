@@ -14,11 +14,11 @@ const EMPTY_HOME_ROOM: HomeRoomState = {
 /** Render another room without changing or saving the viewed room. */
 export function previewHomeRoom(pet: PetProfile, destination: HomeRoomId): PetProfile {
   if ((pet.homeRoomId ?? DEFAULT_HOME_ROOM_ID) === destination) return pet;
-  return { ...pet, ...(pet.homeRooms?.[destination] ?? EMPTY_HOME_ROOM),
+  return { ...pet, ...captureHomeRoom(pet.homeRooms?.[destination] ?? EMPTY_HOME_ROOM),
     homeRoomId: destination, catHomeRoomId: getCatHomeRoomId(pet) };
 }
 
-export function captureHomeRoom(pet: PetProfile): HomeRoomState {
+export function captureHomeRoom(pet: HomeRoomState): HomeRoomState {
   return { ...captureRoomLayout(pet), roomId: pet.roomId ?? "room1",
     roomLayouts: pet.roomLayouts, savedRoomLayouts: pet.savedRoomLayouts };
 }
@@ -58,6 +58,13 @@ export function getCatHomeRoomId(pet: PetProfile): HomeRoomId {
   return pet.catHomeRoomId ?? pet.homeRoomId ?? DEFAULT_HOME_ROOM_ID;
 }
 
+/** Closing the app settles the cat where the player was looking, without moving any furniture. */
+export function restCatInViewedRoom(pet: PetProfile, asleep = true): PetProfile {
+  if (pet.type !== 'cat') return pet;
+  const roomId = pet.homeRoomId ?? DEFAULT_HOME_ROOM_ID;
+  return pet.catHomeRoomId === roomId && pet.isAsleep === asleep ? pet : { ...pet, catHomeRoomId: roomId, isAsleep: asleep };
+}
+
 /** Follow an explicit cat journey in the same saved update as its arrival. */
 export function sendCatToRoom(pet: PetProfile, destination: HomeRoomId, follow = true): PetProfile {
   if (!isHomeRoomId(destination)) return pet;
@@ -72,7 +79,7 @@ export function switchHomeRoom(pet: PetProfile, destination: HomeRoomId): PetPro
   const homeRooms = { ...pet.homeRooms, [origin]: captureHomeRoom(pet) };
   // Room navigation lives in the scene controls, so new spaces start empty.
   const next = homeRooms[destination] ?? EMPTY_HOME_ROOM;
-  return syncPetLayerOrder({ ...pet, ...next, homeRoomId: destination, homeRooms,
+  return syncPetLayerOrder({ ...pet, ...captureHomeRoom(next), homeRoomId: destination, homeRooms,
     catHomeRoomId: getCatHomeRoomId(pet) });
 }
 

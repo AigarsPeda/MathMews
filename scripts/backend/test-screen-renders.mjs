@@ -93,7 +93,8 @@ async function harness(screen = 'store', compiled = false, graphicsMode = '3d') 
       Skia: { Path: { Make() { const points = []; return { points, moveTo(x, y) { points.push([x, y]); }, lineTo(x, y) { points.push([x, y]); }, close() {} }; } } } },
     '@/lib/graphics-mode': { useGraphicsMode: () => graphicsMode },
     '@/hooks/use-room-camera': { useRoomCamera: () => stageCamera },
-    '@/hooks/use-room-activity': { useRoomActivity: (options, fullness) => {
+    '@/hooks/use-room-activity': { useRoomActivity: (options, fullness, ...handlers) => {
+      props.set('saveReleasedBall', handlers.at(-1));
       props.set('activityFullness', fullness);
       props.set('activityOptions', options); counts.set('stageRenders', (counts.get('stageRenders') ?? 0) + 1);
       const room = `stageRenders:${options.homeRoomId}`; counts.set(room, (counts.get(room) ?? 0) + 1);
@@ -208,7 +209,7 @@ async function harness(screen = 'store', compiled = false, graphicsMode = '3d') 
   if (screen === 'room-editor') delete mocks['@/hooks/use-room-editor'];
   function load(id, base = process.cwd()) {
     if (id in mocks) return mocks[id];
-    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'native-scene' && id.endsWith('/NativeRoomScene')) && !(['contact-shadows', 'lamp-light'].includes(screen) && /\/Native(ContactShadows|LampLight)$/.test(id)) && !(screen === 'colliders' && id.endsWith('/NativeRoomColliders')) && !(screen === 'drag-target' && id.endsWith('/DraggableRoomPet')) && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
+    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'native-scene' && id.endsWith('/NativeRoomScene')) && !(['contact-shadows', 'lamp-light'].includes(screen) && /\/Native(ContactShadows|LampLight)$/.test(id)) && !(screen === 'colliders' && id.endsWith('/NativeRoomColliders')) && !(screen === 'drag-target' && id.endsWith('/DraggableRoomPet')) && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && /\/(PetStage|FeatherDragSurface)$/.test(id))) {
       const name = id.split('/').at(-1);
       return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : key === 'MEAL_RING_SIZE' ? 28 : target[key] ?? view(key) });
     }
@@ -228,7 +229,7 @@ async function harness(screen = 'store', compiled = false, graphicsMode = '3d') 
     vm.runInNewContext(ts.transpileModule(source, { compilerOptions: {
       module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
     } }).outputText, { module, exports: module.exports, require: child => load(child, path.dirname(file)),
-      Date: ClockDate, Math, Map, Set, Promise, console, requestAnimationFrame: fn => { const id = ++frameId; frames.set(id, fn); return id; }, cancelAnimationFrame: id => frames.delete(id), requestIdleCallback: () => 1, cancelIdleCallback() {}, __DEV__: false, process: { env: {} },
+      Date: ClockDate, Math, Map, Set, Promise, AbortController, performance: { now: () => clock }, console, requestAnimationFrame: fn => { const id = ++frameId; frames.set(id, fn); return id; }, cancelAnimationFrame: id => frames.delete(id), requestIdleCallback: () => 1, cancelIdleCallback() {}, __DEV__: false, process: { env: {} },
       setInterval: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearInterval: id => timers.delete(id),
       setTimeout: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearTimeout: id => timers.delete(id),
     });
@@ -257,7 +258,7 @@ async function harness(screen = 'store', compiled = false, graphicsMode = '3d') 
       worldClock: game.worldClock, playback, ...stageProps,
     });
   }
-  function MoodProbe() { props.set('mood', load('@/pet-display/hooks/use-pet-base-mood').usePetBaseMood(game.pet, game.worldClock)); counts.set('mood', (counts.get('mood') ?? 0) + 1); return null; }
+  function MoodProbe() { props.set('mood', load('@/pet-display/hooks/use-pet-base-mood').usePetBaseMood(game.pet, game.worldClock, game.catRestedAt)); counts.set('mood', (counts.get('mood') ?? 0) + 1); return null; }
   function DragTargetProbe() { return React.createElement(load('@/components/pet/DraggableRoomPet').DraggableRoomPet,
     { testID: 'target', petSize: 60, accessibilityLabel: 'Bed', ...stageProps }); }
   function RoomEditorProbe() { props.set('editor', load('@/hooks/use-room-editor').useRoomEditor(game.pet, actions.setPet, game.progress)); return null; }
@@ -330,6 +331,37 @@ test(`Home feeds per bite and speaks only on completion (${mode})`, async () => 
       assert.equal(h.props('PetStage:kitchen').stats.hunger, 40 + bite * 5);
     }
     assert.deepEqual(bites, [false, false, false, false, true]);
+  } finally { await h.close(); }
+});
+
+test(`Feather play accepts a drag, releases it, and cleans up when hidden (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    await h.setStage({ playback: { kind: 'segment', mood: 'playFeather', segment: { assetKey: 'featherChase' } } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const touch = h.props('NativeRoomScene').featherTouch;
+    assert.equal(touch.value, undefined);
+    const surface = h.props('feather-drag-surface');
+    assert.equal(surface.onStartShouldSetResponder(), true);
+    const move = { nativeEvent: { locationX: 220, locationY: 175 } };
+    surface.onResponderGrant({ nativeEvent: { locationX: 195, locationY: 210 } });
+    assert.equal(touch.value.x, 0);
+    surface.onResponderMove(move);
+    assert.equal(touch.value.x, 25);
+    assert.equal(touch.value.y, -35);
+    surface.onResponderRelease();
+    assert.equal(touch.value, undefined);
+    surface.onResponderGrant(move);
+    surface.onResponderTerminate();
+    assert.equal(touch.value, undefined);
+    surface.onResponderGrant(move);
+    await h.setStage({ roomVisible: false });
+    assert.equal(touch.value, undefined);
+    assert.equal(h.props('NativeRoomScene').featherTouch, undefined);
+    await h.setReducedMotion(true);
+    await h.setStage({ roomVisible: true });
+    assert.equal(h.props('NativeRoomScene').featherTouch, undefined);
+    assert.equal(h.props('NativeRoomScene').playback.mood, 'playFeather');
   } finally { await h.close(); }
 });
 
@@ -643,6 +675,113 @@ test(`tap placement keeps the selected item, turn and size until confirmed (${mo
   } finally { await h.close(); }
 });
 
+test(`resizing the blue bowl preserves the cat's saved spot (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const { applyRoomObjectEdits } = h.load('@/utils/room-edit');
+    const savedSpot = { x: -.5, y: .2 };
+    let pet = { ...h.game.pet, roomPetOffset: savedSpot,
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: .35, y: .35 } }] };
+    const commits = [];
+    await h.setStage({ catPresent: true, bedId: undefined, placedToys: [], roomPetOffset: savedSpot,
+      placedDecorations: pet.placedDecorations, roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onScalePlacedDecoration() {}, onCommitRoomEdit: edits => {
+        commits.push(edits);
+        pet = applyRoomObjectEdits(pet, edits);
+        return true;
+      } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    await h.update(() => h.props('NativeRoomEditor').select('bowl'));
+    const dock = () => h.props('RoomItemMoveControls');
+    const percentages = [dock().sizePercent];
+    // The visible cat has wandered away from its saved spot.
+    await h.update(() => h.props('NativeRoomScene').onPosition({ x: -30, y: -5 }));
+    for (const action of ['size-up', 'size-down', 'size-up', 'default']) {
+      await h.update(() => action === 'default' ? dock().onDefaultSize()
+        : dock().actions.find(item => item.id === action).onPress());
+      assert.deepEqual(Array.from(commits.at(-1), edit => edit.instanceId), ['bowl']);
+      assert.equal(pet.roomPetOffset, savedSpot);
+      await h.setStage({ placedDecorations: pet.placedDecorations, roomPetOffset: pet.roomPetOffset });
+      percentages.push(dock().sizePercent);
+    }
+    assert.equal(commits.length, 4);
+    assert.ok(percentages[1] > percentages[0] && percentages[2] < percentages[1] && percentages[3] > percentages[2]);
+    assert.equal(percentages[4], 100);
+  } finally { await h.close(); }
+});
+
+test(`a newly placed chair saves once at its suggested pose and survives reload (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const storage = h.load('@/utils/game-storage');
+    const stored = new Map();
+    Object.assign(h.load('@react-native-async-storage/async-storage'), {
+      getItem: async key => stored.get(key) ?? null,
+      multiSet: async pairs => pairs.forEach(([key, value]) => stored.set(key, value)),
+    });
+    const { createRoomPlacementDraft, withRoomPlacementDraft, applyRoomObjectEdits } = h.load('@/utils/room-edit');
+    const { createRoomPlacementResolver } = h.load('@/utils/room-item-placement');
+    const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: 0, y: 0 }, scale: .8 };
+    const chairId = 'chairRockingOak';
+    const save = storage.createDefaultGameSave();
+    save.pet = { ...save.pet, bedId: undefined, placedToys: [], placedDecorations: [sofa] };
+    save.progress.decorationsUnlocked = [...save.progress.decorationsUnlocked, sofa.decorationId, chairId];
+    save.progress.decorationQuantities = { ...save.progress.decorationQuantities, [sofa.decorationId]: 1, [chairId]: 1 };
+    await storage.saveGameSave(save);
+
+    const draft = createRoomPlacementDraft({ kind: 'decoration', id: chairId }, save.pet);
+    Object.assign(draft.initial, { offset: sofa.offset, rotationDegrees: 20, scale: .8 });
+    const instanceId = draft.item.instanceId;
+    const staged = withRoomPlacementDraft(save.pet, draft);
+    let commits = 0;
+    let write;
+    await h.setStage({ placedDecorations: staged.placedDecorations, placementDraft: draft,
+      decorationEntry: { roomId: 'livingRoom', item: draft.item },
+      roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (edits, remove) => {
+        commits++;
+        write = storage.saveGameSave({ ...save, pet: applyRoomObjectEdits(save.pet, edits, remove, draft) });
+        return true;
+      } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    await h.flushFrames();
+    const dock = () => h.props('RoomItemMoveControls');
+    const scene = () => h.props('NativeRoomScene');
+    const placement = createRoomPlacementResolver(scene().world, [instanceId]);
+    assert.equal(placement.canPlace(scene().world.objects.find(object => object.instanceId === instanceId)), false,
+      'The chair starts on the sofa');
+    const pose = scene().editingObject.value;
+    assert.ok(placement.canPlace(pose), 'The chair preview moves clear of the sofa');
+    assert.equal(dock().placementAllowed, false, 'Place waits for the cat-access check');
+    await h.update(() => dock().onPlace());
+    assert.equal(commits, 0, 'Checking a draft cannot save it');
+
+    await h.advance(300);
+    assert.equal(dock().placementAllowed, true, dock().feedback);
+    assert.equal((await storage.loadGameSave()).save.pet.placedDecorations.length, 1);
+    await h.update(() => dock().onPlace());
+    assert.equal(commits, 1);
+    await write;
+
+    const furniture = (await storage.loadGameSave()).save.pet.placedDecorations;
+    assert.equal(furniture.length, 2);
+    const chair = furniture.find(item => item.instanceId === instanceId);
+    assert.equal(chair?.decorationId, chairId);
+    assert.equal(chair.rotationDegrees, 20);
+    assert.ok(Math.abs(chair.scale - .8) < 1e-8);
+    const fresh = await harness('stage', compiled);
+    try {
+      await fresh.setStage({ placedDecorations: furniture });
+      await fresh.update(() => fresh.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+      const world = fresh.props('NativeRoomScene').world;
+      const restored = world.objects.find(object => object.instanceId === instanceId);
+      assert.ok(restored.position.every((value, i) => Math.abs(value - pose.position[i]) < 1e-8),
+        'A fresh room displays the saved chair at the confirmed position');
+      assert.ok(createRoomPlacementResolver(world, [instanceId]).canPlace(restored));
+    } finally { await fresh.close(); }
+  } finally { await h.close(); }
+});
+
 test(`native drag motion updates independently of React diagnostics (${mode})`, async () => {
   const h = await harness('stage', compiled);
   try {
@@ -832,6 +971,78 @@ test(`bed drag through fireplace collisions keeps the pointer anchor (${mode})`,
     const final = roomItemAnchor(scene.editingObject.value, world.width);
     assert.ok(Math.hypot(final.x - target.x, final.y - target.y) < 1e-7);
     await h.update(() => editor().discard('bed'));
+  } finally { await h.close(); }
+});
+
+for (const graphics of ['3d', 'simple']) test(`tapping a sofa places the selected ball on its cushion (${graphics}, ${mode})`, async () => {
+  const h = await harness('stage', compiled, graphics);
+  try {
+    const edits = [];
+    await h.setStage({ catPresent: false, roomToolbar: { decorating: true, onDecoratingChange() {} },
+      placedDecorations: [{ decorationId: 'sofaA', instanceId: 'sofa', offset: { x: 0, y: 0 } }],
+      placedToys: [{ toyId: 'orangeBall', instanceId: 'ball', offset: { x: .7, y: .6 }, scale: .7 }],
+      onCommitRoomEdit: changes => { edits.push(...changes); return true; } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => graphics === '3d' ? editor().select('ball') : h.props('room-object:ball').onPetTap());
+    const world = h.props('activityOptions').nativeWorld;
+    const owner = world.objects.find(object => object.instanceId === 'sofa');
+    const { NATIVE_MODEL_CATALOG, projectWorld } = h.load('@/utils/native-room-world');
+    const top = NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces[0];
+    const at = projectWorld([owner.position[0], owner.position[1] + top.max[1] * owner.scale,
+      owner.position[2] + .16 * owner.scale], world.width);
+    if (graphics === '3d') {
+      const scene = h.props('NativeRoomScene');
+      const touch = { x: at.x + 195, y: at.y + 210 };
+      scene.pickerRef.current = { pick: async () => 'sofa' };
+      const selection = await editor().pick(touch);
+      assert.equal(selection, undefined, 'a tap on the seat is a destination for the selected ball');
+      await h.update(() => { editor().select(selection); editor().tap(touch, selection); });
+      assert.equal(scene.editingObject.value.supportId, 'sofa');
+    } else {
+      await h.update(() => h.props('room-object:sofa').onPetTap(at));
+      assert.ok(Number.isFinite(h.props('room-object:ball').supportDepth), 'draw the ball above its support');
+    }
+    await h.advance(300);
+    await h.update(() => h.props('RoomItemMoveControls').onPlace());
+    assert.equal(edits.find(edit => edit.instanceId === 'ball')?.support?.parentId, 'sofa');
+  } finally { await h.close(); }
+});
+
+test(`swatting a sofa ball saves its floor position and checks the current room layout (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    const ball = { toyId: 'blueBall', instanceId: 'ball', offset: { x: .3, y: .3 }, scale: .7 };
+    const setup = { catPresent: true, roomVisible: true,
+      placedDecorations: [{ decorationId: 'sofaA', instanceId: 'seat', offset: { x: 0, y: 0 }, scale: 1.3 }],
+      placedToys: [ball], onCommitRoomEdit: changes => { commits.push(changes); return true; } };
+    await h.setStage(setup);
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const api = h.load('@/utils/native-room-world');
+    const find = id => h.props('activityOptions').nativeWorld.objects.find(o => o.instanceId === id);
+    const owner = find('seat'), original = find('ball');
+    const top = api.NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces[0];
+    const support = { parentId: 'seat', heading: 0, position: [(top.min[0]+top.max[0])/2,
+      top.max[1]+(.002-api.NATIVE_MODEL_CATALOG[original.modelId].min[1]*original.scale)/owner.scale,
+      (top.min[2]+top.max[2])/2] };
+    const placedToys = [{ ...ball, support }];
+    await h.setStage({ ...setup, placedToys });
+    const world = h.props('activityOptions').nativeWorld;
+    const { roll } = api.findSofaBallPlay(find('ball'), world);
+    assert.equal(h.props('saveReleasedBall')({ ...roll, sofaId: 'other' }), false);
+    assert.equal(h.props('saveReleasedBall')(roll), true);
+    assert.equal(commits.length, 1);
+    const [edit] = commits[0];
+    assert.equal(edit.instanceId, 'ball');
+    assert.ok(Object.hasOwn(edit, 'support') && edit.support === undefined);
+    assert.deepEqual(edit.offset, api.nativeObjectPlacementOffset(world, find('ball'), roll.end));
+    await h.setStage({ ...setup, placedToys: [{ ...ball, ...edit }] });
+    assert.ok(find('ball').movable);
+    assert.equal(h.props('saveReleasedBall')(roll), false, 'Late contact after the ball lands cannot save it again');
+    await h.setStage({ ...setup, placedToys, roomVisible: false });
+    assert.equal(h.props('saveReleasedBall')(roll), false, 'Late contact from a hidden room cannot move the ball');
+    assert.equal(commits.length, 1);
   } finally { await h.close(); }
 });
 
@@ -1424,12 +1635,32 @@ test(`Home bedtime clock ticks do not rerender the rooms (${mode})`, async () =>
   } finally { await h.close(); }
 });
 
+test(`restoring the viewed room discards a pending departure and shows its cat (${mode})`, async () => {
+  const h = await harness('home', compiled);
+  try {
+    const pet = { ...h.game.pet, type: 'cat', homeRoomId: 'bathroom', catHomeRoomId: 'kitchen',
+      homeRooms: { bedroom: { bedId: 'houseA' } } };
+    await h.setGame({ pet, worldClock: { ...h.game.worldClock, realMs: h.now, worldMs: 12*3600000, speed: 1 } });
+    await h.update(() => h.props('PetStage:bathroom').onRequestRoomCommand('bedroom', 'bedSnuggle', 'bed'));
+    assert.equal(h.props('PetStage:kitchen').roomCommand.kind, 'roomTravel');
+    await h.setActive(false);
+    await h.setGame({ pet: { ...pet, catHomeRoomId: 'bathroom' }, catRestedAt: h.now,
+      worldClock: { ...h.game.worldClock, realMs: h.now, worldMs: 22*3600000, speed: 1 } });
+    await h.setActive(true);
+    const viewed = h.props('PetStage:bathroom');
+    assert.equal(viewed.roomVisible, true);
+    assert.equal(viewed.catHomeRoomId, viewed.homeRoomId);
+    assert.equal(viewed.roomCommand, undefined, 'A bedless room keeps the cat when Home resumes at night');
+    assert.equal(h.props('PetStage:bedroom').roomCommand, undefined);
+  } finally { await h.close(); }
+});
+
 test(`Home keeps an active meal through the night boundary and stat updates (${mode})`, async () => {
   const h = await harness('home', compiled);
   try {
     const pet = { ...h.game.pet, type: 'cat', homeRoomId: 'kitchen', catHomeRoomId: 'kitchen',
-      stats: { ...h.game.pet.stats, hunger: 36 }, homeRooms: { ...h.game.pet.homeRooms,
-        bedroom: { roomId: 'room1', placedDecorations: [{ decorationId: 'bedroomDoubleBed', instanceId: 'bed', offset: { x: 0, y: 0 } }] } } };
+      stats: { ...h.game.pet.stats, hunger: 36 },
+      placedDecorations: [{ decorationId: 'bedroomDoubleBed', instanceId: 'bed', offset: { x: 0, y: 0 } }] };
     await h.setGame({ pet, worldClock: { ...h.game.worldClock, realMs: h.now, worldMs: (21 * 3600 - 1) * 1000, speed: 1 } });
     await h.update(() => h.props('PetStage:kitchen').onRoomActivityChange(true, () => {}));
     await h.advance(1600);
@@ -1441,7 +1672,7 @@ test(`Home keeps an active meal through the night boundary and stat updates (${m
       assert.equal(h.props('PetStage:kitchen').roomCommand, undefined, 'Every bite keeps the meal ahead of automatic bedtime');
     }
     await h.update(() => h.props('PetStage:kitchen').onRoomActivityChange(false, () => {}));
-    assert.equal(h.props('PetStage:kitchen').roomCommand?.kind, 'roomTravel', 'Automatic bedtime can run after the meal ends');
+    assert.equal(h.props('PetStage:kitchen').roomCommand?.kind, 'bedSnuggle', 'Local bedtime can run after the meal ends');
   } finally { await h.close(); }
 });
 
@@ -1502,6 +1733,22 @@ test(`mood clock skips unchanged ticks, pauses when covered, and catches up on f
     assert.equal(h.props('mood').mood, 'sleeping');
     await h.setGame({ worldClock: { ...h.game.worldClock, realMs: h.now, worldMs: 9 * 3600000, speed: 1 } });
     assert.equal(h.props('mood').mood, 'idle', 'Dawn still wakes the cat');
+  } finally { await h.close(); }
+});
+
+test(`a returning cat naps in daylight and wakes after interaction or the nap (${mode})`, async () => {
+  const h = await harness('mood', compiled);
+  try {
+    const pet = { ...h.game.pet, type: 'cat', isAsleep: false, lastInteractionAt: h.now - 10000 };
+    const clock = { ...h.game.worldClock, worldMs: 12 * 3600000, realMs: h.now, speed: 1 };
+    await h.setGame({ pet, worldClock: clock, catRestedAt: h.now });
+    assert.equal(h.props('mood').mood, 'sleeping');
+    await h.advance(21000);
+    assert.equal(h.props('mood').mood, 'idle');
+    await h.setGame({ catRestedAt: h.now });
+    assert.equal(h.props('mood').mood, 'sleeping');
+    await h.setGame({ pet: { ...pet, lastInteractionAt: h.now } });
+    assert.equal(h.props('mood').mood, 'idle');
   } finally { await h.close(); }
 });
 

@@ -2,6 +2,19 @@
   "loading": {
     "label": "Ielādē spēli"
   },
+  "cookieShare": {
+    "goal": "Sadali {{cookies}} vienādi uz {{plates}} šķīvjiem.",
+    "cookies_one": "{{count}} cepumu",
+    "cookies_zero": "{{count}} cepumus",
+    "cookies_other": "{{count}} cepumus",
+    "tray": "Cepumu paplāte",
+    "watch": "Parādi, kā sadalīt",
+    "playing": "Dala cepumus…",
+    "replay": "Skatīties vēlreiz",
+    "ask": "Izvēlies, cik cepumu būs uz katra šķīvja un cik paliks pāri.",
+    "result": "Uz katra šķīvja ir {{each}}. Uz paplātes paliek {{left}}.",
+    "diagram": "Uz paplātes ir cepumi ({{items}}). Blakus ir šķīvji ({{plates}})."
+  },
   "common": {
     "back": "Atpakaļ",
     "close": "Aizvērt",
@@ -176,7 +189,9 @@
     "extinguishFire": "Nodzēst uguni",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
+    "featherDragHint": "Velc, lai vadītu spalvu",
     "catCommands": {
+      "scratchPost": "Asināt nagus uz staba",
       "bowlEat": "Ēst",
       "chairSit": "Sēdēt šūpuļkrēslā",
       "furnitureSit": "Uzlēkt un apsēsties",
@@ -215,6 +230,7 @@
     "a11yStore": "Atvērt mājdzīvnieku veikalu",
     "a11ySettings": "Atvērt iestatījumus",
     "decorateStart": "Iekārtosim istabu!",
+    "surfaceMoveHint": "Pieskaries grīdai vai piemērotai virsmai un spied “Novietot šeit”. Vari arī vilkt un atlaist.",
     "dragSelectedHint": "Pieskaries brīvai vietai, lai izmēģinātu novietojumu. Vari arī vilkt priekšmetu un atlaist.",
     "placeHere": "Novietot šeit",
     "turnItem": "Pagriezt",
@@ -1289,6 +1305,7 @@
     "a11yGotIt": "Sapratu"
   },
   "play": {
+    "seeResult": "Skatīt rezultātu",
     "puzzleOf": "Uzdevums {{number}} no {{total}}",
     "backToPath": "Atpakaļ uz taku",
     "adjustAnswer": "Vēl nav pareizi. Pielāgo atbildi un pārbaudi vēlreiz.",
@@ -1769,15 +1786,33 @@
     "parts": "{{count}} daļas",
     "partitionResets": "Jaunas daļas notīra iekrāsojumu.",
     "yourStrip": "Tava josla",
+    "piecesCounted": "{{count}} no {{total}} vienādām daļām",
     "shaded": "Iekrāsotās daļas: {{count}} no {{total}}",
     "remove": "Notīri vienu daļu",
     "add": "Iekrāso vienu daļu",
     "reset": "Sāc šo joslu no jauna"
   },
+  "percentageSolution": {
+    "whole": "100% = {{whole}}",
+    "amount": "{{percent}}% no {{whole}} = {{amount}}",
+    "saved": "{{percent}}% atlaide = {{amount}}",
+    "sale": "{{whole}} − {{amount}} = {{price}}",
+    "budget": "{{budget}} − {{prices}} = {{remaining}} atlikumā",
+    "coins_one": "{{count}} monēta",
+    "coins_other": "{{count}} monētas",
+    "coins_zero": "{{count}} monētu"
+  },
   "decimalModels": {
     "tenthsGuide": "Kvadrāts ir viens veselais. Katra no 10 vienādajām joslām ir viena desmitdaļa jeb 0,1.",
     "hundredthsGuide": "100 rūtiņas = 1 veselais.\n1 rūtiņa = 0,01 · 1 rinda = 0,10 = 0,1",
+    "eachWhole": "Katrs kvadrāts ir viens veselais.",
     "oneWhole": "1 veselais",
+    "countTenths_one": "{{count}} desmitdaļa",
+    "countTenths_other": "{{count}} desmitdaļas",
+    "countTenths_zero": "{{count}} desmitdaļu",
+    "countHundredths_one": "{{count}} simtdaļa",
+    "countHundredths_other": "{{count}} simtdaļas",
+    "countHundredths_zero": "{{count}} simtdaļu",
     "gridLabel": "Decimāldaļu režģis",
     "shaded": "Iekrāsotas {{count}} no {{total}} daļām",
     "tapGrid": "Pieskaries režģim, lai sāktu.",
@@ -1828,6 +1863,7 @@
     "eraseShort": "Dzēst"
   },
   "bridge": {
+    "litreSquare": "1 rūtiņa = 1 litrs",
     "sameBottles": "Katrā pudelē ir vienāds ūdens daudzums.",
     "bottles": "Pudeles",
     "totalLitres": "Litri kopā",
@@ -1863,6 +1899,31 @@
     "moveBy": "Maini x par {{x}} un y par {{y}}.",
     "linkedLinesTitle": "Saistītie daudzumi"
   },
+  "moneyReveal": {
+    "price": "Cena",
+    "paid": "Samaksāts",
+    "change": "Atlikums",
+    "total": "Monētu summa",
+    "each": "Viena priekšmeta cena",
+    "sale": "Cena ar atlaidi",
+    "budget": "Budžets",
+    "left": "Pāri paliek",
+    "itemCount": "Var nopirkt · {{value}} gab."
+  },
+  "jugSolution": {
+    "ml": "{{value}} ml",
+    "litres": "{{value}} l",
+    "left": "Atlikums {{volume}}",
+    "cup": "Pilnas krūzes · {{value}}",
+    "bowl": "Pilnas bļodas · {{value}}",
+    "bottle": "Vajadzīgās pudeles · {{value}}"
+  },
+  "clockSolution": {
+    "minutes": "{{value}} min",
+    "hours": "{{value}} h",
+    "nextDay": "nākamā diena",
+    "previousDay": "iepriekšējā diena"
+  },
   "everyday": {
     "cats": "Kaķi",
     "toys": "Rotaļlietas",
@@ -1881,6 +1942,19 @@
     },
     "catCount": "Kaķu skaits",
     "toyCount": "Rotaļlietu skaits",
+    "boxCubes_one": "{{count}} kubs",
+    "boxCubes_other": "{{count}} kubi",
+    "boxCubes_zero": "{{count}} kubu",
+    "boxLength": "{{n}} cm",
+    "boxVolume": "{{n}} cm³",
+    "boxLayer": "Aizpildītie slāņi  {{layer}} / {{height}}",
+    "boxBase": "Kubi vienā slānī  {{w}} × {{d}} = {{area}}",
+    "gridSquare": "{{number}}. lauciņš",
+    "shapeCount": {
+      "sides": "Malas",
+      "corners": "Virsotnes",
+      "symmetry": "Simetrijas asis"
+    },
     "ribbonPerCorner": "Paklājiņi: 1 lente pie katra stūra",
     "priceEach": "Cena par vienu",
     "packPrice": "Visa komplekta cena",
@@ -1919,6 +1993,11 @@
   "developer": {
     "title": "Izstrādātāja režīmi",
     "enabled": "Testa režīms ieslēgts",
+    "nextTopic": "Nākamā tēma",
+    "topicList": "Uzdevumu tēmas ({{total}})",
+    "taskFits": "Ietilpst bez ritināšanas",
+    "taskScroll": "Ritināšanas attālums: {{distance}} pt",
+    "repeatPuzzle": "Atkārtot uzdevumu",
     "sessionHint": "Izvēlies testa ekrānu. Pārstartējot lietotni, visi režīmi izslēdzas.",
     "choose": "Izvēlēties testa ekrānu",
     "open": "Atvērt testa ekrānu",

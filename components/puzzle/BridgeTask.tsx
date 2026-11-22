@@ -33,10 +33,11 @@ export function BridgeTask({ puzzle, value, onChange, answered, readOnly = false
     </>;
   } else if(puzzle.type==='signed_line') {
     const {min,max,start,mode,delta}=puzzle.payload;
-    const current=readOnly?start:value?.value??0;
+    const origin = mode === 'place' ? 0 : start;
+    const current = value?.value ?? origin;
     model=<>
       <Text style={styles.equation}>{mode==='place'?String(start):`${start} ${delta<0?'−':'+'} ${Math.abs(delta)} = ?`}</Text>
-      <NumberLineTrack min={min} max={max} start={mode==='place'?0:start} value={current} onSelect={n=>onChange({value:n})} disabled={answered}/>
+      <NumberLineTrack min={min} max={max} start={origin} value={current} onSelect={n=>onChange({value:n})} disabled={answered}/>
       {!readOnly ? <Text testID="bridge-value" style={styles.answer}>{value?.value??'?'}</Text> : null}
       {!readOnly ? <View style={styles.row}>{[-1,1].map(d=>button(`bridge-step-${d}`,t(d<0?'puzzleTypes.numberLineMoveLeft':'puzzleTypes.numberLineMoveRight'),()=>onChange({value:current+d}),current+d<min||current+d>max,true))}</View> : null}
     </>;

@@ -6,6 +6,12 @@ export type BridgeState = { value?: number | null; point?: Point | null; equatio
 export function isBridgePuzzle(p: Puzzle): p is BridgePuzzle {
   return ['ratio_table', 'signed_line', 'equation_board', 'coordinate_map'].includes(p.type ?? '');
 }
+/** The largest bottle group that fits both the given and requested totals. */
+export function ratioGroups({ a, b, targetA }: RatioTablePuzzle['payload']) {
+  let bottles = a, remainder = targetA;
+  while (remainder) [bottles, remainder] = [remainder, bottles % remainder];
+  return { bottles, litres: b * bottles / a, start: a / bottles, end: targetA / bottles };
+}
 export function bridgeTarget(p: BridgePuzzle): number | Point {
   const q = p.payload;
   if (p.type === 'ratio_table') return p.payload.targetA * p.payload.b / p.payload.a;

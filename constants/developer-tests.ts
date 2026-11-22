@@ -3,6 +3,7 @@ import type { ComponentType } from 'react';
 export type DeveloperTest = { id: string; title: string; group: string; load: () => ComponentType; usesSavedProgress?: boolean };
 
 export const DEVELOPER_TESTS: DeveloperTest[] = __DEV__ ? [
+  { id: "puzzle-variants", title: "Puzzle topic preview", group: "Puzzles", load: () => require('@/scripts/native/puzzle-variants/fixture').default },
   { id: "action-motion", title: "Action motion", group: "Puzzles", load: () => require('@/scripts/native/action-motion/fixture').default },
   { id: "activity-mix", title: "Activity mix", group: "Puzzles", load: () => require('@/scripts/native/activity-mix/fixture').default },
   { id: "berry", title: "Puzzle theme", group: "Puzzles", load: () => require('@/scripts/native/berry/fixture').default },

@@ -179,14 +179,14 @@ console.log('Verified compiled cupboard and water callbacks, opening, closing, R
   return [part.node,Array.from({length:a.count},(_,i)=>[0,1,2].map(axis=>binary.readFloatLE((v.byteOffset??0)+(a.byteOffset??0)+i*(v.byteStride??12)+axis*4)))];
  }));
  const fireAsset={getFirstEntityByName:name=>gltf.nodes.find(n=>n.name===name)};
- const poses=new Map(),emissions=new Map();let intensity=0,position=[],lightConfig,lightCreates=0,fireWrites=0;
- const lightManager={setIntensity(_light,value){assert.ok(Number.isFinite(value)&&value>=0);intensity=value;fireWrites++},
-  setPosition(_light,value){position=Array.from(value);fireWrites++},setFalloff(){fireWrites++}};
+ const poses=new Map(),emissions=new Map();let intensity=0,bounceIntensity=0,bounceFalloff=0,position=[],direction=[],falloff,lightConfig,lightCreates=0,fireWrites=0;
+ const lightManager={shadowMapsSupported:false,setIntensity(_light,value){assert.ok(Number.isFinite(value)&&value>=0);if(_light.type==='spot')intensity=value;else bounceIntensity=value;fireWrites++},
+  setPosition(_light,value){if(_light.type==='spot')position=Array.from(value);fireWrites++},setDirection(_light,value){direction=Array.from(value);fireWrites++},setFalloff(_light,value){if(_light.type==='spot')falloff=value;else bounceFalloff=value;fireWrites++}};
  mocks['react-native-filament'].useFilamentContext=()=>({lightManager,scene:{},
   transformManager:{createIdentityMatrix:()=>matrix(),setTransform(entity,pose){poses.set(entity.name,pose.ops);fireWrites++}},
   renderableManager:{getPrimitiveCount:()=>1,getMaterialInstanceAt:entity=>({setFloat4Parameter(_key,value){emissions.set(entity.name,Array.from(value));fireWrites++}})},
  });
- mocks['react-native-filament'].useLightEntity=(_manager,config)=>mocks.react.useMemo(()=>{lightConfig=config;lightCreates++;return {id:lightCreates}},[config.falloffRadius]);
+ mocks['react-native-filament'].useLightEntity=(_manager,config)=>mocks.react.useMemo(()=>{if(config.type==='spot')lightConfig=config;else assert.equal(config.castShadows,false);lightCreates++;return {type:config.type,id:lightCreates}},[config.falloffRadius]);
  mocks['react-native-filament'].useEntityInScene=()=>{};
  const fireRuntime={exports:{}};vm.runInNewContext(fireCode,{module:fireRuntime,exports:fireRuntime.exports,require:load,Math,Map,Set,global:{Error}});
  function transformed(point,ops) {
@@ -199,19 +199,19 @@ console.log('Verified compiled cupboard and water callbacks, opening, closing, R
   return p;
  }
  for(const fps of [30,60,120])for(const wallFlipped of [false,true]) {
-  hooks.length=0;poses.clear();emissions.clear();lightCreates=0;
+  hooks.length=0;poses.clear();emissions.clear();lightCreates=0;lightManager.shadowMapsSupported=wallFlipped;
   const room=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1,toys:[],decorations:[
    {decorationId:'livingFireplaceCream',instanceId:'fire',offset:{x:0,y:0},scale:wallFlipped?1.7:.7,wallFlipped,rotationDegrees:37},
   ]});
   let fireObject=room.objects[0];const preview={value:undefined};
-  function renderFire(extra={}){cursor=0;effects=[];fireRuntime.exports.NativeFireplace({asset:fireAsset,object:fireObject,active:true,reduceMotion:false,editingObject:preview,...extra});effects.forEach(fn=>fn())}
+  function renderFire(extra={}){cursor=0;effects=[];fireRuntime.exports.NativeFireplace({castShadows:true,asset:fireAsset,object:fireObject,active:true,reduceMotion:false,editingObject:preview,...extra});effects.forEach(fn=>fn())}
   renderFire();frame({timeSinceLastFrame:1/fps});assert.equal(intensity,0);
   const idle=fireWrites;for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,idle,'An unlit fireplace has no idle native writes');
-  fireObject={...fireObject,poweredOn:true};renderFire();const heights=[],lightLevels=[];
+  fireObject={...fireObject,poweredOn:true};renderFire();const heights=[],lightLevels=[],sourceX=[];
   for(let i=0;i<fps*3;i++) {
    frame({timeSinceLastFrame:1/fps});
    heights.push(poses.get(FIREPLACE_FLAMES[1].node).find(op=>op[0]==='scale')[1][1]);
-   if(i>fps)lightLevels.push(intensity);
+   if(i>fps){lightLevels.push(intensity);sourceX.push(position[0]);}
    if(i%15===0)for(const part of FIREPLACE_FLAMES)for(const vertex of flameVertices.get(part.node)) {
     const p=transformed(vertex,poses.get(part.node));
     assert.ok(Math.abs(p[0])<.49&&p[1]>=.23&&p[1]<.94&&p[2]>-.02&&p[2]<.30,`Animated flame meshes stay inside the firebox: ${part.node}/${i} ${JSON.stringify(p)}`);
@@ -219,17 +219,26 @@ console.log('Verified compiled cupboard and water callbacks, opening, closing, R
   }
   assert.ok(Math.max(...heights)-Math.min(...heights)>.15,'Lit flames visibly rise and fall');
   assert.ok(Math.max(...lightLevels)/Math.min(...lightLevels)>1.05,'The warm room light flickers with the fire');
-  assert.equal(lightConfig.type,'point');assert.equal(lightConfig.colorKelvin,1900);assert.equal(lightCreates,1);
-  assert.ok([...emissions.values()].every(color=>color[0]>3*color[1]&&color[1]>color[2]&&color[0]>.5&&color[0]<1),
-   'Flames keep a soft orange emission without bleaching to white');
-  assert.ok(position.every((v,i)=>Math.abs(v-fireplaceLightPosition(fireObject)[i])<1e-8),'The light follows rotated/scaled fireplaces');
+  assert.equal(lightConfig.type,'spot');assert.equal(lightConfig.colorKelvin,2150);assert.equal(lightCreates,2);
+  assert.equal(lightConfig.castShadows,wallFlipped,'Shadow maps follow native support and the local map budget');
+  assert.ok(lightConfig.spotLightCone[1]>1.3 && direction[1]<0 && Math.abs(Math.hypot(...direction)-1)<1e-6);
+  assert.ok(Math.abs(direction[0]-.96*Math.sin(fireObject.heading))<1e-6 && falloff>=4*fireObject.scale);
+  assert.ok(bounceIntensity>0 && bounceIntensity<intensity*.25 && bounceFalloff<falloff*.35,'Short-range bounce lights the recess');
+  const shadowScale=()=>poses.get('Grate penumbra').find(op=>op[0]==='scale')[1][2];
+  assert.equal(shadowScale(),wallFlipped?0:1,'Only the fallback draws a soft grate shadow on the hearth');
+  assert.ok(Math.max(...sourceX)-Math.min(...sourceX)>.002*fireObject.scale,'The light moves as the flames lean');
+  assert.ok(Math.hypot(...position.map((v,i)=>v-fireplaceLightPosition(fireObject)[i]))<.08*fireObject.scale,'The source stays inside the burning logs');
+  for (const [i,part] of FIREPLACE_FLAMES.entries()) {
+   const [r,g,b]=emissions.get(part.node);
+   assert.ok(r>g&&g>b&&(i<3?g/r<.3:g/r>.5),'Amber silhouettes retain distinct golden cores');
+  }
   const frozen=fireWrites;renderFire({active:false});for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,frozen,'Hidden rooms freeze flame and light work');
   renderFire({reduceMotion:true});frame({timeSinceLastFrame:1/fps});
   for(const part of FIREPLACE_FLAMES)assert.deepEqual(poses.get(part.node).find(op=>op[0]==='scale')[1],[1,1,1],'Reduce Motion keeps a steady visible fire');
   const still=fireWrites;for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,still,'Reduce Motion has no flicker or repeated native writes');
   preview.value={...fireObject,position:[1,.068,1],heading:Math.PI/2};frame({timeSinceLastFrame:1/fps});
-  assert.ok(position.every((v,i)=>Math.abs(v-fireplaceLightPosition(preview.value)[i])<1e-8),'Light follows live dragging without handle recreation');assert.equal(lightCreates,1);
-  fireObject={...fireObject,poweredOn:false};renderFire();for(let i=0;i<fps*2;i++)frame({timeSinceLastFrame:1/fps});assert.equal(intensity,0,'Extinguishing removes all room light');
+  assert.ok(position.every((v,i)=>Math.abs(v-fireplaceLightPosition(preview.value)[i])<1e-8),'Light follows live dragging without handle recreation');assert.equal(lightCreates,2);
+  fireObject={...fireObject,poweredOn:false};renderFire();for(let i=0;i<fps*2;i++)frame({timeSinceLastFrame:1/fps});assert.equal(intensity,0,'Extinguishing removes all room light'); assert.equal(shadowScale(),0);assert.equal(bounceIntensity,0);
   for(const part of FIREPLACE_FLAMES)assert.deepEqual(poses.get(part.node).find(op=>op[0]==='scale')[1],[0,0,0],'Extinguished flames disappear');
   fireObject={...fireObject,poweredOn:true};hooks.length=0;renderFire();frame({timeSinceLastFrame:1/fps});assert.ok(intensity>0,'A saved lit fireplace restores after remount');
  }

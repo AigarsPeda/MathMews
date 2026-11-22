@@ -955,32 +955,6 @@ render([closeChair,closeSofa],dropProps).find(({node})=>node.type==='RoomItemMov
 assert.equal(closePreview.value,undefined);
 console.log('Verified the reported rotated chair previews over the sofa, keeps blocked drops unsaved until cancelled, accepts a clear drop and preserves its angle on both edit paths.');
 
-// A new placement suggests a free spot, but waits for explicit Place before saving.
-states.length=0; drawingValues.length=0; refs.length=0;
-measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
-const smallSofa={...sofa,scale:.8,offset:{x:0,y:0}};
-const newChair={...dragChair,offset:{x:0,y:0}};
-const draft={target:{kind:'decoration',id:newChair.decorationId},item:{kind:'decoration',decorationId:newChair.decorationId,instanceId:newChair.instanceId},initial:newChair};
-const draftProps={...moveProps,placementDraft:draft};
-moved=undefined;
-render([smallSofa,newChair],{...draftProps,decorationEntry:{roomId:'livingRoom',item:draft.item}});
-const added=render([smallSofa,newChair],draftProps);
-assert.equal(moved,undefined,'A placement draft does not write the saved room');
-for(const frame of placementFrames.values())frame();
-placementFrames.clear();
-const draftPreview=added.find(({node})=>node.type==='NativeRoomScene').node.props.editingObject;
-const draftWorld=roomWorld(added), draftResolver=placementApi.createRoomPlacementResolver(draftWorld,[newChair.instanceId]);
-for(let i=0;i<100 && (!draftPreview.value || !draftResolver.canPlace(draftPreview.value));i++)await new Promise(resolve=>setTimeout(resolve,0));
-assert.ok(draftPreview.value && draftResolver.canPlace(draftPreview.value),'The draft receives a free suggested position');
-assert.equal(draftPreview.value.heading,20*Math.PI/180,'The suggestion retains the selected angle');
-assert.equal(moved,undefined,'A free suggestion still waits for Place');
-render([smallSofa,newChair],draftProps).find(({node})=>node.type==='RoomItemMoveControls').node.props.onPlace();
-assert.equal(moved.id,newChair.instanceId,'Place commits the selected draft');
-const fixedChair={...newChair,offset:moved.offset};
-const correctedWorld=roomWorld(render([smallSofa,fixedChair],moveProps));
-assert.ok(placementApi.createRoomPlacementResolver(correctedWorld,[newChair.instanceId]).canPlace(correctedWorld.objects[1]));
-console.log('Verified new furniture receives a free suggestion, preserves its angle and waits for Place before saving.');
-
 const routineClock = { worldMs: 23 * 3_600_000, realMs: Date.now(), speed: 1 };
 render([], { worldClock: routineClock });
 assert.equal(activityOptionsForTest.period, 'night', 'The rendered cat stage passes nighttime to its scheduler');

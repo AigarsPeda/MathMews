@@ -35,6 +35,7 @@ export function smoothHardFractions({ puzzles, lessons, pathExtras }) {
         const p = byId.get(id), variant = slot < 4 ? 0 : slot < 7 ? 1 : 2;
         if (p.type === 'multiple_choice') {
           const [n, d, total] = plan.amounts[stage][variant], each = total / d, answer = each * n;
+          p.fractionExample = { numerator: n, denominator: d, whole: total };
           const rank = (stage + slot) % 3;
           p.choices = [answer - rank, answer + 1 - rank, answer + 2 - rank].map(String); p.correctIndex = rank;
           p.question = lv ? `Paplātē ir ${total} stādi. ${n}/${d} ir puķes. Cik puķu?` : `A tray has ${total} seedlings. ${n}/${d} are flowers. How many flowers?`;
@@ -60,7 +61,7 @@ export function smoothHardFractions({ puzzles, lessons, pathExtras }) {
     const first = medium.get('v2-medium-fractions-explore-10-1');
     delete first.payload;
     Object.assign(first, { type: 'multiple_choice', question: lv ? 'Kura daļa ir vienāda ar 0,6?' : 'Which fraction equals 0.6?',
-      choices: ['3/5', '1/5', '1/2'], correctIndex: 0,
+      choices: ['3/5', '1/5', '1/2'], correctIndex: 0, fractionExample: { numerator: 6, denominator: 10, compareTo: [3, 5] },
       hint: lv ? 'Izsaki decimāldaļu desmitdaļās, tad saīsini daļu.' : 'Write the decimal as tenths, then simplify the fraction.',
       explanation: lv ? '0,6 = 6/10 = 3/5.' : '0.6 = 6/10 = 3/5.', helpTemplate: 'fraction_decimal_link' });
     first.learning.representation = 'symbols'; first.learning.reasoningSteps = 2;

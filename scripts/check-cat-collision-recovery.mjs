@@ -22,6 +22,27 @@ for (const decorationId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) {
 }
 
 const empty = w.buildNativeRoomWorld(base);
+// A bowl can cover the saved home while the cat is resting somewhere else.
+const bowl = { decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } };
+const savedSpot = [-.54, w.FLOOR_Y, -1];
+const bowlRoom = scale => w.buildNativeRoomWorld({ ...base, decorations: [{ ...bowl, scale }], livePositions: { cat: w.catScreenPoint(savedSpot, empty) } });
+const smallBowl = bowlRoom(1), largeBowl = bowlRoom(1.14);
+assert.ok(w.isFree(savedSpot, smallBowl) && !w.isFree(savedSpot, largeBowl), 'Only the bigger bowl covers the saved spot');
+for (const reduceMotion of [false, true]) {
+  openSkin('grey'); resetCatActor();
+  const resting = [-1.3, w.FLOOR_Y, 1.3];
+  const positionValue = { value: undefined };
+  const props = { active: true, playback: idle, initialPosition: resting, positionValue, reduceMotion };
+  for (const world of [smallBowl, largeBowl, smallBowl]) {
+    render({ ...props, world }); drawCat(1 / 60);
+    assert.ok(w.pathLength([resting, positionValue.value]) < 1e-6, 'Resizing a distant bowl keeps the resting cat in place');
+  }
+  const dragged = [1.3, w.FLOOR_Y, -1.3];
+  const world = w.buildNativeRoomWorld({ ...base, decorations: [bowl], livePositions: { cat: w.catScreenPoint(dragged, empty) } });
+  render({ ...props, world }); drawCat(1 / 60);
+  assert.ok(w.pathLength([dragged, actorState().position]) < 1e-6, 'Dragging the cat itself still moves it');
+}
+
 const doorWorld = { ...empty, objects: [{ instanceId: 'open-door', modelId: 'test-door', solid: false,
   interactionBoxes: [{ min: [-.3, 0, -.3], max: [.3, 1, .3] }] }] };
 assert.ok(w.isFree(w.nearestFree(floor, doorWorld), doorWorld), 'Spawn repair respects an open door on a non-solid object');

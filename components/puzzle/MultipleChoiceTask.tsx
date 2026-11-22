@@ -7,6 +7,7 @@ import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
 
 type MultipleChoiceTaskProps = {
+  onSolutionShown?: () => void;
   puzzle: MultipleChoicePuzzle;
   selectedIndex: number | null;
   isCorrect: boolean;
@@ -16,6 +17,7 @@ type MultipleChoiceTaskProps = {
 };
 
 export function MultipleChoiceTask({
+  onSolutionShown,
   puzzle,
   selectedIndex,
   isCorrect,
@@ -26,8 +28,8 @@ export function MultipleChoiceTask({
   const choiceLayout = useChoiceLayout(puzzle.choices);
   return (
     <View style={styles.choices}>
-      {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} /> : null}
-      {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
+      {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} onSolutionShown={onSolutionShown} /> : null}
+      {puzzle.taskVisual ? <QuantityTaskScene onSolutionShown={onSolutionShown} key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
       <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
         {puzzle.choices.map((choice, index) => {
         let result: "correct" | "wrong" | null = null;

@@ -1,3 +1,5 @@
+import { sofaBallPosition, type SofaBallRoll } from '@/utils/sofa-ball-roll';
+import { acceptsSurfaceItem, surfaceContains, type SurfaceUse, type ItemSurface } from '@/utils/room-support-surface';
 import type { CatSleepPose } from '@/constants/cat-sleep';
 import { restoreRoomSupports } from '@/utils/room-support';
 import { isDecorationOpen } from '@/constants/item-interactions';
@@ -50,7 +52,8 @@ export type ModelMetadata = {
   cupboard?: { surface: number[]; clearance: number[] };
   collisionBoxes?: { min: number[]; max: number[]; footprint?: number[][] }[];
   placementBoxes?: { min: number[]; max: number[]; footprint?: number[][] }[];
-  supportSurfaces?: { min: number[]; max: number[] }[];
+  supportSurfaces?: ItemSurface[];
+  surfaceUse?: SurfaceUse;
   baseHull?: number[][];
   wallMountBounds?: { min: number[]; max: number[] };
   placementHull?: number[][];
@@ -59,7 +62,7 @@ export type ModelMetadata = {
   bathroom?: { kind: BathroomFixtureKind; contact: number[]; sprayHeight?: number };
 };
 export type CollisionBox = { min: Vec3; max: Vec3 };
-type PlacementMetadata = Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "placementBoxes" | "supportSurfaces" | "baseHull" | "wallMountBounds" | "interactionBounds"> & { placementBoxesFrom?: string };
+type PlacementMetadata = Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "placementBoxes" | "supportSurfaces" | "surfaceUse" | "baseHull" | "wallMountBounds" | "interactionBounds"> & { placementBoxesFrom?: string };
 const derivedPlacement = placementBounds as Record<string, PlacementMetadata>;
 export const NATIVE_MODEL_CATALOG: Record<string, ModelMetadata> = Object.fromEntries(
   Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => {
@@ -168,6 +171,8 @@ export type NativeRoomWorld = {
   fridgeDoorClearance?: string;
   radius: number;
   home: Vec3;
+  /** Original cat placement when furniture forces the navigation home onto nearby free floor. */
+  homeAnchor?: Vec3;
   objects: NativeRoomObject[];
 };
 export type CatBrushPass = { from: Vec3; to: Vec3; side: number; instanceId: string };
@@ -192,6 +197,7 @@ export type NativeTravel = {
   prepareJump?: { target: Vec3; light: boolean };
   voluntaryPerch?: Vec3;
   watchToy?: boolean;
+  sofaBallRoll?: SofaBallRoll;
   contactKey?: string;
   gait?: CatGait;
   ramp?: number;
@@ -211,6 +217,8 @@ export type NativeTravel = {
   replanned?: boolean;
   targetPosition?: Vec3;
   treePlay?: boolean;
+  scratchingPost?: { center: Vec3; radius: number; top: number };
+  watchingWindow?: string;
   plantPlay?: boolean;
   playTargetId?: string;
   pawTargetRadius?: number;
@@ -292,6 +300,17 @@ export function nativeWallPlacementBounds(object: NativeRoomObject): CollisionBo
     max: [0,1,2].map(i => Math.max(...corners.map(p => p[i]))) as Vec3 };
 }
 
+export function isLooseRoomToy(modelId: string): boolean {
+  return /Ball$|toy-mouse|^yarn/i.test(modelId);
+}
+
+export function roomToyRadius(object: NativeRoomObject): number {
+  // A turned bounding box grows around a sphere. Its vertical diameter stays exact.
+  const diameter = /Ball$/.test(object.modelId) ? object.max[1] - object.min[1]
+    : Math.max(object.max[0] - object.min[0], object.max[2] - object.min[2]);
+  return Math.max(.01, diameter / 2);
+}
+
 export function isSurfacePlaceable(modelId: string): boolean {
   return !!NATIVE_MODEL_CATALOG[modelId]?.baseHull;
 }
@@ -337,36 +356,48 @@ export function placeObjectOnRugs(object: NativeRoomObject, objects: NativeRoomO
     interactionBoxes: object.interactionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
 }
 
+function baseFitsSurface(object: NativeRoomObject, position: Vec3, owner: NativeRoomObject, top: ItemSurface) {
+  const meta = NATIVE_MODEL_CATALOG[object.modelId];
+  return acceptsSurfaceItem(top, meta.surfaceUse) && !!meta.baseHull?.every(([x, z]) => {
+    const corner = rotate([x, 0, z], object.heading).map((v, i) => v * object.scale + position[i] - owner.position[i]);
+    const local = rotate(corner, -owner.heading);
+    return surfaceContains(top, local[0] / owner.scale, local[2] / owner.scale);
+  });
+}
+
+/** Check the actual saved contact, even with another shelf above it. */
+export function hasRoomItemSupport(object: NativeRoomObject, objects: NativeRoomObject[]) {
+  if (!object.supportId) return true;
+  const owner = objects.find(entry => entry.instanceId === object.supportId);
+  return !!owner && !!NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces?.some(top =>
+    Math.abs(object.min[1] - owner.position[1] - top.max[1] * owner.scale - .002) < .005
+    && baseFitsSurface(object, object.position, owner, top));
+}
+
 /** Rest a small object on an authored surface. Saved anchors use the exact
  * elevated pose; dragging may also target the surface and snap the base onto it. */
-export function placeObjectOnSurface(object: NativeRoomObject, objects: NativeRoomObject[], width: number, snapToSurface = false): NativeRoomObject {
-  if (!isSurfacePlaceable(object.modelId)) return placeObjectOnRugs(object, objects);
+export function placeObjectOnSurface(object: NativeRoomObject, objects: NativeRoomObject[], width: number, snapToSurface = false, legacyAnchor = false): NativeRoomObject {
+  if (!isSurfacePlaceable(object.modelId) || legacyAnchor && NATIVE_MODEL_CATALOG[object.modelId].surfaceUse) return placeObjectOnRugs(object, objects);
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const centerOffset = rotate(meta.center, object.heading);
   const center = centerOffset.map((v, i) => v * object.scale + object.position[i]) as Vec3;
   const point = projectWorld(center, width);
-  const base = meta.collisionBoxes?.filter(box => box.min[1] <= meta.min[1] + .02)
-    .sort((a, b) => a.max[1] - b.max[1])[0] ?? meta;
-  const baseHull = meta.baseHull ?? [base.min[0], base.max[0]].flatMap(x => [base.min[2], base.max[2]].map(z => [x,z]));
+  const baseCenter = meta.surfaceUse ? rotate(meta.min.map((v, i) => (v + meta.max[i]) / 2), object.heading) : centerOffset;
   const surfaces = objects.flatMap(owner => owner.instanceId === object.instanceId ? []
-    : (NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []).map(top => ({ owner, top })))
+    : (NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []).filter(top => (!legacyAnchor || !top.kind)
+      && acceptsSurfaceItem(top, meta.surfaceUse)).map(top => ({ owner, top })))
     .sort((a, b) => (b.owner.position[1] + b.top.max[1] * b.owner.scale) - (a.owner.position[1] + a.top.max[1] * a.owner.scale));
-  // Prefer an exact anchor before trying the surface beneath the dragged object.
-  for (const targetBoard of snapToSurface ? [false, true] : [false]) for (const { owner, top } of surfaces) {
+  // Try the topmost support first so tapping a book on a table targets its cover.
+  for (const { owner, top } of surfaces) for (const targetBoard of snapToSurface ? [false, true] : [false]) {
     const height = owner.position[1] + top.max[1] * owner.scale + .002;
     const desired = unprojectFloor(point, height + (targetBoard ? 0 : (meta.center[1] - meta.min[1]) * object.scale), width);
-    const position = desired.map((v, i) => v - centerOffset[i] * object.scale) as Vec3;
+    const anchor = targetBoard ? baseCenter : centerOffset;
+    const position = desired.map((v, i) => v - anchor[i] * object.scale) as Vec3;
     position[1] = height - meta.min[1] * object.scale;
-    const fits = baseHull.every(([x,z]) => {
-      const corner = rotate([x, 0, z], object.heading).map((v, i) => v * object.scale + position[i] - owner.position[i]);
-      const local = rotate(corner, -owner.heading);
-      return local[0] >= top.min[0] * owner.scale && local[0] <= top.max[0] * owner.scale
-        && local[2] >= top.min[2] * owner.scale && local[2] <= top.max[2] * owner.scale;
-    });
-    if (!fits) continue;
+    if (!baseFitsSurface(object, position, owner, top)) continue;
     const delta = position.map((v, i) => v - object.position[i]);
     const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
-    return { ...object, supportId: owner.instanceId, rugLift: undefined, position, min: move(object.min), max: move(object.max),
+    return { ...object, supportId: owner.instanceId, movable: false, rugLift: undefined, position, min: move(object.min), max: move(object.max),
       collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
   }
   return placeObjectOnRugs(object, objects);
@@ -488,12 +519,12 @@ export function buildNativeRoomWorld(options: {
         }
     const min = [0, 1, 2].map(i => Math.min(...corners.map(c => c[i]))) as Vec3;
     const max = [0, 1, 2].map(i => Math.max(...corners.map(c => c[i]))) as Vec3;
-    const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
+    const movable = isLooseRoomToy(modelId);
     // Flat feeding mats remain walkable; bowl rims and dispensers block the body.
     const feederObstacle = isFoodBowlDecorationId(modelId) || modelId === 'kibbleDispenser';
     const solid = (!isCatFeederDecorationId(modelId) || feederObstacle) && !wall && !/carpet|rug/i.test(modelId) && !movable
       && max[1] > FLOOR_Y + (feederObstacle ? .01 : .10);
-    const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
+    const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && (isSurfacePlaceable(modelId) || max[1] > FLOOR_Y + .01);
     const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, opened, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
     if (opened && meta.interactionBounds) object.interactionBoxes = meta.interactionBounds.flatMap(bounds => {
@@ -604,15 +635,18 @@ export function buildNativeRoomWorld(options: {
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
   world.objects = world.objects.map(object => placeObjectOnRugs(object, world.objects));
-  world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width));
+  world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width, false, true));
   world.objects = restoreRoomSupports(world.objects, new Map([...options.decorations, ...options.toys]
     .filter(item => item.support).map(item => [item.instanceId, item.support!])));
+  // An arranged toy stays on its support until the player returns it to the floor.
+  for (const object of world.objects) if (object.supportId) object.movable = false;
   const findFree = createFloorSearch(world);
   // Land in navigable floor space so the following walk never relocates its start.
   for (const object of world.objects)
     if (object.approach) object.approach = findFree(object.approach);
   const home = catFloorPoint(options.livePositions?.cat ?? roomOffsetToPoint(options.homeOffset ?? { x: 0, y: .12 }, width, height, options.petSize), world);
   world.home = findFree(home);
+  if (world.home !== home) world.homeAnchor = home;
   return world;
 }
 export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): boolean {
@@ -1378,6 +1412,53 @@ function catTransferPawsFit(at: Vec3, heading: number, object: NativeRoomObject,
   })));
 }
 
+/** Choose a planted swatting pose and an unobstructed roll off the front of the sofa. */
+export function findSofaBallPlay(ball: NativeRoomObject, world: NativeRoomWorld) {
+  const sofa = world.objects.find(item => item.instanceId === ball.supportId);
+  if (!sofa?.seat || !isSeatingSofaDecorationId(sofa.modelId) || !/^toy-(orange|blue|pink)Ball$/.test(ball.modelId)) return;
+  const start = ball.min.map((v, i) => (v + ball.max[i]) / 2) as Vec3;
+  const radius = roomToyRadius(ball), height = ball.min[1] - .002;
+  const front = sofa.heading + (sofa.modelId === 'sofaB' ? Math.PI / 2 : 0);
+  if (!hasRoomItemSupport(ball, world.objects)) return;
+  const obstacles = world.objects.filter(o => o.instanceId !== ball.instanceId && o.collidable);
+  const clear = (point: Vec3, radius: number) => obstacles.every(object => {
+    if (point.some((v, i) => v < object.min[i] - radius || v > object.max[i] + radius)) return true;
+    const local = rotate(point.map((v, i) => (v - object.position[i]) / object.scale) as Vec3, -object.heading);
+    const model = NATIVE_MODEL_CATALOG[object.modelId];
+    return (model.collisionBoxes ?? [model]).every(box => {
+      const distance = Math.hypot(...local.map((v, i) => Math.max(box.min[i] - v, v - box.max[i], 0)));
+      return distance * object.scale >= radius - .004;
+    });
+  });
+  const cushions = NATIVE_MODEL_CATALOG[sofa.modelId].supportSurfaces?.filter(surface => surface.kind === 'seat') ?? [];
+  const onCushion = (point: Vec3) => {
+    const local = rotate(point.map((v, i) => (v - sofa.position[i]) / sofa.scale) as Vec3, -sofa.heading);
+    return cushions.some(top => surfaceContains(top, local[0], local[2]));
+  };
+  for (const spread of [0, .4, -.4, .8, -.8]) {
+    const direction = front + spread;
+    const along = (distance: number, y: number): Vec3 => [start[0] + Math.sin(direction) * distance, y, start[2] + Math.cos(direction) * distance];
+    let distance = 0;
+    while (distance < 4 && onCushion(along(distance, start[1]))) distance += .035;
+    const edge = along(distance + radius, start[1]);
+    for (const range of [1.1, .72, .48]) {
+      const end = along(distance + radius + range, FLOOR_Y + radius);
+      if (Math.max(Math.abs(end[0]), Math.abs(end[2])) + radius > 2.32) continue;
+      const roll = { ballId: ball.instanceId, sofaId: sofa.instanceId, start, edge, end };
+      if (!Array.from({ length: 41 }, (_, i) => i / 40).every(t => clear(sofaBallPosition(roll, t), radius))) continue;
+      for (const turn of [0, .7, -.7, 1.35, -1.35, 2, -2]) {
+        const angle = direction + turn;
+        const reach = radius + .61 * world.catScale;
+        const seat: Vec3 = [start[0] - Math.sin(angle) * reach, height, start[2] - Math.cos(angle) * reach];
+        if (!catTransferPawsFit(seat, angle, sofa, world)
+          || !clear([seat[0], height + .48 * world.catScale, seat[2]], .35 * world.catScale)) continue;
+        const approach = findSeatApproach(world.home, { ...sofa, seat }, world);
+        if (approach && findPawApproach(approach, [end], radius, world)) return { roll, seat, approach, heading: angle };
+      }
+    }
+  }
+}
+
 function furnitureTransferArc(start: Vec3, seat: Vec3, source: NativeRoomObject, target: NativeRoomObject, world: NativeRoomWorld, landingHeading?: number, launchHeading?: number): number | undefined {
   if (!catTransferSupport(source) || !catTransferSupport(target)) return undefined;
   const distance=Math.hypot(seat[0]-start[0],seat[2]-start[2]);
@@ -1553,9 +1634,23 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const previousBathroomApproach = plan.steps.find(s => s.bathroomApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.bathroomApproach;
   const bathroomApproach = object?.bathroom && step.bathroomPhase ? step.bathroomPhase === 'approach'
     ? findBathroomApproach(start, object, world) : step.bathroomApproach ?? previousBathroomApproach : undefined;
+  const scratching = plan.kind === 'scratchPost' && !!object && object.modelId.startsWith('toy-scratchPost');
+  // The tall narrow collision box is the sisal column between the base and the perch.
+  const column = scratching ? object.collisionBoxes?.find(box => box.max[1]-box.min[1] > object.scale) : undefined;
+  const post = column && object ? { center: column.min.map((v,i)=>(v+column.max[i])/2) as Vec3,
+    radius: .12*object.scale, top: column.max[1] } : undefined;
   const previousApproach = plan.steps.find(s => s.treeApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.treeApproach;
-  const treeApproach = tree ? walking && !step.returnHome ? findHangingToyApproach(start, object, world)
-    : step.treeApproach ?? previousApproach ?? object.approach : undefined;
+  let treeApproach = tree ? step.treeApproach ?? previousApproach ?? object.approach : undefined;
+  if (tree && walking && !step.returnHome) {
+    if (scratching) {
+      const contactY = post && Math.min(post.top, FLOOR_Y + .84 * world.catScale);
+      treeApproach = post && contactY !== undefined
+        ? findPawApproach(start, [[post.center[0], contactY, post.center[2]]], post.radius, world)
+        : undefined;
+    } else {
+      treeApproach = findHangingToyApproach(start, object, world);
+    }
+  }
   const plantApproach = plant && walking && !step.returnHome ? findPlantApproach(start, object, world) : undefined;
   let looseToyApproach: Vec3 | undefined;
   let target = plantApproach ?? catFloorPoint(step.position, world);
@@ -1573,7 +1668,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   else if (object?.seat && object.approach) {
     if (onSeat)
       target = object.seat;
-    else if (jump || walking && !step.returnHome && (step.approachingSeat || tree && plan.kind === 'toyPlay'))
+    else if (jump || walking && !step.returnHome && (step.approachingSeat || tree && (plan.kind === 'toyPlay' || scratching)))
       target = treeApproach ?? seatApproach ?? object.approach;
   }
   else if (plan.kind === 'doorTravel' && object) {
@@ -1590,7 +1685,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     const screen = plan.kind === 'mouseChase' ? step.objectPosition : undefined;
     const p = screen ? unprojectFloor(screen, centerY, world.width) : object.position;
     const center=object.min.map((v,i)=>(v+object.max[i])/2) as Vec3;
-    const radius=Math.max(object.max[0]-object.min[0],object.max[2]-object.min[2])/2;
+    const radius = roomToyRadius(object);
     if(plan.kind==='toyPlay' && object.movable)looseToyApproach=findPawApproach(start,[center],radius,world);
     target = plan.kind==='toyPlay' && object.movable
       ? looseToyApproach ?? start
@@ -1635,7 +1730,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     && !hasNativeArrived(start, object.bathroom.contact)) blocked = true;
   if ((tree && !treeApproach || plant && !plantApproach) && walking && !step.returnHome) { blocked = true; path = [start]; }
   if(plan.kind==='toyPlay' && object?.movable && walking && !step.returnHome && !looseToyApproach){blocked=true;path=[start];}
-  if (!object && !step.returnHome && (step.approachingSeat || step.sofaApproach || step.bowlApproach || plan.kind === 'doorTravel' || plan.kind === 'toyPlay' || plan.kind === 'mouseChase' || plan.kind === 'bowlEat' || plan.kind === 'plantPlay')) {
+  if (!object && !step.returnHome && (step.approachingSeat || step.sofaApproach || step.bowlApproach || plan.kind === 'doorTravel' || plan.kind === 'toyPlay' || plan.kind === 'mouseChase' || plan.kind === 'bowlEat' || plan.kind === 'plantPlay' || plan.kind === 'scratchPost')) {
     blocked = true;
     path = [start];
   }
@@ -1694,8 +1789,8 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   }
   const aim = plan.kind === 'windowWatch' ? world.objects.find(o => o.instanceId === plan.targetInstanceId)?.position
     : plant ? [...(object.leaves ?? [])].sort((a,b) => Math.hypot(...a.map((v,i)=>v-start[i])) - Math.hypot(...b.map((v,i)=>v-start[i])))[0]
-    : tree && plan.kind === 'toyPlay' ? hangingToyPosition(object) : object?.position;
-  const targetHeading = aim && !onSeat && !walking && !step.returnHome && (plan.kind === 'toyPlay' || plan.kind === 'plantPlay' || plan.kind === 'bowlEat' || plan.kind === 'windowWatch' || plan.kind === 'fridgeInvestigate' || plan.kind === 'investigate') ? Math.atan2(aim[0] - start[0], aim[2] - start[2]) : undefined;
+    : post ? post.center : tree && plan.kind === 'toyPlay' ? hangingToyPosition(object) : object?.position;
+  const targetHeading = aim && !onSeat && !walking && !step.returnHome && (plan.kind === 'scratchPost' || plan.kind === 'toyPlay' || plan.kind === 'plantPlay' || plan.kind === 'bowlEat' || plan.kind === 'windowWatch' || plan.kind === 'fridgeInvestigate' || plan.kind === 'investigate') ? Math.atan2(aim[0] - start[0], aim[2] - start[2]) : undefined;
   const rockingSupport=fromSupport?.modelId==='chairRockingOak' ? fromSupport : object;
   const departureSupport=fromSupport ?? (jump && !onSeat ? object : undefined);
   const stance=onSeat && object && catTransferSupport(object) ? catSupportStance(object,world) : 1;
@@ -1712,13 +1807,15 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const prepareJump=preparationArc!==undefined && object?.seat
     ? {target:object.seat,light:catJumpEffort(target,object.seat,world.catScale,preparationArc)<.8} : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking || jump ? duration * 1000 : step.durationMs, moveMs: walking || jump ? duration * 1000 : step.moveMs,
-    native: { watchToy: step.toyBeat === 'watch' || step.toyBeat === 'wait',
+    native: { watchingWindow: plan.kind === 'windowWatch' && step.animation === 'blinkSit' && !blocked ? plan.targetInstanceId : undefined,
+      scratchingPost: step.animation === 'scratchPost' && !blocked ? post : undefined,
+      watchToy: step.toyBeat === 'watch' || step.toyBeat === 'wait',
       voluntaryPerch: !blocked && plan.userRequested === false && (plan.kind === 'sofaSit' || plan.kind === 'islandSit')
         ? prepareJump?.target ?? (step.animation === 'jumpOn' ? target : undefined) : undefined,
       navigation: { radius: world.radius, kitchenNavigation: world.kitchenNavigation, fridgeDoorClearance: world.fridgeDoorClearance }, sleepPose: step.sleepPose, wakeToSit: step.wakeToSit, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
-      jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, playTargetId: plan.kind==='toyPlay'?object?.instanceId:undefined, pawTargetRadius: tree && object ? .1*object.scale : 0, targetPosition: object?.position, objectPath, objectDuration: duration * .6,
+      jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!tree, plantPlay: !!plant, sofaBallRoll: step.sofaBallRoll, playTargetId: step.sofaBallRoll?.ballId ?? (plan.kind==='toyPlay'?object?.instanceId:undefined), pawTargetRadius: tree && object ? .1*object.scale : 0, targetPosition: object?.position, objectPath, objectDuration: duration * .6,
       heading: object?.bed && (step.bedPhase === 'crawl' || step.bedPhase === 'covered') ? object.heading + Math.PI
         : object?.bathroom && step.bathroomPhase ? object.heading : object?.seat && onSeat ? object.seatHeading : targetHeading } };
 }

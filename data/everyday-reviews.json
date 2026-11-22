@@ -82775,6 +82775,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 7,
         "height": 3,
         "depth": 2,
@@ -82816,6 +82817,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 8,
         "height": 3,
         "depth": 2,
@@ -82857,6 +82859,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 2,
         "height": 4,
         "depth": 3,
@@ -82898,6 +82901,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 3,
         "height": 4,
         "depth": 3,
@@ -82939,6 +82943,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 4,
         "height": 4,
         "depth": 3,
@@ -82980,6 +82985,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 5,
         "height": 4,
         "depth": 4,
@@ -83021,6 +83027,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 6,
         "height": 4,
         "depth": 4,
@@ -83062,6 +83069,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 7,
         "height": 4,
         "depth": 4,
@@ -83103,6 +83111,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 8,
         "height": 4,
         "depth": 5,
@@ -83144,6 +83153,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 2,
         "height": 5,
         "depth": 5,
@@ -83185,6 +83195,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 3,
         "height": 5,
         "depth": 5,
@@ -83226,6 +83237,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 4,
         "height": 5,
         "depth": 2,
@@ -83269,6 +83281,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 5,
         "height": 5,
         "depth": 2,
@@ -83310,6 +83323,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 6,
         "height": 5,
         "depth": 2,
@@ -83351,6 +83365,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 7,
         "height": 5,
         "depth": 3,
@@ -83392,6 +83407,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 8,
         "height": 5,
         "depth": 3,
@@ -83433,6 +83449,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 2,
         "height": 6,
         "depth": 3,
@@ -83474,6 +83491,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 3,
         "height": 6,
         "depth": 4,
@@ -83515,6 +83533,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 4,
         "height": 6,
         "depth": 4,
@@ -83556,6 +83575,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 5,
         "height": 6,
         "depth": 4,
@@ -83597,6 +83617,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 6,
         "height": 6,
         "depth": 5,
@@ -83638,6 +83659,7 @@
       "correctIndex": 0,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 7,
         "height": 6,
         "depth": 5,
@@ -83679,6 +83701,7 @@
       "correctIndex": 1,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 8,
         "height": 6,
         "depth": 5,
@@ -83720,6 +83743,7 @@
       "correctIndex": 2,
       "model": {
         "kind": "solid",
+        "answerUnit": "cubes",
         "width": 2,
         "height": 2,
         "depth": 2,

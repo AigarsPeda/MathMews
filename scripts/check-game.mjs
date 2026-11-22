@@ -85,6 +85,7 @@ const extended = [
   "check-cat-expression",
   "check-cat-command-attention",
   "check-cat-paw-contact",
+  "check-sofa-ball-play",
   "check-cat-waking",
   "check-cat-sleeping",
   "check-cat-seat-naps",

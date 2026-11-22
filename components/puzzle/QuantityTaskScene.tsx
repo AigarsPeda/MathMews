@@ -8,8 +8,10 @@ import { moderateScale } from "@/utils/scale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
+import { CountingBoard } from "./CountingBoard";
+import { hasCountingAnimation } from "@/utils/puzzle-counting";
 
-export function QuantityTaskScene({ model, disabled, showExpression = true }: { model: QuantityTaskModel; disabled: boolean; showExpression?: boolean }) {
+export function QuantityTaskScene({ model, disabled, showExpression = true, onSolutionShown }: { onSolutionShown?: () => void; model: QuantityTaskModel; disabled: boolean; showExpression?: boolean }) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const sharing = model.kind === "share";
@@ -19,14 +21,21 @@ export function QuantityTaskScene({ model, disabled, showExpression = true }: { 
   const prompt = sharing ? `${model.items} ÷ ${model.groups} = ?`
     : model.kind === "array" ? `${model.rows} × ${model.columns} = ?`
     : `${model.left} ${model.kind === "join" ? "+" : "−"} ${model.right} = ?`;
+  const resolved = step > 0 || !!onSolutionShown;
   const description = sharing
     ? t('actionMotion.sharing', { remaining: model.items - step, counts: Array.from({ length: model.groups }, (_, i) => Math.floor(step / model.groups) + (i < step % model.groups ? 1 : 0)).join(' · ') })
     : model.kind === "array" ? t(`${sceneKeys}.${step ? "arrayBuilt" : "arrayReady"}`, { rows: model.rows, columns: model.columns, objects })
-    : t(`${sceneKeys}.${model.kind}${step ? "Done" : "Ready"}`, { left: model.left, right: model.right, objects });
+    : t(`${sceneKeys}.${model.kind}${resolved ? "Done" : "Ready"}`, { left: model.left, right: model.right, objects });
   return <View style={styles.wrap}>
 
     <View accessible accessibilityRole="image" accessibilityLabel={description} accessibilityLiveRegion="polite">
-      <VisualPracticeBoard compact durationMs={sharing ? 280 : undefined} staggerMs={sharing ? 0 : undefined} boardHeight={getQuantityTaskHeight(model)} prompt={showExpression ? prompt : undefined} tokens={getQuantityTaskTokens(model, step, sharing ? step : undefined)} />
+      {hasCountingAnimation(model) ? (
+        <CountingBoard model={model} joined={resolved} onSolutionShown={onSolutionShown} prompt={showExpression ? prompt : undefined} />
+      ) : (
+        <VisualPracticeBoard compact durationMs={sharing ? 280 : undefined} staggerMs={sharing ? 0 : undefined}
+          boardHeight={getQuantityTaskHeight(model)} prompt={showExpression ? prompt : undefined}
+          tokens={getQuantityTaskTokens(model, step, sharing ? step : undefined)} />
+      )}
     </View>
     {sharing || model.kind === "array" ? <View style={styles.captionRow}>
       {sharing ? <View pointerEvents="none"><PuzzleCatPortrait replayKey={step} petType="cat" mood="idle" reaction={step > 0 && !disabled ? 'puzzleHighPaw' : undefined} size={32} brief /></View> : null}

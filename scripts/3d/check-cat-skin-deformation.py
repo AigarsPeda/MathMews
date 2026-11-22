@@ -25,10 +25,20 @@ for coat in ('orange', 'grey', 'white'):
         strip = track.strips[0]
         resting = track.name.startswith(('restLoaf', 'restCrescent', 'restSide'))
         phases = [i/40 for i in range(41)] if resting and track.name.endswith(('Enter', 'Wake')) else (0, .25, .5, .75, 1)
+        if track.name == 'featherChase':
+            phases = sorted({*phases, .29, .48})
         for phase in phases:
             frame = strip.frame_start+(strip.frame_end-strip.frame_start)*phase
             bpy.context.scene.frame_set(int(frame), subframe=frame-int(frame))
-            evaluated = body.evaluated_get(bpy.context.evaluated_depsgraph_get())
+            deps = bpy.context.evaluated_depsgraph_get()
+            if track.name == 'featherChase' and phase in (.29, .48):
+                swat, support = ('L', 'R') if phase == .29 else ('R', 'L')
+                wrist = arm.matrix_world @ arm.pose.bones[swat+'.front.paw'].head
+                planted = arm.matrix_world @ arm.pose.bones[support+'.front.paw'].head
+                feathers = [o.evaluated_get(deps) for o in bpy.context.scene.objects if o.name.startswith('Chase feather')]
+                gap = min((o.matrix_world @ v.co - wrist).length for o in feathers for v in o.data.vertices)
+                assert wrist.z > .36 and planted.z < .14 and gap < .13, (coat, swat, 'mitten misses the feather', gap)
+            evaluated = body.evaluated_get(deps)
             mesh = evaluated.to_mesh()
             points = np.empty(len(mesh.vertices)*3)
             mesh.vertices.foreach_get('co', points)

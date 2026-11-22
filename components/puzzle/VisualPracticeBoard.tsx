@@ -1,3 +1,4 @@
+import { glide } from '@/utils/puzzle-motion';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { IconText } from "@/components/ui/IconText";
 import { PuzzleObjectImage } from "./PuzzleObjectImage";
@@ -19,24 +20,24 @@ function MovingToken({ token, ratio, delay, durationMs, motion }: { token: Pract
   const scale = useSharedValue(token.scale ?? 1);
   const fill = useSharedValue(token.tone === "muted" ? 0 : 1);
   const lane = useSharedValue(0);
-  const previousX = useRef(token.x);
+  const previous = useRef({ x: token.x, y: token.y });
   useEffect(() => {
     const duration = motion ? durationMs : 0;
-    const wait = motion ? delay : 0;
+    const wait = duration > 0 ? delay : 0;
     for (const value of [x, y, opacity, scale, fill, lane]) cancelAnimation(value);
     lane.value = 0;
-    x.value = withDelay(wait, withTiming(token.x, { duration }));
-    y.value = withDelay(wait, withTiming(token.y, { duration }));
+    x.value = withDelay(wait, withTiming(token.x, { duration, easing: glide }));
+    y.value = withDelay(wait, withTiming(token.y, { duration, easing: glide }));
     opacity.value = withDelay(wait, withTiming(token.visible === false ? 0 : 1, { duration }));
     scale.value = withTiming(token.scale ?? 1, { duration });
     fill.value = withDelay(wait, withTiming(token.tone === "muted" ? 0 : 1, { duration }));
-    if (token.arc && previousX.current !== token.x) {
+    if (token.arc && (previous.current.x !== token.x || previous.current.y !== token.y)) {
       lane.value = withDelay(wait, withSequence(
         withTiming(motion ? token.arc : 0, { duration: duration / 2 }),
         withTiming(0, { duration: duration / 2 }),
       ));
     }
-    previousX.current = token.x;
+    previous.current = { x: token.x, y: token.y };
     return () => { for (const value of [x, y, opacity, scale, fill, lane]) cancelAnimation(value); };
   }, [token.x, token.y, token.visible, token.scale, token.tone, token.arc, motion, durationMs, delay, x, y, opacity, scale, fill, lane]);
   const movingStyle = useAnimatedStyle(() => ({
@@ -89,7 +90,7 @@ export function VisualPracticeBoard({ prompt, tokens, result, compact = false, b
       {prompt ? <Text style={styles.prompt}>{prompt}</Text> : null}
       <View testID="practice-board" style={[styles.board, { aspectRatio: PRACTICE_BOARD_WIDTH / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
-          <MovingToken key={token.id} token={token} ratio={ratio} delay={Math.min(i, 5) * staggerMs} durationMs={durationMs} motion={active && !reduceMotion} />
+          <MovingToken key={token.id} token={token} ratio={ratio} delay={token.delayMs ?? Math.min(i, 5) * staggerMs} durationMs={durationMs} motion={active && !reduceMotion} />
         )) : null}
       </View>
       {!compact || result ? <View style={styles.resultHost}>

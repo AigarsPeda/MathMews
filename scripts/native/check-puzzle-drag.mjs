@@ -84,7 +84,50 @@ try {
         '-only-testing:NativeDragTests/NativeLaunchTests/testHomeReady'], startupLog);
     } finally { await startupLog.close(); }
   }
-  await run('xcrun', ['simctl', 'openurl', device, teachingTests || layoutTests || catPlanTests || actionMotionTests || everydayTests || bridgeFeedbackTests || fractionHelpTests || geometryHelpTests || bridgeTests || geometryTests || placeValueTests || fractionModelTests || decimalModelTests ? `mathmews:///${route}` : `mathmews://${route}`]);
+  const solutionExample = {
+    testDecimalWholes: 'v2-medium-medium-fractions-explore-9-path-review-2',
+    testCookieShareEqual: 'v2-medium-division-equal-1',
+    testCookieShareRemainder: 'v2-medium-division-leftovers-1',
+    testLineCrossRight: 'v2-hard-operations-explore-8-1',
+    testLineCrossLeft: 'v2-hard-operations-explore-8-2',
+    testLineFraction: 'v2-medium-fractions-equivalent-2',
+    testLineTens: 'v2-medium-subtraction-lesson-9-boss-2',
+    testLineSubtract: 'v2-easy-subtraction-back-2',
+    testRatioGrowth: 'v2-medium-multiplication-explore-8-3',
+    testRatioPartialMultiple: 'v2-hard-hard-measurement-explore-8-path-review-2',
+    testRatioShrink: 'v2-hard-measurement-explore-8-1',
+    testPercentageAmount: 'v2-hard-percentages-quarters-1',
+    testPercentageSale: 'v2-hard-percentages-lesson-1-boss-2',
+    testPercentageBudget: 'v2-hard-percentages-camp-budget-1',
+    testDecimalTenths: 'v2-medium-fractions-explore-7-1',
+    testDecimalHundredths: 'v2-medium-fractions-lesson-8-boss-1',
+    testDecimalSplit: 'v2-medium-fractions-explore-9-3',
+    testFractionPartition: 'v2-easy-fractions-explore-6-1',
+    testFractionPieces: 'v2-easy-fractions-lesson-4-boss-3',
+    testFractionEquivalence: 'v2-easy-fractions-kite-2',
+    testAreaFill: 'v2-hard-measurement-area-3',
+    testPerimeterTrace: 'v2-hard-measurement-explore-3-4',
+    testPerimeterComparison: 'v2-hard-measurement-explore-6-1',
+    testMissingArea: 'v2-hard-measurement-explore-6-2',
+    testVolumeBox: 'v2-hard-capacity-lesson-2-1',
+    testVolumeCubes: 'v2-hard-capacity-lesson-9-4',
+    testGridTurn: 'v2-hard-spatial-lesson-3-1',
+    testGridFlip: 'v2-easy-spatial-lesson-8-9',
+    testGridMove: 'v2-hard-spatial-lesson-5-9',
+    testShapeCorners: 'v2-easy-spatial-lesson-3-7',
+    testShapeSymmetry: 'v2-medium-spatial-lesson-1-4',
+    testShapeSides: 'v2-easy-spatial-lesson-1-9',
+    testMoneyReveal: 'v2-easy-money-lesson-7-9',
+    testBarReveal: 'v2-easy-data-lesson-9-1',
+    testJugReveal: 'v2-easy-capacity-lesson-5-1',
+    testClockReveal: 'v2-easy-time-lesson-8-9',
+    testBalanceReveal: 'v2-easy-addition-explore-5-1',
+    testMouseArray: 'v2-easy-multiplication-rows-1',
+    testRibbonJoinMotion: 'v2-easy-addition-join-1',
+    testStarRemovalMotion: 'v2-easy-subtraction-take-1',
+    testCountingReveal: 'v2-easy-addition-join-3',
+  }[testName];
+  await run('xcrun', ['simctl', 'openurl', device, teachingTests || layoutTests || catPlanTests || actionMotionTests || everydayTests || bridgeFeedbackTests || fractionHelpTests || geometryHelpTests || bridgeTests || geometryTests || placeValueTests || fractionModelTests || decimalModelTests ? `mathmews:///${route}${solutionExample ? "?example=" + solutionExample : ""}` : `mathmews://${route}`]);
   const log = await open(path.join(work, 'test.log'), 'w');
   try {
     console.log(`Testing native ${teachingTests ? 'equation and ratio clarity' : layoutTests ? 'puzzle layout' : coldReplayTests ? 'cold app restart during timed replay' : replayTests ? 'puzzle replay and next-level progression' : bridgeFeedbackTests ? 'bridge feedback' : fractionHelpTests ? 'fraction help' : geometryHelpTests ? 'geometry help' : bridgeTests ? 'bridge' : geometryTests ? 'geometry' : decimalModelTests ? 'decimal models' : fractionModelTests ? 'fraction models' : placeValueTests ? 'place-value' : pathTests ? 'ten-step path' : berryTests ? 'Berry puzzle flow' : progressTests ? 'visual lesson progress' : timedTests ? 'timed challenges and expanded curriculum' : homeLifeTests ? 'home lives header' : lifeTests ? 'three-life system' : varietyTests ? 'practice variety' : hardQuestionTests ? 'Hard questions' : numberLineTests ? 'number-line selection' : companionTests ? 'cat companion' : sceneTests ? 'task scenes' : 'drag'} on ${device}. Log and screenshots: ${work}`);

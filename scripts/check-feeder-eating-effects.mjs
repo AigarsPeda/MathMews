@@ -4,8 +4,8 @@ import fs from 'node:fs';
 
 const counts = { feedingTile: 6, feedingPebble: 6, foodTrailTray: 9, kibbleDispenser: 8, lickingPad: 6 };
 const [frames, fps] = JSON.parse(fs.readFileSync('scripts/3d/clips.json')).eating;
-for (const [id, count] of Object.entries(counts)) {
-  const bytes = fs.readFileSync(`assets/3d/native/${id}-eating-effect.glb`);
+function readModel(id) {
+  const bytes = fs.readFileSync(`assets/3d/native/${id}.glb`);
   const length = bytes.readUInt32LE(12);
   const model = JSON.parse(bytes.subarray(20, 20 + length));
   const binary = bytes.subarray(28 + length);
@@ -16,6 +16,33 @@ for (const [id, count] of Object.entries(counts)) {
     return Array.from({ length: accessor.count }, (_, i) => Array.from({ length: width }, (_, axis) =>
       binary.readFloatLE((view.byteOffset ?? 0) + (accessor.byteOffset ?? 0) + i * (view.byteStride ?? width * 4) + axis * 4)));
   };
+  return { model, values };
+}
+
+for (const id of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) {
+  const { model, values } = readModel(id);
+  const [meal] = model.animations;
+  assert.equal(meal.name, 'Eating');
+  function keys(name, path) {
+    const node = model.nodes.findIndex(n => n.name === name);
+    const channel = meal.channels.find(c => c.target.node === node && c.target.path === path);
+    const sampler = meal.samplers[channel.sampler];
+    return values(sampler.output);
+  }
+  const base = keys('Bowl base', 'translation');
+  const portion = keys('Food', 'scale');
+  assert.ok(Math.max(...base.map(v => v[0])) > .02, `${id}: muzzle nudges the bowl`);
+  assert.ok(Math.min(...portion.map(v => v[0])) < .72, `${id}: food recedes with bites`);
+  assert.deepEqual(base[0], base.at(-1), `${id}: bowl settles in its placed position`);
+  for (const part of ['Food', 'Bowl kibble', 'Bowl kibble.001', 'Bowl kibble.002']) {
+    const size = keys(part, 'scale');
+    assert.deepEqual(size[0], size.at(-1), `${id}/${part}: ready for the next helping`);
+    assert.ok(Math.min(...size.map(v => v[0])) < .75 * size[0][0]);
+  }
+}
+
+for (const [id, count] of Object.entries(counts)) {
+  const { model, values } = readModel(`${id}-eating-effect`);
   assert.equal(model.meshes.length, count, `${id}: only the effect, without another feeder`);
   assert.equal(model.animations.length, 1);
   const clip = model.animations[0];
@@ -66,4 +93,4 @@ for (const [id, count] of Object.entries(counts)) {
   assert.ok(Math.min(...births) <= 1.1 && Math.max(...births) - Math.min(...births) > .8, `${id}: several eating beats, not one simultaneous burst`);
   if (id === 'foodTrailTray') assert.equal(new Set(origins.map(p => p[0].toFixed(2))).size, 3, 'Each feeding spot sheds crumbs');
 }
-console.log('Verified five distinct eating effects: muzzle timing, splashes and smears, dispenser outlet, three tray spots, floor landings and cleanup.');
+console.log('Verified four bite-driven bowls and five feeder effects, including food portions, spills, landings and cleanup.');

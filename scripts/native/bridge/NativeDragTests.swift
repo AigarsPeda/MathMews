@@ -61,7 +61,7 @@ final class NativeDragTests: XCTestCase {
   shot("lv-medium-equation-start");tap("bridge-divide-2");shot("lv-medium-equation");solve();next()
   tap("bridge-x-1",4);tap("bridge-y-1");shot("lv-medium-coordinates");solve();next()
   enter(4);shot("ru-hard-ratio");solve();next()
-  tap("bridge-step-1",2);shot("ru-hard-negatives");solve();next()
+  tap("bridge-step-1",5);shot("ru-hard-negatives");solve();next()
   shot("ru-hard-equation-start");tap("bridge-add--1",3);tap("bridge-divide-2");shot("ru-hard-equation");solve();next()
   tap("bridge-x--1");shot("ru-hard-coordinates");solve();next()
   tap("bridge-zero");shot("lv-zero-answer");solve();next()

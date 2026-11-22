@@ -1829,6 +1829,10 @@
       8
     ],
     "topic": "fractions",
+    "fractionExample": {
+      "numerator": 2,
+      "denominator": 2
+    },
     "type": "true_false",
     "isTrue": true,
     "payload": {
@@ -19754,6 +19758,10 @@
       8
     ],
     "topic": "fractions",
+    "fractionExample": {
+      "numerator": 2,
+      "denominator": 2
+    },
     "type": "multiple_choice",
     "choices": [
       "1",
@@ -21972,6 +21980,14 @@
       8
     ],
     "topic": "fractions",
+    "fractionExample": {
+      "numerator": 1,
+      "denominator": 2,
+      "compareTo": [
+        2,
+        2
+      ]
+    },
     "type": "true_false",
     "isTrue": false,
     "payload": {
@@ -22009,6 +22025,10 @@
       8
     ],
     "topic": "fractions",
+    "fractionExample": {
+      "numerator": 1,
+      "denominator": 2
+    },
     "type": "multiple_choice",
     "choices": [
       "0/2",

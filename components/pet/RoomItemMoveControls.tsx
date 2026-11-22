@@ -16,6 +16,7 @@ export type RoomMoveDirection = typeof DIRECTIONS[number][0];
 
 type Props = {
   draft?: boolean;
+  canUseSurface?: boolean;
   sizePercent?: number;
   canGrow?: boolean;
   canShrink?: boolean;
@@ -43,7 +44,7 @@ type Props = {
 
 /** Dragging is primary; size and precise movement each get their own small tool. */
 export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDone, onRotate, onFaceWall, feedback, feedbackError,
-  draft, sizePercent, canGrow, canShrink, onDefaultSize, onQuickTurn, pending, placementAllowed = true, tapToMove, onPlace, onCancel, onTapMove, onReplace, onPlaceAnother }: Props) {
+  draft, canUseSurface, sizePercent, canGrow, canShrink, onDefaultSize, onQuickTurn, pending, placementAllowed = true, tapToMove, onPlace, onCancel, onTapMove, onReplace, onPlaceAnother }: Props) {
   const { t } = useTranslation();
   const [tool, setTool] = useState<"size" | "move" | null>(null);
   const bigger = actions.find(action => action.id === "size-up");
@@ -74,7 +75,7 @@ export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDo
         <AppIcon name="check" size={20} style={{ tintColor: GameColors.card }} /><Text style={[styles.placeText, styles.placeLabel]}>{t(pending ? "home.placeHere" : "common.done")}</Text>
       </Pressable>}
     </View>
-    {tool !== "size" && <Text style={styles.hint}>{t(tapToMove ? "home.tapMoveHint" : draft ? "home.draftHint" : "home.dragSelectedHint")}</Text>}
+    {tool !== "size" && <Text style={styles.hint}>{t(canUseSurface ? "home.surfaceMoveHint" : tapToMove ? "home.tapMoveHint" : draft ? "home.draftHint" : "home.dragSelectedHint")}</Text>}
     {feedback && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" numberOfLines={2} style={[styles.feedback, { color: feedbackError ? GameColors.primaryDark : GameColors.secondaryDark }]}>{feedback}</Text>}
     <View style={styles.actions}>
     {(pending || tapToMove) && onCancel && <Pressable accessibilityRole="button" onPress={onCancel} style={styles.back}>

@@ -85,4 +85,6 @@ export type PracticeToken = {
   cornerRadius?: number;
   /** Separate lanes keep swapping number tiles readable while they cross. */
   arc?: number;
+  /** Arrival order within a group transformation. */
+  delayMs?: number;
 };

@@ -27,6 +27,7 @@ export const ROOM_COMMANDS = [
   { kind: "showerWash", target: "shower", icon: "play", section: "essentials" },
   { kind: "toiletUse", target: "toilet", icon: "play", section: "essentials" },
   { kind: "toyPlay", target: "toy", icon: "play", section: "play" },
+  { kind: "scratchPost", target: "post", icon: "paw", section: "play" },
   { kind: "mouseChase", target: "mouse", icon: "mouse", section: "play" },
   { kind: "cupboardHide", target: "cupboard", icon: "box", section: "play" },
   { kind: "drawerHide", target: "drawer", icon: "box", section: "play" },
@@ -47,6 +48,7 @@ export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
   const commands = ROOM_COMMANDS.filter(command => {
     if (item.kind === "bed") return command.target === "sleepingBed"
       && (isSleepingBed(`bed-${bedId}`) || command.kind === 'bedSleep' && isCatPetBedId(bedId ?? ''));
+    if (item.kind === "toy" && command.target === "post") return item.toyId.startsWith("scratchPost");
     if (item.kind === "toy") return command.target === (item.toyId === "mouse" ? "mouse" : "toy");
     const id = item.decorationId;
     switch (command.target) {

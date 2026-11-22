@@ -37,6 +37,182 @@ const t = (key, values = {}) => {
 };
 const json = value => JSON.parse(JSON.stringify(value));
 function ready(puzzle, patch) { return getPuzzleDraftAnswer(puzzle, { ...empty, ...patch }); }
+const { percentageRevealPlan, percentageAmount, percentageFraction } = loadPure('@/utils/percentage-reveal');
+for (const p of allPuzzles.filter(p => p.percentageExample || p.helpTemplate?.startsWith('percent_'))) {
+  assert.ok(p.percentageExample, p.id);
+  const [part] = percentageRevealPlan(p, null).parts;
+  assert.ok(Number.isInteger(part.percent) && part.percent >= 0 && part.percent <= 100, p.id);
+  const amount = percentageAmount(part);
+  const [n, d] = percentageFraction(part.percent).split('/').map(Number);
+  assert.equal(n * 100, part.percent * (d ?? 1), p.id);
+  if (p.type === 'true_false') {
+    const [percent, whole, claim] = p.payload.statement.match(/\d+/g).map(Number);
+    assert.deepEqual([part.percent, part.whole], [percent, whole]);
+    assert.equal(amount === claim, p.isTrue, p.id);
+  } else {
+    const choices = p.choices ?? p.payload.choices;
+    assert.equal(part.kind === 'sale' ? part.whole - amount : amount, Number(choices[p.correctIndex]), p.id);
+  }
+}
+for (const p of allPuzzles.filter(p => p.type === 'budget_plan')) {
+  assert.equal(percentageRevealPlan(p, null), null);
+  for (let a = 0; a < p.payload.items.length; a++) for (let b = a + 1; b < p.payload.items.length; b++) {
+    const picks = [a, b].map(i => p.payload.items[i]);
+    const spent = picks.reduce((sum, item) => sum + item.price * (100 - item.discountPercent) / 100, 0);
+    const plan = percentageRevealPlan(p, { kind: 'budget', indices: [a, b] });
+    if (p.payload.budget - spent !== p.payload.remaining) assert.equal(plan, null, p.id);
+    else {
+      assert.deepEqual(json(plan.parts.map(i => i.label)), picks.map(i => i.label), p.id);
+      assert.equal(plan.budget - plan.parts.reduce((sum, part) => sum + part.whole - percentageAmount(part), 0), p.payload.remaining);
+    }
+  }
+}
+const { numberLineRoute, landingEquation } = loadPure('@/utils/number-line-reveal');
+for (const p of allPuzzles.filter(p => ['number_line', 'signed_line', 'fraction_number_line'].includes(p.type))) {
+  const route = numberLineRoute(p), { stops, min, max, divisions } = route;
+  const q = p.payload;
+  const start = divisions || q.mode === 'place' ? 0 : q.start;
+  const target = divisions ? q.numerator * divisions / q.denominator : q.correctValue ?? (q.mode === 'place' ? q.start : q.start + q.delta);
+  assert.equal(stops[0], start); assert.equal(stops.at(-1), target);
+  assert.ok(stops.every(n => Number.isInteger(n) && n >= min && n <= max), p.id);
+  assert.ok(stops.slice(1).every((n, i) => Math.sign(n - stops[i]) === Math.sign(target - start)), p.id);
+  if (start * target < 0) assert.ok(stops.includes(0), p.id);
+  if (divisions && divisions !== q.denominator) assert.equal(landingEquation(route, stops.length - 1), `${target}/${divisions} = ${q.numerator}/${q.denominator}`);
+}
+const { fractionRevealPlan } = loadPure('@/utils/fraction-reveal');
+for (const p of allPuzzles) {
+  const plan = fractionRevealPlan(p);
+  if ((p.type?.startsWith('fraction_') && p.type !== 'fraction_number_line') || p.fractionExample || p.payload?.rule === 'fractions') assert.ok(plan, p.id);
+  if (!plan) continue;
+  for (const { numerator, denominator } of plan.diagrams) {
+    assert.ok(Number.isInteger(numerator) && Number.isInteger(denominator) && numerator >= 0 && numerator <= denominator && denominator > 0, p.id);
+  }
+  if (p.type === 'fraction_equivalent') {
+    const [a,b] = plan.diagrams;
+    assert.equal(a.numerator * b.denominator, b.numerator * a.denominator, p.id);
+    assert.equal(`${b.numerator}/${b.denominator}`, p.payload.choices[p.correctIndex], p.id);
+  }
+  if (p.fractionExample?.whole) {
+    const [set] = plan.diagrams;
+    assert.equal(set.denominator * set.groupSize, p.fractionExample.whole, p.id);
+    assert.equal(set.numerator * set.groupSize, Number(p.choices[p.correctIndex]), p.id);
+  }
+}
+const equivalentStrip = { type: 'fraction_strip', payload: { numerator: 1, denominator: 2, partitions: [4, 6, 8], mode: 'equivalent' } };
+for (const parts of equivalentStrip.payload.partitions) {
+  assert.equal(fractionRevealPlan(equivalentStrip, { parts, shaded: parts / 2 }).equation, `1/2 = ${parts / 2}/${parts}`);
+}
+const { clockTravel, clockTime } = loadPure('@/utils/puzzle-clock');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'clock')) {
+  const model = puzzle.everyday.model, delta = clockTravel(model);
+  const correct = puzzle.choices[puzzle.correctIndex];
+  if (model.task === 'elapsed') {
+    assert.equal(clockTime(model.minutes + delta), clockTime(model.end), puzzle.id);
+    assert.equal(delta, Number(correct) * (puzzle.difficulty === 'easy' ? 60 : 1), puzzle.id);
+  } else {
+    assert.equal(clockTime(model.minutes + delta), correct, puzzle.id);
+  }
+}
+const { volumeLayers, landedVolumeRows } = loadPure('@/utils/puzzle-volume');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'solid')) {
+  const box = puzzle.everyday.model;
+  const { rows, perLayer, total } = volumeLayers(box);
+  assert.equal(box.answerUnit === 'cubes', puzzle.question.includes('unit cubes'), puzzle.id);
+  assert.equal(landedVolumeRows(-.01, box.depth, box.height), 0);
+  rows.forEach((row, i) => {
+    assert.equal(landedVolumeRows(row.lands - .0001, box.depth, box.height), i);
+    assert.equal(landedVolumeRows(row.lands, box.depth, box.height), i + 1);
+  });
+  assert.equal(landedVolumeRows(box.height + .01, box.depth, box.height), rows.length);
+  assert.equal(total, Number(puzzle.choices[puzzle.correctIndex]), puzzle.id);
+  assert.equal(rows.length * box.width, total, puzzle.id);
+  for (let layer = 0; layer < box.height; layer++) {
+    const face = rows.filter(row => row.layer === layer);
+    assert.equal(face.length * box.width, perLayer);
+    face.forEach((row, i) => {
+      assert.equal(row.depthIndex, box.depth - 1 - i);
+      assert.ok(layer <= row.begins && row.begins < row.lands && row.lands < layer + 1);
+    });
+  }
+}
+const { gridPose, gridSteps, gridStops } = loadPure('@/utils/puzzle-grid');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'grid')) {
+  const m = puzzle.everyday.model;
+  const stops = gridStops(m);
+  let col = (m.start - 1) % m.size, row = Math.floor((m.start - 1) / m.size);
+  for (let step = 1; step <= gridSteps(m); step++) {
+    if (m.task === 'rotate') [col, row] = [m.size - 1 - row, col];
+    else if (m.task === 'reflect') col = m.size - 1 - col;
+    else if (step <= Math.abs(m.dx)) col += Math.sign(m.dx);
+    else row += Math.sign(m.dy);
+    const pose = gridPose(m, step);
+    assert.ok(Math.abs(pose.x - col - .5) < 1e-6 && Math.abs(pose.y - row - .5) < 1e-6, puzzle.id);
+  }
+  assert.equal(stops[0].square, m.start);
+  assert.equal(stops.at(-1).square, Number(puzzle.choices[puzzle.correctIndex]), puzzle.id);
+  if (m.task === 'reflect') {
+    assert.equal(gridPose(m, .5).x, m.size / 2);
+    assert.equal(gridPose(m, 1).scaleX, -1);
+  }
+}
+const { shapeGeometry } = loadPure('@/utils/puzzle-shapes');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'shapes')) {
+  const model = puzzle.everyday.model;
+  const total = model.sides.reduce((sum, n) => {
+    const { edges, axes } = shapeGeometry(n, model.rectangle);
+    return sum + (model.task === 'symmetry' ? axes : edges).length;
+  }, 0);
+  assert.equal(total, Number(puzzle.choices[puzzle.correctIndex]), puzzle.id);
+}
+// Reflect every vertex across each displayed axis; its image must land on another vertex.
+for (const [n, rectangle] of [[4, true], ...Array.from({ length: 8 }, (_, i) => [i + 3, false])]) {
+  const { edges, axes } = shapeGeometry(n, rectangle);
+  assert.equal(axes.length, rectangle ? 2 : n);
+  for (const { from, to } of axes) {
+    const dx = to.x - from.x, dy = to.y - from.y;
+    for (const { from: p } of edges) {
+      const projection = ((p.x - from.x) * dx + (p.y - from.y) * dy) / (dx * dx + dy * dy);
+      const x = 2 * (from.x + projection * dx) - p.x, y = 2 * (from.y + projection * dy) - p.y;
+      assert.ok(edges.some(({ from: q }) => Math.hypot(q.x - x, q.y - y) < 1e-6));
+    }
+  }
+}
+const { moneyPurchase } = loadPure('@/utils/puzzle-money');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'money')) {
+  const model = puzzle.everyday.model;
+  const { price, priceCoins, changeCoins, itemCount, change } = moneyPurchase(model);
+  const sum = coins => coins.reduce((a, b) => a + b, 0);
+  assert.equal(sum(priceCoins), price, puzzle.id);
+  if (model.coins) assert.deepEqual(Array.from(priceCoins), Array.from(model.prices), puzzle.id);
+  if (change !== null) assert.equal(price + sum(changeCoins), model.paid, puzzle.id);
+  const amount = model.task === 'change' ? change : price;
+  const answer = model.task === 'afford' ? itemCount : amount / (model.unit === 'euros' ? 100 : 1);
+  assert.equal(answer, Number(puzzle.choices[puzzle.correctIndex]), puzzle.id);
+}
+const { barAnswer } = loadPure('@/utils/puzzle-bars');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'bars')) {
+  const model = puzzle.everyday.model, reveal = barAnswer(model);
+  assert.equal(reveal.answer, puzzle.choices[puzzle.correctIndex], puzzle.id);
+  assert.ok(reveal.columns.length && reveal.columns.every(i => i >= 0 && i < model.values.length), puzzle.id);
+  assert.ok(reveal.marks.every(v => v >= 0 && v <= Math.max(...model.values)), puzzle.id);
+}
+const { jugMeasure } = loadPure('@/utils/puzzle-capacity');
+for (const puzzle of allPuzzles.filter(p => p.everyday?.model.kind === 'capacity')) {
+  const model = puzzle.everyday.model;
+  const { start, end, capacity, full, portions, remainder } = jugMeasure(model);
+  assert.ok(start <= end && end <= capacity, puzzle.id);
+  assert.equal(full * model.portion + remainder, end, puzzle.id);
+  const result = { space: end - start, litres: end / 1000, servings: portions, containers: portions, total: end, read: end };
+  assert.equal(result[model.task], Number(puzzle.choices[puzzle.correctIndex]), puzzle.id);
+}
+const { balanceLeftValue } = loadPure('@/utils/balance-value');
+for (const puzzle of allPuzzles.filter(p => p.type === 'balance')) {
+  puzzle.payload.choices.forEach((choice, index) => {
+    const total = balanceLeftValue(puzzle.payload.leftDisplay, choice);
+    assert.ok(Number.isFinite(total), puzzle.id);
+    assert.equal(total === puzzle.payload.rightValue, index === puzzle.correctIndex, puzzle.id);
+  });
+}
 for (const puzzle of allPuzzles) {
   const blank = ready(puzzle, {});
   assert.equal(blank, null, `${puzzle.id}: incomplete drafts cannot submit`);
@@ -282,6 +458,21 @@ assert.equal(continuation.result().onGoHome, undefined, 'The end of a path has j
 continuation.result().onContinue();
 assert.equal(continuation.routes.at(-1)[0], 'path', 'The final puzzle still returns to its path');
 assert.ok(continuation.routes.every(([action]) => ['params', 'path'].includes(action)), 'Advancing never replaces or pushes the screen');
+const percentageWrite = screen(allPuzzles.find(p => p.percentageExample && p.response?.kind === 'write'));
+const rightPrice = percentageWrite.task().puzzle.response.answer;
+percentageWrite.task().onResponseChange('999'); percentageWrite.refresh();
+percentageWrite.check().onPress(); percentageWrite.refresh();
+assert.equal(percentageWrite.task().onSolutionShown, undefined);
+assert.equal(percentageWrite.result(), undefined);
+retry(percentageWrite);
+percentageWrite.task().onResponseChange(rightPrice); percentageWrite.refresh();
+percentageWrite.check().onPress(); percentageWrite.refresh();
+assert.equal(typeof percentageWrite.task().onSolutionShown, 'function');
+assert.equal(percentageWrite.result(), undefined);
+assert.equal(percentageWrite.primary().label, en.play.seeResult);
+percentageWrite.primary().onPress(); percentageWrite.refresh();
+assert.equal(percentageWrite.result().correct, true);
+
 const pie = screen({ ...base, type: 'fraction_build', payload: { numerator: 2, denominator: 6 } });
 assert.equal(pie.check().disabled, true);
 pie.task().onToggleFractionSlice(1); pie.refresh();
@@ -304,6 +495,9 @@ pie.check().onPress(); pie.refresh();
 assert.equal(pie.attempts.length, 2);
 assert.notEqual(pie.attempts[0].id, pie.attempts[1].id, 'Correction receives a fresh attempt ID');
 assert.equal(pie.attempts[1].correct, true);
+assert.equal(pie.result(), undefined);
+assert.deepEqual(json(pie.task().fractionPlan.diagrams[0].selected), [1, 5]);
+pie.primary().onPress(); pie.refresh();
 assert.equal(pie.result().coinsEarned, 4);
 assert.equal(pie.task().answered, true);
 assert.deepEqual(json(pie.task().fractionSelectedSlices), [1, 5]);
@@ -341,6 +535,14 @@ line.check().onPress(); line.refresh();
 assert.equal(line.task().numberLineValue, 0, 'The number-line dot stays where the learner left it');
 assert.ok(line.text().includes(en.play.attemptHints.moveRight));
 
+assert.equal(line.task().onSolutionShown, undefined);
+retry(line);
+line.task().onSelectNumberLineValue(5); line.refresh(); line.check().onPress(); line.refresh();
+assert.equal(line.result(), undefined);
+assert.equal(typeof line.task().onSolutionShown, 'function');
+line.primary().onPress(); line.refresh();
+assert.equal(line.result().correct, true);
+
 for (const puzzle of allPuzzles.filter(isOptionalChallengePuzzle)) {
   const view = screen(puzzle);
   const wrong = puzzle.type === 'sort_buckets' ? { kind: 'sort', buckets: [-1] }
@@ -355,7 +557,8 @@ const cards = buildFractionMatchCards(matching.task().puzzle);
 for (const numerator of [1, 2]) for (const card of cards.filter(card => card.numerator === numerator)) { matching.task().onTapFractionMatchCard(card.id); matching.refresh(); }
 assert.equal(matching.result(), undefined, 'Completing matches waits for the same explicit Check action');
 assert.equal(matching.check().disabled, false);
-matching.check().onPress(); matching.refresh(); assert.equal(matching.result().correct, true);
+matching.check().onPress(); matching.refresh(); assert.equal(matching.result(), undefined);
+matching.primary().onPress(); matching.refresh(); assert.equal(matching.result().correct, true);
 
 for (const hasFollowingTask of [false, true]) {
   const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { final: true, hasFollowingTask });
@@ -628,6 +831,28 @@ assert.equal(reviewRoutes.at(-1).pathname,'/puzzles','Review feedback returns to
 assert.equal(reviewRoutes.at(-1).params.lesson,reviewLesson.id);
 console.log('Review screen requires selection, submits once, charges one life on error and returns to the lesson.');
 
+const { decimalRevealModel, decimalFillAt, decimalEquation } = loadPure('@/utils/decimal-reveal');
+const { decimalTotal, checkDecimalPlace } = loadPure('@/utils/decimal-models');
+for (const p of allPuzzles.filter(p => p.type === 'decimal_grid' || p.type === 'decimal_place_value')) {
+  const model = decimalRevealModel(p);
+  assert.equal(decimalFillAt(model.steps, -.01), 0);
+  assert.equal(decimalFillAt(model.steps, model.steps.length), p.payload.hundredths);
+  assert.equal(model.plates, Math.max(1, Math.ceil(p.payload.hundredths / 100)));
+  for (let i = 1; i < model.steps.length; i++) {
+    assert.ok([1, 10, 100].includes(model.steps[i] - model.steps[i - 1]), p.id);
+    assert.equal(decimalFillAt(model.steps, i - .05), model.steps[i], p.id);
+  }
+  if (model.exchange) {
+    assert.equal(decimalTotal(model.exchange.before), p.payload.hundredths, p.id);
+    assert.equal(decimalTotal(model.exchange.after), p.payload.hundredths, p.id);
+    assert.ok(checkDecimalPlace(p, model.exchange.after), p.id);
+    assert.notEqual(decimalEquation(model, model.total, false, 'en'), decimalEquation(model, model.total, true, 'en'));
+  }
+}
+const trailingZero = decimalRevealModel({ type: 'decimal_grid', payload: { hundredths: 80, scale: 100, digits: 1 } });
+assert.equal(decimalEquation(trailingZero, 80, true, 'lv'), '80/100 = 0,80 = 0,8');
+assert.equal(decimalEquation(trailingZero, 6, false, 'en'), '6/100 = 0.06');
+
 // Decimal drafts use the production screen's Check, life costs and result flow.
 for (const kind of ['decimal_grid','decimal_place_value']) {
   const puzzle=allPuzzles.find(p=>p.type===kind && !p.response && (kind==='decimal_grid'||p.payload.mode==='build'));
@@ -644,6 +869,9 @@ for (const kind of ['decimal_grid','decimal_place_value']) {
   update(grid?n*puzzle.payload.scale/100:{ones:Math.floor(n/100),tenths:Math.floor(n%100/10),hundredths:n%10});
   const submit=state.check().onPress;submit();submit();state.refresh();
   assert.equal(state.attempts.length,2);assert.equal(state.attempts[1].correct,true);
+  assert.equal(state.result(), undefined);
+  assert.equal(state.primary().label, en.play.seeResult);
+  state.primary().onPress();state.refresh();
   assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));assert.equal(state.task().answered,true);
 }
 const decimalRender=renderHarness('components/puzzle/DecimalGridTask.tsx','DecimalGridTask',{
@@ -664,10 +892,22 @@ for (const mode of ['area','perimeter','compare','missing_area','missing_perimet
   assert.equal(state.task().geometry,0);retry(state);assert.equal(state.check().disabled,true,'Same wrong answer cannot spend another life');
   state.task().onGeometryChange(null);state.refresh();assert.equal(state.check().disabled,true);
   state.task().onGeometryChange(target);state.refresh();const submit=state.check().onPress;submit();submit();state.refresh();
+  assert.equal(state.result(), undefined);
+  assert.equal(state.primary().label, en.play.seeResult);
+  state.primary().onPress(); state.refresh();
   assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);
   assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));
 }
 const renderGeometry=renderHarness('components/puzzle/GeometryMeasureTask.tsx','GeometryMeasureTask');
+for (const mode of ['area', 'perimeter']) {
+  const render = renderHarness('components/puzzle/GeometryMeasureTask.tsx', 'GeometryMeasureTask');
+  const puzzle = allPuzzles.find(p => p.type === 'geometry_measure' && p.payload.guided && p.payload.mode === mode);
+  const props = { puzzle, value: null, onChange() {}, answered: false };
+  for (let i = 0; i < 2; i++) nodes(render(props)).find(n => n.props.testID === 'geometry-mark').props.onPress();
+  const solved = render({ ...props, answered: true, onSolutionShown() {} });
+  assert.equal(nodes(solved).find(n => n.type === 'GeometryMeasureReveal').props.marked, 2,
+    'The automatic count continues from the learner’s manual marks');
+}
 const hiddenSides=allPuzzles.filter(p=>p.type==='geometry_measure'&&p.payload.mode.startsWith('missing'));
 let referenceGeometry;
 for(const puzzle of hiddenSides){
@@ -691,6 +931,11 @@ for(const type of ['ratio_table','signed_line','equation_board','coordinate_map'
  assert.equal(state.game.progress.lives.current,2);assert.equal(state.attempts[0].correct,false);retry(state);assert.equal(state.check().disabled,true);
  state.task().onBridgeChange(null);state.refresh();assert.equal(state.check().disabled,true);assert.equal(state.game.progress.lives.current,2);
  state.task().onBridgeChange(right);state.refresh();const submit=state.check().onPress;submit();submit();state.refresh();
+ if (type === 'ratio_table' || type === 'signed_line') {
+   assert.equal(state.result(), undefined);
+   assert.equal(typeof state.task().onSolutionShown, 'function');
+   state.primary().onPress();state.refresh();
+ }
  assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);assert.equal(state.result().coinsEarned,getPuzzleCoinReward(tier));
 }
 console.log('Bridge screen checks passed in every difficulty: empty drafts, correction, reset, one-life mistakes, duplicate submissions and rewards.');
@@ -707,6 +952,11 @@ for (const kind of ['write', 'choose', 'judge']) {
   state.task().onResponseChange(null); state.refresh(); assert.equal(state.check().disabled, true);
   state.task().onResponseChange(right); state.refresh(); const submit = state.check().onPress;
   submit(); submit(); state.refresh();
+  if (state.task().lineRoute || puzzle.type === 'ratio_table' || state.task().percentagePlan || state.task().fractionPlan || puzzle.type?.startsWith('decimal_') || puzzle.type === 'balance' || puzzle.type === 'geometry_measure' || ['clock', 'capacity', 'bars', 'money', 'shapes', 'grid', 'solid'].includes(puzzle.everyday?.model.kind) || ['join', 'take_away'].includes(puzzle.taskVisual?.kind) && puzzle.taskVisual.object) {
+    assert.equal(state.result(), undefined, 'The result sheet leaves the accepted solution visible');
+    assert.equal(state.primary().label, en.play.seeResult);
+    state.primary().onPress(); state.refresh();
+  }
   assert.equal(state.attempts.length, 2); assert.equal(state.result().correct, true);
   assert.equal(state.result().coinsEarned, getPuzzleCoinReward(puzzle.difficulty));
 }
@@ -737,7 +987,9 @@ for (const locale of ['en','lv','ru']) for (const type of ['ratio_table','signed
   const right=type==='equation_board'?{equation:{a:1,b:0,c:target}}:typeof target==='number'?{value:target}:{point:target};
   state.task().onBridgeChange(right);state.refresh();
   assert.ok(!state.text().includes(strings[getPuzzleAttemptHint(puzzle,{kind:'bridge',state:wrongs[1]},2).key]),'Editing removes stale feedback');
-  state.check().onPress();state.refresh();assert.equal(state.result().correct,true);
+  state.check().onPress();state.refresh();
+  if (type === 'ratio_table' || type === 'signed_line') { state.primary().onPress(); state.refresh(); }
+  assert.equal(state.result().correct,true);
   assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));
 }
 console.log('Localized bridge retry flow passed: specific first hints, expanded second hints, unchanged drafts, duplicate-tap guards, life costs and normal solve rewards.');
@@ -749,6 +1001,9 @@ console.log('Localized bridge retry flow passed: specific first hints, expanded 
   const puzzle = allPuzzles.find(item => item.id === ids.at(-1));
   const state = screen(puzzle, { final: true, lessonOverride: plan, completedIds: ids.slice(0, -1) });
   state.task().onSelectChoice(puzzle.correctIndex); state.refresh(); state.check().onPress(); state.refresh();
+  assert.equal(state.result(), undefined, 'The final shopping puzzle shows the purchase before the furnishing');
+  assert.equal(state.primary().label, en.play.seeResult);
+  state.primary().onPress(); state.refresh();
   assert.equal(state.result().decorationLessonId, plan.id);
   assert.equal(state.game.progress.decorationQuantities.kitchenBreadBasket, 1);
   assert.equal(state.result().secondaryLabel, en.catPlans.placeInHouse);
@@ -757,6 +1012,7 @@ console.log('Localized bridge retry flow passed: specific first hints, expanded 
   assert.deepEqual(json(state.routes), [['decorate', { kind: 'decoration', id: 'kitchenBreadBasket' }], ['path', '/']], 'Place in house selects the earned item before returning home');
   const replay = screen(puzzle, { final: true, lessonOverride: plan, completedIds: ids, claimedRewards: [plan.id], replay: true });
   replay.task().onSelectChoice(puzzle.correctIndex); replay.refresh(); replay.check().onPress(); replay.refresh();
+  replay.primary().onPress(); replay.refresh();
   assert.equal(replay.result().decorationLessonId, undefined, 'Replay does not announce another item');
 }
 console.log('Cat-plan completion previews its earned furnishing and opens the existing placement flow without a duplicate replay reward.');

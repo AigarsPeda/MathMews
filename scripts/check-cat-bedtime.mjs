@@ -29,24 +29,23 @@ function load(id) {
   }).outputText, { module, exports: module.exports, require: load, Date, Set, Map });
   return module.exports;
 }
-const { bedroomSleepTarget, useCatBedtime } = load('@/hooks/use-cat-bedtime');
-const { sendCatToRoom } = load('@/utils/home-rooms');
-const bedroom = { bedId: 'houseA', placedDecorations: [] };
-const pet = { type: 'cat', homeRoomId: 'livingRoom', catHomeRoomId: 'kitchen', homeRooms: { bedroom } };
-assert.equal(bedroomSleepTarget(pet), 'bed');
-assert.equal(bedroomSleepTarget({ ...pet, homeRooms: { bedroom: { bedId: 'brown' } } }), undefined);
-assert.equal(bedroomSleepTarget({ ...pet, homeRooms: undefined, bedId: 'houseA' }), undefined, 'A living-room bed is not a bedroom bed');
+const { roomSleepTarget, useCatBedtime } = load('@/hooks/use-cat-bedtime');
+const kitchen = { bedId: 'houseA', placedDecorations: [] };
+const pet = { type: 'cat', homeRoomId: 'livingRoom', catHomeRoomId: 'kitchen', homeRooms: { kitchen } };
+assert.equal(roomSleepTarget(pet), 'bed');
+assert.equal(roomSleepTarget({ ...pet, homeRooms: { kitchen: { bedId: 'brown' } } }), undefined);
+assert.equal(roomSleepTarget({ ...pet, homeRooms: undefined, bedId: 'houseA' }), undefined, 'A bed in another room does not move the cat');
 for (const id of ['bedroomDoubleBed', 'bedroomBedRose', 'bedroomBedLilac']) {
-  assert.equal(bedroomSleepTarget({ ...pet, homeRooms: { bedroom: { placedDecorations: [{ decorationId: id, instanceId: id }] } } }), id);
-  assert.equal(bedroomSleepTarget({ ...pet, homeRoomId: 'bedroom', placedDecorations: [{ decorationId: id, instanceId: 'current-bedroom' }] }), 'current-bedroom', 'Current bedroom edits take priority over a stale saved layout');
+  assert.equal(roomSleepTarget({ ...pet, homeRooms: { kitchen: { placedDecorations: [{ decorationId: id, instanceId: id }] } } }), id);
+  assert.equal(roomSleepTarget({ ...pet, homeRoomId: 'kitchen', placedDecorations: [{ decorationId: id, instanceId: 'current-kitchen' }] }), 'current-kitchen', 'Current kitchen edits take priority over a stale saved layout');
 }
 const arrivals = [], mornings = [];
 let options = { pet, clock: { worldMs: 20 * 3600000, realMs: now, speed: 1 }, enabled: true, busy: false, hasCommand: false,
-  onBedtime: id => arrivals.push(id), onMorning: () => mornings.push(now) };
+  onBedtime: (room, id) => arrivals.push([room, id]), onMorning: () => mornings.push(now) };
 const render = () => { index = 0; effects = []; useCatBedtime(options); effects.forEach(fn => fn()); };
 function time(hour, day = 0) { options = { ...options, clock: { ...options.clock, worldMs: (day*24+hour)*3600000, realMs: now } }; render(); }
 render(); assert.equal(arrivals.length, 0);
-time(21); assert.deepEqual(arrivals, ['bed']);
+time(21); assert.deepEqual(arrivals, [['kitchen', 'bed']]);
 now += 10_000; render(); assert.equal(arrivals.length, 1, 'Polling does not force an interrupted cat back into bed');
 time(0,1); assert.equal(arrivals.length, 1, 'Midnight belongs to the same night');
 time(5.99,1); assert.equal(arrivals.length, 1);
@@ -58,7 +57,5 @@ options = { ...options, enabled: false }; time(6,2); time(22,2); assert.equal(ar
 options = { ...options, enabled: true }; render(); assert.equal(arrivals.length, 3, 'Returning at night restores the routine');
 options = { ...options, pet: { ...pet, homeRooms: {} } }; time(21,3); assert.equal(arrivals.length, 3, 'Missing beds do not cause invented sleep or purchases');
 options = { ...options, pet }; render(); assert.equal(arrivals.length, 4, 'A bed added during the night becomes usable');
-const moved = sendCatToRoom(pet, 'bedroom', false);
-assert.equal(moved.homeRoomId, 'livingRoom'); assert.equal(moved.catHomeRoomId, 'bedroom');
-assert.equal(moved.homeRooms, pet.homeRooms, 'Automatic travel keeps the current view and saved furnishings');
-console.log('Verified bedtime at 21:00, waking at 06:00, midnight continuity, one request per night, manual priority, care/edit deferral, missing/added beds, foreground resume and independent room browsing.');
+assert.equal(roomSleepTarget({ ...pet, catHomeRoomId: 'bathroom', homeRooms: { bedroom: kitchen } }), undefined);
+console.log('Verified local bedtime, dawn, one request per night, manual priority, bedless rooms and foreground resume.');

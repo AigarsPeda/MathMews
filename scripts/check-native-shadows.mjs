@@ -52,14 +52,16 @@ renderShadowHook(asset);
 assert.deepEqual(flags, [[1, 'cast', true], [1, 'receive', true], [2, 'cast', true], [2, 'receive', true]]);
 assert.equal(renderCallbacks, 0, 'Shadow flags do not add per-frame JS/native work');
 
-const { shadowCastingLampIds } = load('@/utils/native-shadows');
+const { shadowCastingLocalLightIds } = load('@/utils/native-shadows');
 const lamp = (modelId, instanceId, poweredOn = true) => ({ modelId, instanceId, poweredOn,
   position: [0, .068, 0], heading: 0, scale: 1 });
 const objects = [lamp('sofaA', 'sofa'), lamp('lavaLampAni', 'lava'), lamp('halloweenGhostLantern', 'ghost'), lamp('bedroomFloorLamp', 'off', false),
   lamp('wallSpotBarChrome', 'spot'), lamp('lampFloorTripod', 'floor'), lamp('bedroomFloorLamp', 'third')];
-const chosen = shadowCastingLampIds(objects);
+const chosen = shadowCastingLocalLightIds(objects);
 assert.deepEqual([...chosen], ['spot', 'floor'], 'Off/point lights do not consume the two spotlight maps');
-assert.deepEqual([...shadowCastingLampIds(objects.slice(0, 3))], []);
+assert.deepEqual([...shadowCastingLocalLightIds(objects.slice(0, 3))], []);
+const withFire = [...objects, lamp('livingFireplaceCream', 'hearth'), lamp('livingFireplaceCream', 'cold', false)];
+assert.deepEqual([...shadowCastingLocalLightIds(withFire)], ['hearth', 'spot'], 'A lit hearth shares the two-map budget with lamps');
 const { NativeWorldLighting } = load('@/components/pet/native/NativeWorldLighting');
 const { NativeLampLight } = load('@/components/pet/native/NativeLampLight');
 const clock = { realMs: 1_790_000_000_000, worldMs: 13 * 3_600_000, speed: 60, weather: 'clear' };

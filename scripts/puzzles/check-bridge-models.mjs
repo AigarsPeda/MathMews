@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {BRIDGE_PLANS,BRIDGE_TYPES,bridgeSolution} from './bridge-pilot.mjs';
 export function checkBridgeModels({load}){
  const json=v=>JSON.parse(JSON.stringify(v));
- const {bridgeTarget,checkBridgeAnswer,transformEquation}=load('@/utils/bridge-models');
+ const {ratioGroups,bridgeTarget,checkBridgeAnswer,transformEquation}=load('@/utils/bridge-models');
  const {getPuzzleDraftAnswer}=load('@/utils/puzzle-attempt');
  const {getLearningReview}=load('@/constants/learning-review');
  const {getVisualExplanation}=load('@/constants/visual-explanations');
@@ -39,6 +39,12 @@ export function checkBridgeModels({load}){
    if(p.difficulty==='hard')assert.equal(q.mode,'move');
   }
   if(p.type==='ratio_table'){
+   const { bottles, litres, start, end } = ratioGroups(q);
+   assert.ok([bottles, litres, start, end].every(n => Number.isInteger(n) && n > 0));
+   assert.deepEqual([bottles * start, litres * start], [q.a, q.b]);
+   assert.deepEqual([bottles * end, litres * end], [q.targetA, target]);
+   for (let group = Math.min(start, end); group <= Math.max(start, end); group++)
+     assert.equal(bottles * group * q.b, litres * group * q.a, p.id);
    assert.ok(Number.isInteger(target)&&target>0);
    if(p.difficulty==='easy')assert.ok(q.a===1&&q.b<=5&&target<=20);
    if(p.difficulty==='medium')assert.equal(q.targetA%q.a,0);

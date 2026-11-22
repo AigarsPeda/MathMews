@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { clearWindowTextures } from './clear-window-view.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const native = path.join(root, 'assets/3d/native');
 const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -65,38 +66,114 @@ const gltf = { asset: { version: '2.0', generator: 'Math Mews window weather' },
   nodes: [{ name: 'Weather pool', children: [] }], meshes: [], accessors: [], bufferViews: [], materials: [],
   extensionsUsed: ['KHR_materials_unlit'], buffers: [] };
 const chunks = []; let length = 0;
-function accessor(values, type, componentType, target) {
-  const bytes = Buffer.alloc(values.length * (componentType === 5126 ? 4 : 2));
-  values.forEach((v,i) => componentType === 5126 ? bytes.writeFloatLE(v,i*4) : bytes.writeUInt16LE(v,i*2));
+function bufferView(bytes, target) {
   const padded = Buffer.alloc(Math.ceil(bytes.length / 4)*4); bytes.copy(padded);
-  const bufferView = gltf.bufferViews.length;
-  gltf.bufferViews.push({ buffer: 0, byteOffset: length, byteLength: bytes.length, target }); chunks.push(padded); length += padded.length;
-  const components = type === 'VEC3' ? 3 : 1;
-  const meta = { bufferView, componentType, count: values.length / components, type };
+  const index = gltf.bufferViews.length;
+  gltf.bufferViews.push({ buffer: 0, byteOffset: length, byteLength: bytes.length, target });
+  chunks.push(padded); length += padded.length;
+  return index;
+}
+function accessor(values, type, componentType, target) {
+  const stride = componentType === 5126 ? 4 : componentType === 5121 ? 1 : 2;
+  const bytes = Buffer.alloc(values.length * stride);
+  values.forEach((v,i) => {
+    if (componentType === 5126) bytes.writeFloatLE(v,i*4);
+    else if (componentType === 5121) bytes.writeUInt8(Math.round(255*v),i);
+    else bytes.writeUInt16LE(v,i*2);
+  });
+  const components = { VEC4: 4, VEC3: 3, VEC2: 2, SCALAR: 1 }[type];
+  const meta = { bufferView: bufferView(bytes, target), componentType, count: values.length / components, type, ...(componentType === 5121 ? {normalized:true} : {}) };
   if (type === 'VEC3') {
     meta.min = [0,1,2].map(k => Math.min(...values.filter((_,i) => i%3===k)));
     meta.max = [0,1,2].map(k => Math.max(...values.filter((_,i) => i%3===k)));
   }
   gltf.accessors.push(meta); return gltf.accessors.length - 1;
 }
-for (const [kind, count, polygon, color] of [
-  ['rain', 24, [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]], [.45,.65,.9,.75]],
-  ['snow', 12, Array.from({length:8},(_,i) => [Math.cos(i*Math.PI/4)*.5,Math.sin(i*Math.PI/4)*.5]), [.8,.88,1,1]],
-  ['leaves', 8, [[0,-.5],[.45,-.15],[.35,.25],[0,.5],[-.35,.25],[-.45,-.15]], [.8,.32,.065,1]],
-]) {
-  const positions = polygon.flatMap(p => [...p,0]), triangles = [];
-  for (let i=1; i<polygon.length-1; i++) triangles.push(0,i,i+1);
+function particlePool(kind, count, points, triangles, layers) {
   const material = gltf.materials.length;
   gltf.materials.push({ name: kind, doubleSided: true, alphaMode: 'BLEND', extensions: { KHR_materials_unlit: {} },
-    pbrMetallicRoughness: { baseColorFactor: color, metallicFactor: 0, roughnessFactor: 1 } });
-  const mesh = gltf.meshes.length;
-  gltf.meshes.push({ primitives: [{ attributes: { POSITION: accessor(positions,'VEC3',5126,34962) },
-    indices: accessor(triangles,'SCALAR',5123,34963), material }] });
+    pbrMetallicRoughness: { baseColorFactor: [1,1,1,1], metallicFactor: 0, roughnessFactor: 1 } });
+  const POSITION = accessor(points.flatMap(([x,y])=>[x,y,0]),'VEC3',5126,34962);
+  const indices = accessor(triangles,'SCALAR',5123,34963);
+  const first = gltf.meshes.length;
+  for (const colors of layers) {
+    const COLOR_0 = accessor(colors.flat(), 'VEC4', 5121, 34962);
+    gltf.meshes.push({ primitives: [{ attributes: { POSITION, COLOR_0 }, indices, material }] });
+  }
   for (let i=0; i<count; i++) {
     gltf.nodes[0].children.push(gltf.nodes.length);
-    gltf.nodes.push({ name: `${kind} ${i}`, mesh, scale: [.00001,.00001,.00001], translation: [0,0,-10] });
+    gltf.nodes.push({ name: `${kind} ${i}`, mesh: first + i % layers.length, scale: [.00001,.00001,.00001], translation: [0,0,-10] });
   }
 }
+function fan(rim, center) {
+  return Array.from({length:rim},(_,i)=>[center,i,(i+1)%rim]).flat();
+}
+const rain = [[0,-.5],[.40,-.39],[.5,-.15],[.19,.23],[0,.5],[-.19,.23],[-.5,-.15],[-.40,-.39],[0,-.24]];
+particlePool('rain',24,rain,fan(8,8),[.39,.68,.96].map(opacity=>
+  [.65,.47,.35,.19,0,.19,.35,.47,1].map(a=>[1,1,1,a*opacity])));
+
+// A bright, solid center and feathered six-point rim stay legible at phone scale.
+const snow = [], snowTriangles = [], snowAlpha = [];
+for (const outer of [false,true]) for (let i=0;i<12;i++) {
+  const a = i*Math.PI/6, radius = outer ? (i%2 ? .31 : .5) : .215;
+  snow.push([Math.cos(a)*radius,Math.sin(a)*radius]);
+  snowAlpha.push(outer ? .04 : .96);
+  if (outer) {
+    const n=(i+1)%12;
+    snowTriangles.push(i,12+i,12+n,i,12+n,n);
+  }
+}
+snow.push([0,0]); snowAlpha.push(1); snowTriangles.push(...fan(12,24));
+particlePool('snow',12,snow,snowTriangles,[.56,.79,1].map(opacity=>snowAlpha.map(a=>[1,1,1,a*opacity])));
+
+// Sections along a bent midrib give each blade a stem, a folded face and a pointed tip.
+const leaf = [], leafTriangles = [], leafShade = [];
+const sections = [[-.49,-.08,.009],[-.31,-.05,.016],[-.25,-.04,.21],[-.10,-.015,.44],[.05,.01,.36],[.15,.035,.40],[.28,.06,.25],[.49,.12,.008]];
+for (const [i,[y,mid,halfWidth]] of sections.entries()) {
+  leaf.push([mid-halfWidth,y],[mid,y+.005],[mid+halfWidth*.88,y]);
+  leafShade.push(.64,1,.84);
+  if (i) {
+    const k = 3*(i-1);
+    leafTriangles.push(k,k+1,k+3,k+1,k+4,k+3,k+1,k+2,k+4,k+2,k+5,k+4);
+  }
+}
+particlePool('leaves',8,leaf,leafTriangles,[[1,.46,.065],[.88,.16,.045],[.86,.62,.15]].map(rgb=>
+  leafShade.map(shade=>[...rgb.map(channel=>channel*shade),1])));
+
+// One set of textures for the entire catalog. Each window cuts the same view to its glass.
+gltf.images = (await clearWindowTextures()).map(bytes => ({ bufferView: bufferView(bytes), mimeType: 'image/png' }));
+gltf.textures = gltf.images.map((_, source) => ({ source }));
+const scenery = ['Landscape', 'Wet terrain', 'Snow cover', 'Autumn foliage', 'Night lights', 'Cottage lights'].map((name, index) => ({
+  // Masked terrain writes depth before Filament sorts the transparent particles and lights.
+  name, material: gltf.materials.push({ name, doubleSided: true, ...(index < 4 ? { alphaMode: 'MASK', alphaCutoff: .3 } : { alphaMode: 'BLEND' }), extensions: { KHR_materials_unlit: {} },
+    pbrMetallicRoughness: { baseColorTexture: { index }, baseColorFactor: [1,1,1,0], metallicFactor: 0, roughnessFactor: 1 } }) - 1,
+}));
+const shapeMeshes = new Map();
+for (const [model, outlines] of Object.entries(panes)) {
+  const key = JSON.stringify(outlines);
+  if (!shapeMeshes.has(key)) {
+    const xmin = Math.min(...outlines.map(p => p.min[0])), xmax = Math.max(...outlines.map(p => p.max[0]));
+    const ymin = Math.min(...outlines.map(p => p.min[1])), ymax = Math.max(...outlines.map(p => p.max[1]));
+    const width = Math.max(xmax-xmin, (ymax-ymin)*1.6), height = width/1.6;
+    const positions = [], uv = [], triangles = [];
+    for (const pane of outlines) {
+      const start = positions.length/3;
+      for (const [x,y] of pane.polygon) {
+        positions.push(x, y, pane.z + .0008);
+        uv.push(.5+(x-(xmin+xmax)/2)/width, .5-(y-(ymin+ymax)/2)/height);
+      }
+      for (let i=1; i < pane.polygon.length-1; i++) triangles.push(start, start+i, start+i+1);
+    }
+    const attributes = { POSITION: accessor(positions,'VEC3',5126,34962), TEXCOORD_0: accessor(uv,'VEC2',5126,34962) };
+    const indices = accessor(triangles,'SCALAR',5123,34963);
+    shapeMeshes.set(key, scenery.map(({material}) => gltf.meshes.push({ primitives: [{ attributes, indices, material }] }) - 1));
+  }
+  scenery.forEach(({name}, i) => {
+    gltf.nodes[0].children.push(gltf.nodes.length);
+    gltf.nodes.push({ name: `${name} ${model}`, mesh: shapeMeshes.get(key)[i], translation: [0,0,i*.0004] });
+  });
+}
+
 gltf.buffers.push({ byteLength: length });
 const jsonRaw = Buffer.from(JSON.stringify(gltf)), json = Buffer.alloc(Math.ceil(jsonRaw.length/4)*4,0x20); jsonRaw.copy(json);
 const binary = Buffer.concat(chunks), output = Buffer.alloc(12+8+json.length+8+binary.length);

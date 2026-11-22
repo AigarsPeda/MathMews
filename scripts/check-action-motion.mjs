@@ -15,6 +15,39 @@ function load(id) {
 }
 const clone = value => JSON.parse(JSON.stringify(value));
 const { getQuantityTaskTokens } = load('@/utils/quantity-task-scene');
+const { getCountingLayout, getPiecePosition } = load('@/utils/puzzle-counting');
+for (const kind of ['join', 'take_away']) {
+  for (const right of [1, 3, 7]) {
+    const { pieces } = getCountingLayout({ kind, left: 9, right, object: kind === 'join' ? 'ribbon' : 'star' });
+    const moving = pieces.filter(p => p.turn >= 0).sort((a, b) => a.turn - b.turn);
+    assert.equal(moving.length, right);
+    for (const piece of moving) {
+      const position = getPiecePosition(piece, piece.turn + .5);
+      assert.ok(kind === 'join' ? piece.endX < position.x && position.x < piece.x : piece.endY < position.y && position.y < piece.y);
+    }
+    assert.equal(pieces.filter(p => getPiecePosition(p, right).y >= 0).length, kind === 'join' ? 9 + right : 9 - right);
+    assert.ok(pieces.every(p => getPiecePosition(p, 0).x === p.x && getPiecePosition(p, 0).y === p.y));
+  }
+}
+// At the same instant, joining objects should be airborne and departing objects
+// should be speeding up. The stationary group anchors the count throughout.
+for (const kind of ['join', 'take_away']) {
+  const { pieces } = getCountingLayout({ kind, left: 5, right: 1, object: 'star' });
+  const moving = pieces.find(p => p.turn === 0);
+  const pose = t => getPiecePosition(moving, t);
+  assert.ok(pose(.09).squash > 0 && pose(.09).y > moving.y);
+  if (kind === 'join') {
+    assert.ok(pose(.48).y < moving.y && pose(.48).angle < 0);
+    assert.ok(pose(.9).squash > 0 && pose(.9).x === moving.endX);
+  } else {
+    assert.equal(pose(.90).opacity, 0);
+    assert.ok(pose(.55).y - pose(.70).y > pose(.30).y - pose(.45).y);
+  }
+  assert.equal(pose(1).squash, 0);
+  for (const still of pieces.filter(p => p.turn < 0)) {
+    assert.deepEqual(getPiecePosition(still, .5), getPiecePosition(still, 0));
+  }
+}
 for (const items of [8, 23, 31]) for (const groups of [3, 4, 5]) {
   const model = { kind: 'share', items, groups, object: 'cookie' };
   const limit = Math.floor(items / groups) * groups;

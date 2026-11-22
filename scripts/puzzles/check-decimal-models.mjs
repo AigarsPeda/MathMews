@@ -11,9 +11,16 @@ export function checkDecimalModels({ load }) {
   const { getVisualExplanation }=load('@/constants/visual-explanations');
   const en=readPuzzles('en', 'medium'), lv=readPuzzles('lv', 'medium');
   const boards=en.filter(p=>p.type.startsWith('decimal_'));assert.equal(boards.length,30);
-  const labels=['en','lv'].map(l=>JSON.parse(fs.readFileSync(`locales/${l}.json`)).decimalModels);
-  assert.deepEqual(Object.keys(labels[0]).sort(),Object.keys(labels[1]).sort());
-  assert.ok(labels.every(l=>Object.values(l).every(v=>typeof v==='string'&&v.length>0)));
+  const messageKeys = ['en', 'lv', 'ru'].map(locale => {
+    const labels = JSON.parse(fs.readFileSync(`locales/${locale}.json`)).decimalModels;
+    const forms = new Intl.PluralRules(locale).resolvedOptions().pluralCategories;
+    for (const unit of ['countTenths', 'countHundredths']) {
+      for (const form of forms) assert.ok(labels[`${unit}_${form}`]?.includes('{{count}}'), `${locale}: ${unit}_${form}`);
+    }
+    assert.ok(Object.values(labels).every(text => typeof text === 'string' && text.length > 0));
+    return [...new Set(Object.keys(labels).map(key => key.replace(/_(one|few|many|other|zero)$/, '')))].sort();
+  });
+  for (const keys of messageKeys.slice(1)) assert.deepEqual(keys, messageKeys[0]);
   assert.equal(decimalLabel(4,2,'en'),'0.04');assert.equal(decimalLabel(104,2,'lv-LV'),'1,04');
   assert.equal(decimalLabel(40,1,'en'),'0.4');assert.equal(decimalLabel(40,2,'lv'),'0,40');
   for(const p of boards) {

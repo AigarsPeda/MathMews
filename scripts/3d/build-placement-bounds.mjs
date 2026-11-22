@@ -60,6 +60,96 @@ function curvedPartBoxes(mesh) {
   }
   return [...cells.values()].map(points=>({...bounds(points),footprint:hull(points)}));
 }
+// Only these horizontal parts can carry decor. A back cushion, armrest or
+// decorative pillow is never a substitute for the usable part of a seat.
+const boardPart = /^(Rounded tabletop|Wall shelf|Shelf|Broad fireplace mantel|Thick stone worktop)$/;
+const topPart = /^(Round oak tabletop|Rounded cabinet top|Vanity tabletop|Chest lid)$/;
+const seatPart = /^(Seat|Dining chair seat|Rounded bar stool seat|Mint bar stool seat|Tufted bench cushion|Seat cushion|Corner sofa seat cushion|Long chaise cushion)$/;
+
+const cushionItems = [
+  /^toy-(orangeBall|pinkBall|blueBall|mouse)$/, /^yarn(Red|Blue)$/, /^sofaPillow$/,
+  /^bathroom(Towel(Blue|Green|Red)|Duck)$/, /^bedroomSlippers$/, /^halloweenWitchHat$/,
+  /^office(Headset|Paper[1-6]|StickyNote.+|Blueprint|RolledPapers)$/,
+  /^computerMacbook/, /^console(Gameboy.*|Psp|Switch)$/,
+];
+const hardSurfaceItems = [
+  /^(computer|console)/, /^bowl(Tan|Blue|Purple|Pink)$/,
+  /^japanese(Bonsai|Candle|BaseCup|Cup|Dish|Tea|Vase|Lamp|CartonBox|Plant)$/,
+  /^bathroom(Soap.+|Tissues|ToiletPaper)$/,
+  /^office(Calculator|PencilHolder|Telephone|Ruler|PrinterAni|ProjectorAni|MedicalKitAni|CartonBox|WhiteBox|TvOff|WhiteboardEraser)$/,
+  /^tv(BigOff|BigAniA|BigAniB|DvdAni)$/, /^plant(Small|A|B|E|Potted|Sunflower|CactusA|CactusB)$/,
+  /^kitchen(BreadBasket|Microwave)$/, /^(foodBag|halloweenPumpkin|livingSpeaker)$/,
+];
+function portableItem(id) {
+  if (/^(livingBook|books(BookGreen|Pile|Notebooks|RingBinder.+))$/.test(id)) return 'book';
+  if (cushionItems.some(pattern => pattern.test(id))) return 'soft';
+  if (hardSurfaceItems.some(pattern => pattern.test(id))) return 'hard';
+}
+
+export function itemSupportSurfaces(id, meshes) {
+  const result = [], cushions = [];
+  // The cabinet shell uses the same board for its bottom and its lid.
+  // Only the exposed upper board carries items when the doors are shut.
+  if (/^(japanese(ClothesCase|Closet)|office(Metallic|Wood)ClosetAni|kitchen(Modern)?WallCabinet.*)$/.test(id)) {
+    const boards = meshes.filter(m => /^(Storage inner floor|Cabinet top and bottom)(\.\d+)?$/.test(m.name))
+      .map(m => bounds(m.points)).sort((a,b) => b.max[1] - a.max[1]);
+    if (boards.length >= 2) result.push({ ...boards[0], kind: 'top' });
+  }
+  // The quilt chest ships with folded linen already on it.
+  const foldedTop = meshes.filter(m => /^Folded quilt(\.\d+)?$/.test(m.name))
+    .sort((a, b) => bounds(b.points).max[1] - bounds(a.points).max[1])[0];
+  for (const mesh of meshes) {
+    const name = mesh.name.replace(/\.\d+$/, '');
+    const box = bounds(mesh.points);
+    if (name === 'Soft quilt cloth') {
+      // Keep the curved drape off the placement area. The raised seams belong
+      // to the same quilt and must clear the bottom of the placed object.
+      const seamTop = Math.max(box.max[1], ...meshes.filter(m => m.name.startsWith('Quilt stitching')).map(m => bounds(m.points).max[1]));
+      result.push({ min: [box.min[0] + .06, box.min[1], box.min[2] + .04],
+        max: [box.max[0] - .06, seamTop, box.max[2] - .06], kind: 'seat' });
+    } else if (name === 'Pet bed cushion' || mesh === foldedTop || name === 'Bedside book') {
+      const contactDepth = name === 'Pet bed cushion' ? .025 : .002;
+      const footprint = hull(mesh.points.filter(p => p[1] >= box.max[1] - contactDepth));
+      if (footprint.length >= 3) result.push({ ...box, footprint, kind: name === 'Bedside book' ? 'book' : 'seat' });
+    } else if (name === 'Stone counter' || name === 'Vanity top') {
+      // Offer the dry strips beside each basin. The rim encloses empty space.
+      const basins = meshes.filter(m => /^(Porcelain basin rim|Sink rim)/.test(m.name))
+        .map(m => bounds(m.points)).sort((a, b) => a.min[0] - b.min[0]);
+      let left = box.min[0];
+      for (const [index, x] of [...basins.map(b => b.min[0]), box.max[0]].entries()) {
+        if (x > left) result.push({ min: [left, box.min[1], box.min[2]], max: [x, box.max[1], box.max[2]], kind: 'top' });
+        left = basins[index]?.max[0] ?? x;
+      }
+    } else if (boardPart.test(name)) result.push(box);
+    else if (/^sofa/.test(id) && seatPart.test(name)) cushions.push(box);
+    else if (seatPart.test(name) || topPart.test(name)) {
+      const footprint = hull(mesh.points.filter(p => p[1] >= box.max[1] - .002));
+      if (footprint.length >= 3) result.push({ ...box, footprint, kind: seatPart.test(name) ? 'seat' : 'top' });
+    }
+  }
+  // Adjacent cushions form one usable seat across their narrow seam. Keep
+  // a corner sofa's longer chaise separate so its empty corner stays empty.
+  for (const box of cushions) {
+    const neighbor = result.find(other => other.kind === 'seat' && [0, 2].some(axis => {
+      const across = 2 - axis;
+      return Math.abs(other.max[1] - box.max[1]) < .001
+        && Math.abs(other.min[across] - box.min[across]) < .005 && Math.abs(other.max[across] - box.max[across]) < .005
+        && Math.max(other.min[axis], box.min[axis]) - Math.min(other.max[axis], box.max[axis]) < .09;
+    }));
+    if (neighbor) {
+      neighbor.min = neighbor.min.map((v, i) => Math.min(v, box.min[i]));
+      neighbor.max = neighbor.max.map((v, i) => Math.max(v, box.max[i]));
+    } else result.push({ ...box, kind: 'seat' });
+  }
+  if (/^(livingBook|booksBookGreen|booksNotebooks|booksPile)$/.test(id)) {
+    const cover = meshes.filter(m => /^Book cover/.test(m.name)).sort((a,b) => bounds(b.points).max[1] - bounds(a.points).max[1])[0];
+    const suffix = cover.name.slice('Book cover'.length);
+    const points = meshes.filter(mesh => mesh === cover || mesh.name === 'Spine' + suffix || mesh.name === 'Pages' + suffix)
+      .flatMap(mesh => mesh.points);
+    result.push({ ...bounds(points), footprint: hull(points), kind: 'book' });
+  }
+  return result;
+}
 export function derivePlacementBounds() {
   const result = {};
   for (const [id,meta] of Object.entries(catalog)) {
@@ -70,7 +160,7 @@ export function derivePlacementBounds() {
     for(const axis of [0,1,2]) if(actual.min[axis]<meta.min[axis]-.025 || actual.max[axis]>meta.max[axis]+.025)
       throw new Error(`GLB exceeds catalog bounds: ${id}, axis ${axis}`);
     result[id] = {placementHull:hull(points)};
-    const physical = meshes.filter(mesh => !/^(Interaction (water|power LED)|Flowing water|Bath water glint|Bathroom (wash ripple|water drop)|Recessed bath water)/.test(mesh.name));
+    const physical = meshes.filter(mesh => !/^(Interaction (water|power LED)|Soft teardrop flame|Grate penumbra|Flowing water|Bath water glint|Bathroom (wash ripple|water drop)|Recessed bath water)/.test(mesh.name));
     // Preserve the authored choice to ignore leaves and loose cat-tree toys.
     // All other items use their physical model parts, including animated items.
     const selected = meta.leaves || /^(catTree(Tan|Blue|Pink)|toy-scratchPost)/.test(id)
@@ -85,8 +175,7 @@ export function derivePlacementBounds() {
     if(openingBounds.length)result[id].interactionBounds=openingBounds;
     // Only authored horizontal boards can support objects. Brackets, backs,
     // shades and decorative trim must not become accidental placement targets.
-    const surfaces = meshes.filter(mesh => /^(Rounded tabletop|Wall shelf(?:\.\d+)?|Shelf(?:\.\d+)?|Broad fireplace mantel|Thick stone worktop(?:\.\d+)?)$/.test(mesh.name))
-      .map(mesh => bounds(mesh.points));
+    const surfaces = itemSupportSurfaces(id, meshes);
     if (surfaces.length) result[id].supportSurfaces = surfaces;
     const wallMount = meshes.find(mesh => mesh.name === 'Wall backplate');
     if (wallMount) result[id].wallMountBounds = bounds(wallMount.points);
@@ -96,9 +185,18 @@ export function derivePlacementBounds() {
       const feet = /^kitchenMixer/.test(id) ? bases : bases.slice(0,1);
       if (feet.length) result[id].baseHull = hull(feet.flatMap(mesh=>mesh.points));
     }
+    const use = portableItem(id);
+    if (use) {
+      result[id].surfaceUse = use;
+      // Use the full width of a ball so it cannot balance on a narrow rim.
+      // For other objects the lower mesh includes feet, book covers and bases.
+      const bottom = points.filter(p => p[1] <= actual.min[1] + .025);
+      const base = hull(/Ball$|^yarn/.test(id) ? points : bottom);
+      result[id].baseHull = base.length >= 3 ? base : result[id].placementHull;
+    }
     // Retain deliberately authored shapes and animation envelopes. Static
     // furniture gets one box per part instead of a box full of empty air.
-    if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.filter(mesh => !/^Interaction (water|power LED)/.test(mesh.name)).map(mesh => ({
+    if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.filter(mesh => !/^(Interaction (water|power LED)|Soft teardrop flame|Grate penumbra)/.test(mesh.name)).map(mesh => ({
       ...bounds(mesh.points),
       // Round dining parts must not collide with the empty corners of their box.
       ...(/^(Round oak tabletop|Dining chair seat)$/.test(mesh.name) ? { footprint: hull(mesh.points) } : {}),

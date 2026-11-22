@@ -1,10 +1,11 @@
+import { sofaBallPosition, SOFA_BALL_ROLL_SECONDS, type SofaBallRoll } from '@/utils/sofa-ball-roll';
 import type { PawObjectTarget } from '@/utils/native-paw-contact';
 import type { CatCommandAttention } from '@/utils/native-cat-expression';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { WorldPeriod } from '@/utils/world-clock';
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { FEED_BITES_PER_MEAL } from "@/constants/game";
-import { FLOOR_Y, nativeRoomEdge, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, planLandingWalk, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
+import { FLOOR_Y, projectWorld, nativeRoomEdge, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, planLandingWalk, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { getCatJumpMotion, getCatWalkMotion, isCatJump, isCatWalk } from "@/constants/cat-room-motion";
 import {
@@ -48,6 +49,7 @@ export function useRoomActivity(
   onStopped?: () => void,
   onCompleted?: (kind: RoomActivityKind, instanceId?: string) => void,
   onBlocked?: (failure: BlockedRoomActivity) => void,
+  onReleaseBall?: (roll: SofaBallRoll) => boolean,
 ) {
   const { active: screenActive, reduceMotion } = useAnimationActivity();
   const wasRoomVisible = useRef(roomVisible);
@@ -107,6 +109,21 @@ export function useRoomActivity(
   const queuedPlan = useRef<RoomActivityPlan | null>(null);
   const latestOptions = useRef(options);
   const liveWorld = useRef(options.nativeWorld);
+  const spriteRoll = useRef<{ roll: SofaBallRoll; startedAt: number } | undefined>(undefined);
+  const releaseCallback = useRef(onReleaseBall);
+  useEffect(() => { releaseCallback.current = onReleaseBall; }, [onReleaseBall]);
+  const releaseSofaBall = useCallback((key: string, roll: SofaBallRoll) => {
+    const current = running.current, world = liveWorld.current;
+    if (!current || !world || roomActivityStepKey(current) !== key) return false;
+    const step = current.plan.steps[current.stepIndex];
+    const beat = step.sofaBallRoll;
+    const ball = world.objects.find(o => o.instanceId === roll.ballId);
+    if (!beat || step.native?.blocked || beat.sofaId !== roll.sofaId || beat.ballId !== roll.ballId || ball?.supportId !== roll.sofaId || !releaseCallback.current?.(roll)) return false;
+    const moved = updateNativeObjectPosition(world,roll.ballId,roll.end);
+    liveWorld.current = { ...moved, objects: moved.objects.map(o => o.instanceId === roll.ballId
+      ? { ...o, supportId: undefined, movable: true } : o) };
+    return true;
+  }, []);
   const [navigationVersion, setNavigationVersion] = useState(0);
   const wasActive = useRef(screenActive && roomVisible);
   useEffect(() => {
@@ -257,6 +274,12 @@ export function useRoomActivity(
         return;
       }
       const room = latestOptions.current;
+      // A missed or interrupted swat still gets a safe dismount. Only a loose
+      // ball can start the floor chase or complete a play reward.
+      if (step.chaseReleasedBall && !liveWorld.current?.objects.some(o => o.instanceId === plan.targetInstanceId && o.movable)) {
+        runStep({ ...plan, userRequested: false }, plan.steps.length - 1);
+        return;
+      }
       const startedAt = Date.now() - elapsed * 1000;
       if (liveWorld.current) {
         // A resumed swat keeps the identity of any impulse it already delivered.
@@ -265,7 +288,7 @@ export function useRoomActivity(
         step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length || step.native.brushSide !== undefined)) ? { ...step } :
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
-        step.native = { ...step.native!, contactKey, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion && !step.hold };
+        step.native = { ...step.native!, contactKey, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: !(reduceMotion && (plan.kind === 'bowlEat' || step.sofaBallRoll)) && roomVisible && room.nativeStepCompletion && !step.hold };
         const nextStep=plan.steps[stepIndex+1];
         if(step.native.walkAfterLanding && nextStep && !reduceMotion && !elapsed) {
           const landing=step.native.path[step.native.path.length-1];
@@ -290,7 +313,7 @@ export function useRoomActivity(
           const position = room.nativeStepCompletion && nativePosition.current ? nativePosition.current : step.native.path[0];
           step = { ...step, position: catScreenPoint(position, liveWorld.current), animation: "idle", mood: "idle", hold: false,
             sofaApproach: undefined, bedPhase: undefined, bathroomPhase: undefined, durationMs: 200, moveMs: 0,
-            native: { ...step.native, path: [position], distance: 0, duration: .2, jump: false, awaitCompletion: !(reduceMotion && plan.kind === 'bowlEat') && roomVisible && room.nativeStepCompletion } };
+            native: { ...step.native, path: [position], distance: 0, duration: .2, jump: false, awaitCompletion: !(reduceMotion && (plan.kind === 'bowlEat' || step.sofaBallRoll)) && roomVisible && room.nativeStepCompletion } };
         }
         if (reduceMotion) step.native = { ...step.native!, path: [step.native!.path.at(-1)!], legs: undefined, distance: 0, jump: false };
       }
@@ -336,6 +359,40 @@ export function useRoomActivity(
       const next = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? visibleStep : item) }, stepIndex, startedAt };
       running.current = next;
       setState(next);
+      const swat = step.sofaBallRoll;
+      const followsSwat = step.chaseReleasedBall || plan.steps[stepIndex - 1]?.sofaBallRoll;
+      const rolling = followsSwat && spriteRoll.current?.roll.ballId === plan.targetInstanceId ? spriteRoll.current : undefined;
+      const roll = swat ?? rolling?.roll;
+      if (roll && !step.native?.blocked && roomVisible && (reduceMotion || room.nativeStepCompletion === false)) {
+        const animateRoll = (elapsedSeconds: number) => {
+          const progress = Math.min(1, Math.max(0, elapsedSeconds / SOFA_BALL_ROLL_SECONDS));
+          const phases = [progress, ...[.1, .19, .28, .55, .8, 1].filter(t => t > progress)];
+          const points = phases.map(t => projectWorld(sofaBallPosition(roll, t), room.width));
+          for (const [axis, value] of [['x', objectX], ['y', objectY]] as const) {
+            value.set(points[0][axis]);
+            const tail = phases.slice(1).map((t, i) => withTiming(points[i + 1][axis], {
+              duration: (t - phases[i]) * SOFA_BALL_ROLL_SECONDS * 1000, easing: Easing.linear,
+            }));
+            if (reduceMotion) value.set(points.at(-1)![axis]);
+            else if (tail.length) value.set(withSequence(...tail));
+          }
+        };
+        const supported = liveWorld.current?.objects.find(o => o.instanceId === roll.ballId)?.supportId === roll.sofaId;
+        if (swat && supported) {
+          spriteRoll.current = undefined;
+          const start = projectWorld(roll.start, room.width);
+          objectX.set(start.x); objectY.set(start.y);
+          const delay = Math.max(0, (reduceMotion ? 200 : 600) - elapsed * 1000);
+          biteTimers.push(setTimeout(() => {
+            if (!stopped && running.current === next && releaseSofaBall(roomActivityStepKey(next), roll)) {
+              spriteRoll.current = { roll, startedAt: Date.now() };
+              animateRoll(0);
+            }
+          }, delay));
+        } else if (spriteRoll.current?.roll.ballId === roll.ballId) {
+          animateRoll((Date.now() - spriteRoll.current.startedAt) / 1000);
+        }
+      }
       const eating = plan.kind === 'bowlEat' && step.mood === 'eating' && !step.native?.blocked;
       const biteOffset = step.mealBiteOffset ?? 0;
       const stepBites = Math.min(FEED_BITES_PER_MEAL, (plan.mealTotal ?? FEED_BITES_PER_MEAL) - biteOffset);
@@ -549,8 +606,8 @@ export function useRoomActivity(
       for (const biteTimer of biteTimers) clearTimeout(biteTimer);
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
-  }, [awardMealBites, cancelMeal, screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
+  }, [releaseSofaBall, awardMealBites, cancelMeal, screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
   return { activity, mealProgress: screenActive && activity?.plan.kind === 'bowlEat'
     && activity.plan.steps[activity.stepIndex].mood === 'eating' ? mealProgress : null,
-    commandAttention, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
+    commandAttention, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep, releaseSofaBall };
 }

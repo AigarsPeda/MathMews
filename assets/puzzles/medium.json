@@ -10496,6 +10496,14 @@
       "1/2"
     ],
     "correctIndex": 0,
+    "fractionExample": {
+      "numerator": 6,
+      "denominator": 10,
+      "compareTo": [
+        3,
+        5
+      ]
+    },
     "helpTemplate": "fraction_decimal_link"
   },
   {

@@ -1,21 +1,16 @@
+import { PuzzlePreviewGame } from '@/components/dev/PuzzlePreviewGame';
 /** Production screens with disposable local progress. No player save is written. */
 import { type PuzzleLayoutMeasurement, PlaySession } from '@/app/play';
-import { GameContext, useGame } from '@/contexts/GameProvider';
 import { LocaleContext } from '@/contexts/LocaleProvider';
 import type { Puzzle } from '@/types/puzzle';
-import { getPuzzlesByDifficulty } from '@/constants/puzzles';
+import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from '@/constants/puzzles';
 import { getPuzzleType } from '@/utils/puzzle-type';
-import { getPathLocation, getPathLesson } from '@/constants/puzzle-path';
-import { createDefaultGameSave } from '@/utils/game-storage';
-import { buyOneLife, canBuyLife } from '@/utils/lives';
-import { getStoreCoinPrice } from '@/utils/store-catalog';
-import { applyPuzzleAnswer } from '@/utils/game-operations';
-import { beginTimedChallenge, settleChallengeTimeout } from '@/utils/timed-challenge';
-import type { GameSave } from '@/types/save';
+import { getTimedChallengeLevel } from '@/constants/curriculum';
+import { getPathLesson } from '@/constants/puzzle-path';
 import type { AppLocale } from '@/types/locale';
 import i18n from '@/i18n';
 import { Redirect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Text, View } from 'react-native';
 type ReviewCase = { id: string; locale: AppLocale; difficulty: 'easy' | 'medium' | 'hard'; variant: string };
@@ -43,18 +38,20 @@ const cases: ReviewCase[] = (['en', 'lv', 'ru'] as const).flatMap(locale => {
 });
 
 export default function PuzzleLayoutFixture() {
-  const realGame = useGame();
-  const params = useLocalSearchParams<{ single?: string }>();
+  const params = useLocalSearchParams<{ single?: string; example?: string }>();
   const [step,setStep] = useState(0);
   const index = params.single === undefined ? step : Number(params.single);
   const [rows,setRows] = useState<(ReviewCase & PuzzleLayoutMeasurement)[]>([]);
-  const item = cases[index];
+  const item = useMemo(() => {
+    const example = params.example;
+    const difficulty = example && PUZZLE_DIFFICULTIES.find(level => getPuzzlesByDifficulty('en', level).some(p => p.id === example));
+    return example && difficulty ? { id: example, locale: 'en' as const, difficulty, variant: 'solution' } : cases[index];
+  }, [index, params.example]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sent = useRef(false);
   const [readyCase,setReadyCase] = useState(-1);
   const ready = readyCase === index;
   const locale: AppLocale = item?.locale ?? 'en';
-  const [save, setSave] = useState(createDefaultGameSave), current = useRef(save);
   const [language] = useState(() => i18n.cloneInstance({ lng: 'en' }));
   useEffect(() => {
     sent.current=false;
@@ -62,7 +59,8 @@ export default function PuzzleLayoutFixture() {
     return () => { if(timer.current) clearTimeout(timer.current); };
   }, [index, locale, language]);
   const base = getPathLesson(item?.difficulty ?? 'easy', `${item?.difficulty ?? 'easy'}-cat-plans-picnic`)!;
-  const level = { ...base.levels[0], puzzleIds: item ? [item.id] : base.levels[0].puzzleIds };
+  const challenge = params.example ? getTimedChallengeLevel(params.example) : undefined;
+  const level = challenge ?? { ...base.levels[0], puzzleIds: item ? [item.id] : base.levels[0].puzzleIds };
   const lesson = {...base, levels:[level]};
   const measured = useCallback((metrics:PuzzleLayoutMeasurement)=>{
     if(sent.current || !item || metrics.puzzleId!==item.id) return;
@@ -70,40 +68,14 @@ export default function PuzzleLayoutFixture() {
     timer.current=setTimeout(()=>{
       sent.current=true;
       setRows(current => [...current, {...metrics,...item}]);
-      if(!params.single) setStep(index+1);
+      if(!params.single && !params.example) setStep(index+1);
     },180);
-  },[index,item,params.single]);
-  const commit = useCallback((next: GameSave) => { current.current = next; setSave(next); }, []);
-  const beginChallenge = useCallback((id: string, pace: 'timed' | 'untimed' = 'timed') => {
-    const start = getPathLocation(id)?.level;
-    if (!start) return false;
-    const now = Date.now(), progress = beginTimedChallenge(current.current.progress, start, `qa-${now}`, now, pace);
-    if (!progress) return false;
-    commit({ ...current.current, progress }); return true;
-  }, [commit]);
-  const expireChallenge = useCallback((id: string) => {
-    commit({ ...current.current, progress: settleChallengeTimeout(current.current.progress, Date.now(), id) });
-  }, [commit]);
+  },[index,item,params.single,params.example]);
   if (!__DEV__) return <Redirect href="/" />;
-  const game = { ...realGame, pet: save.pet, wallet: save.wallet, progress: save.progress, isReady: true, hasCompletedOnboarding: true,
-    recordInteraction() { return 0; }, recordLearningHelp() {}, purchaseVisualHelp: () => true,
-    answerPuzzle(puzzle: Parameters<typeof realGame.answerPuzzle>[0], correct: boolean, id: string) {
-      const result = applyPuzzleAnswer(current.current, puzzle, correct, id);
-      if (!result.accepted) return null;
-      commit(result.save); return result.coins;
-    },
-    async buyLife(cost = getStoreCoinPrice('life', 'one')!) {
-      if (!canBuyLife(current.current.progress.lives, current.current.wallet.coins)) return false;
-      commit({ ...current.current, wallet: { ...current.current.wallet, coins: current.current.wallet.coins - cost },
-        progress: { ...current.current.progress, lives: buyOneLife(current.current.progress.lives) } });
-      return true;
-    },
-    beginChallenge, expireChallenge,
-  };
-  return <I18nextProvider i18n={language}><LocaleContext.Provider value={{ locale, isReady: true, setLocale: async () => {} }}><GameContext.Provider value={game}>
-    <View style={{ flex: 1 }}>{item ? ready && <PlaySession key={index} session={{ lesson, level, phase: 0 }} onLayoutMeasured={measured} /> : <View><Text testID="layout-done">Audit complete</Text>
+  return <I18nextProvider i18n={language}><LocaleContext.Provider value={{ locale, isReady: true, setLocale: async () => {} }}><PuzzlePreviewGame>
+    <View style={{ flex: 1 }}>{item ? ready && <PlaySession key={params.example ?? index} session={{ lesson, level, phase: 0 }} onLayoutMeasured={measured} /> : <View><Text testID="layout-done">Audit complete</Text>
       <Text testID="layout-summary">{rows.filter(row => row.contentHeight > row.viewportHeight + 1).length} overflowing screens</Text>
       <Text testID="layout-count">{rows.length}</Text>
       <Text testID="layout-report" style={{position:'absolute',width:1,height:1,color:'transparent'}}>{JSON.stringify(rows)}</Text></View>}</View>
-  </GameContext.Provider></LocaleContext.Provider></I18nextProvider>;
+  </PuzzlePreviewGame></LocaleContext.Provider></I18nextProvider>;
 }

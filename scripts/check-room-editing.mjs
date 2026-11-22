@@ -40,6 +40,11 @@ const bedDraft=createRoomPlacementDraft({kind:'bed',id:'green'});
 assert.equal(withRoomPlacementDraft(pet,bedDraft).bedId,'green');assert.equal(pet.bedId,'brown','Cancel keeps the existing bed');
 assert.equal(applyRoomObjectEdits(pet,[{instanceId:'bed',offset:{x:.1,y:.2}}],[],bedDraft).bedId,'green');
 
+const bedWithBall = { ...pet, placedToys: [{ ...pet.placedToys[0], support: { parentId: 'bed', position: [0,.5,0], heading: 0 } }] };
+assert.equal(withRoomPlacementDraft(bedWithBall, bedDraft).placedToys[0].support, undefined);
+assert.equal(applyRoomObjectEdits(bedWithBall, [], ['bed']).placedToys[0].support, undefined);
+assert.equal(bedWithBall.placedToys[0].support.parentId, 'bed', 'Cancelling a bed replacement preserves the original arrangement');
+
 const normalizedPet=applyRoomObjectEdits(pet,[]);
 const bedMoved=applyRoomObjectEdits(normalizedPet,[{instanceId:'bed',offset:{x:.2,y:.3}}]);
 assert.equal(bedMoved.placedToys,normalizedPet.placedToys,'Moving the bed preserves the toy collection');
@@ -198,7 +203,7 @@ const shelfWorld=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale
  {decorationId:'sofaA',instanceId:'sofa',offset:{x:.2,y:0}}]});
 const shelf=shelfWorld.objects.find(o=>o.instanceId==='shelf');
 const pickContext={placementDraft:undefined,tapToMove:false,movingItem:{kind:'decoration',instanceId:'shelf'},editingObject:{value:shelf},
- nativeWorld:shelfWorld,selectedRoomItemAtPoint,viewport:{width:390,height:420},zoom:1,pickNativeItem:async()=> 'sofa'};
+ nativeWorld:shelfWorld,selectedRoomItemAtPoint,viewport:{width:390,height:420},zoom:1,targetsSurface:()=>false,pickNativeItem:async()=> 'sofa'};
 const pickEditing=vm.runInNewContext(ts.transpileModule(`(${pickerSource})`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText,pickContext);
 const shelfCenter=projectWorld(shelf.min.map((v,i)=>(v+shelf.max[i])/2),390);
 assert.equal(await pickEditing({x:shelfCenter.x+195,y:shelfCenter.y+210}),'shelf','The selected shelf remains draggable through the foreground sofa');

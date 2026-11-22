@@ -16,7 +16,7 @@ JUMP = __import__('json').loads((ROOT/'constants/cat-jump.json').read_text())
 from original_cat import create_cat as create_original_cat, EAR, join
 from cat_gaits import GAITS, pose_gait
 from box_play import arrival as box_arrival, build_box, pose_box, pose_box_cat
-from cat_acting import performance
+from cat_acting import performance, meal_motion
 from cat_collar import add_collar
 
 # The white coat's own trim is a touch brighter, so muzzle, bib and mittens
@@ -478,6 +478,11 @@ def pose(arm, driver, state, t, idle_controls):
     # stride. This owns the running silhouette; runtime spine offsets add
     # landing loads, without applying a second running pitch cycle.
     fore_body, hind_body = body, body
+    if state == 'scratchPost':
+        rise = smooth_window(t, .03, .97, .19)
+        hip = bones['pelvis'].head_local
+        body = Matrix.Translation(hip+shift) @ Matrix.Rotation(-.73*rise, 4, 'X') @ Matrix.Translation(-hip)
+        fore_body = hind_body = body
     if state == 'run':
         flex = math.cos((t-.65)*math.tau)
         def bend_at(name, angle):
@@ -577,9 +582,11 @@ def pose(arm, driver, state, t, idle_controls):
         head_rotation = Matrix.Rotation(.12, 3, 'X')
     if state == 'eating':
         # Bend the chest and neck toward the food while IK keeps all paws planted.
-        munch = math.sin(eating_time*math.tau*5)*eating_lean
-        head_shift = Vector((0, -.08*eating_lean, -.40*eating_lean+.012*munch))
-        head_rotation = Matrix.Rotation(.72*eating_lean+.025*munch, 3, 'X')
+        bite, chew, _ = meal_motion(eating_time)
+        search = math.sin((eating_time-.17)*math.tau*1.6)*eating_lean
+        head_shift = Vector((.055*search, -.06*eating_lean-.035*bite,
+                             -.32*eating_lean-.080*bite+.035*chew))
+        head_rotation = Matrix.Rotation(.57*eating_lean+.15*bite-.08*chew, 3, 'X')
     if state == 'wash':
         # A seated cat lifts one forepaw to its muzzle, then wipes across its
         # cheek. The other paw and both hind paws stay planted throughout.

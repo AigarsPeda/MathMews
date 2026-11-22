@@ -2,7 +2,7 @@ import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { useTranslation } from "react-i18next";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
-import { Pressable, StyleSheet, type StyleProp, type ViewStyle, type TextStyle } from "react-native";
+import { Pressable, StyleSheet, type GestureResponderEvent, type StyleProp, type ViewStyle, type TextStyle } from "react-native";
 
 type ChoiceButtonProps = {
   label: string;
@@ -11,7 +11,7 @@ type ChoiceButtonProps = {
   result?: "correct" | "wrong" | null;
   style?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  onPress: () => void;
+  onPress: (event: GestureResponderEvent) => void;
 };
 
 export function ChoiceButton({

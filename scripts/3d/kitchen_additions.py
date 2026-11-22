@@ -171,17 +171,27 @@ def build_kitchen_addition(id, h):
             log = cylinder('Firewood log', (0, y, .22), .07, .75, 'brown', rotation=(0, math.pi / 2, a))
             for x in (-.37, .37):
                 cylinder('Log end grain', (x, y, .22), .048, .016, 'wood', rotation=(0, math.pi / 2, 0))
-        glow = h['material']('Warm fireplace flame', 'FF862E')
-        shader = glow.node_tree.nodes.get('Principled BSDF')
-        shader.inputs['Emission Color'].default_value = (*glow.diffuse_color[:3], 1)
-        shader.inputs['Emission Strength'].default_value = .65
-        tint = glow.node_tree.nodes.new('ShaderNodeVertexColor')
-        tint.layer_name = 'Flame softness'
-        glow.node_tree.links.new(tint.outputs['Color'], shader.inputs['Base Color'])
-        glow.node_tree.links.new(tint.outputs['Alpha'], shader.inputs['Alpha'])
-        glow.surface_render_method = 'DITHERED'
-        glow.use_backface_culling = True
-        for x, height, curl in ((-.22, .31, -.07), (0, .44, .08), (.22, .35, -.045)):
+        def fire_material(name, color):
+            mat = h['material'](name, color)
+            shader = mat.node_tree.nodes.get('Principled BSDF')
+            shader.inputs['Emission Color'].default_value = (*mat.diffuse_color[:3], 1)
+            shader.inputs['Emission Strength'].default_value = .8
+            tint = mat.node_tree.nodes.new('ShaderNodeVertexColor')
+            tint.layer_name = 'Flame softness'
+            mat.node_tree.links.new(tint.outputs['Color'], shader.inputs['Base Color'])
+            mat.node_tree.links.new(tint.outputs['Alpha'], shader.inputs['Alpha'])
+            mat.surface_render_method = 'DITHERED'
+            mat.use_backface_culling = True
+            return mat
+
+        amber = fire_material('Amber outer flame', 'FF7729')
+        gold = fire_material('Golden inner flame', 'FFD06B')
+        # Broad overlapping roots feed slender, curling tips; the two hotter
+        # tongues sit forward of the amber layer so both read at room scale.
+        for x, depth, height, width, curl, glow in (
+                (-.205, .13, .40, .91, -.085, amber), (0, .13, .54, 1.08, .085, amber),
+                (.21, .13, .44, .92, -.075, amber), (-.115, .203, .29, .78, .06, gold),
+                (.115, .208, .34, .76, -.055, gold)):
             vertices = []
             rings = [(0, .075), (.08, .11), (.18, .135), (.30, .14), (.43, .125),
                      (.56, .10), (.68, .074), (.79, .049), (.88, .027), (.95, .011), (1, .001)]
@@ -189,7 +199,9 @@ def build_kitchen_addition(id, h):
             for t, radius in rings:
                 for i in range(sides):
                     a = i * math.tau / sides
-                    vertices.append((x + curl * t * t + radius * math.cos(a), -.13 + radius * .55 * math.sin(a), .25 + t * height))
+                    bend = curl * (t * t - .45 * math.sin(math.tau * t))
+                    r = radius * width * (1.22 - .42 * t)
+                    vertices.append((x + bend + r * math.cos(a), -depth + r * .43 * math.sin(a), .25 + t * height))
             faces = [(r * sides + i, r * sides + (i + 1) % sides, (r + 1) * sides + (i + 1) % sides, (r + 1) * sides + i)
                      for r in range(len(rings) - 1) for i in range(sides)]
             faces += [tuple(range(sides - 1, -1, -1)), tuple(range((len(rings) - 1) * sides, len(rings) * sides))]
@@ -207,6 +219,29 @@ def build_kitchen_addition(id, h):
             h['finish'](obj, obj.name, glow)
             for face in mesh.polygons:
                 face.use_smooth = True
+        # Soft grate projections on the stone lip for renderers without shadow maps.
+        # Vertex alpha fades outward from each iron bar and toward the lip.
+        verts, faces, opacity = [], [], []
+        for x in (-.39, -.20, 0, .20, .39):
+            start = len(verts)
+            for t in (0, .3, .75, 1):
+                for side, weight in ((-1, 0), (-.35, .8), (0, 1), (.35, .8), (1, 0)):
+                    verts.append((x * (1 + .50 * t) + side * (.016 + .037 * t),
+                                  -.312 - .099 * t, .1215))
+                    opacity.append(.52 * weight * (1 - t))
+            for row in range(3):
+                for col in range(4):
+                    k = start + row * 5 + col
+                    faces.append((k, k + 5, k + 6, k + 1))
+        mesh = bpy.data.meshes.new('Grate penumbra')
+        mesh.from_pydata(verts, [], faces)
+        mesh.update()
+        colors = mesh.color_attributes.new(name='Flame softness', type='FLOAT_COLOR', domain='POINT')
+        for vertex, alpha in zip(colors.data, opacity):
+            vertex.color = (.015, .007, .003, alpha)
+        shadow = bpy.data.objects.new('Grate penumbra', mesh)
+        bpy.context.collection.objects.link(shadow)
+        h['finish'](shadow, shadow.name, fire_material('Grate shadow fade', '100900'))
         for x in (-.39, -.20, 0, .20, .39):
             box('Fireplace grate bar', (x, -.31, .23), (.024, .026, .21), 'dark', .008)
         box('Fireplace grate rail', (0, -.31, .28), (.89, .026, .025), 'dark', .008)

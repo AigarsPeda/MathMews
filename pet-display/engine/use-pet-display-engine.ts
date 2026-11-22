@@ -19,10 +19,10 @@ type ActiveScenario = {
   thenMood: PetAnimationState | null;
 };
 
-export function usePetDisplayEngine(pet: PetProfile, clock?: WorldClock): PetDisplayEngine {
+export function usePetDisplayEngine(pet: PetProfile, clock?: WorldClock, catRestedAt?: number): PetDisplayEngine {
   const { t } = useTranslation();
   const registry = getPetMediaRegistry(pet.type);
-  const { mood: baseMood, onFallAsleepComplete, onLieDownComplete } = usePetBaseMood(pet, clock);
+  const { mood: baseMood, onFallAsleepComplete, onLieDownComplete } = usePetBaseMood(pet, clock, catRestedAt);
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [boxPlayScenario, setBoxPlayScenario] =
     useState<PetMediaScenario | null>(null);

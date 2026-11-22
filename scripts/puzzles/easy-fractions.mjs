@@ -10,6 +10,7 @@ function varyIntroductoryHalves(byId, lv) {
       explanation: text('A whole has 2 halves. It is more than 1 half.', 'Veselajam ir 2 puses. Tas ir vairāk nekā 1 puse.'),
     },
     'v2-easy-fractions-parts-4': {
+      fractionExample: { numerator: 2, denominator: 2 },
       type: 'true_false', isTrue: true, payload: { statement: '1/2 + 1/2 = 1' },
       question: text('Do 2 halves make one whole?', 'Vai 2 puses veido vienu veselo?'),
       explanation: text('Yes. Put the 2 equal halves together to make one whole.', 'Jā. Saliec abas vienādās puses kopā, lai iegūtu vienu veselo.'),
@@ -20,6 +21,7 @@ function varyIntroductoryHalves(byId, lv) {
       explanation: text('Both halves are colored. 2/2 is one whole.', 'Abas puses ir iekrāsotas. 2/2 ir viens vesels.'),
     },
     'v2-easy-fractions-lesson-1-boss-2': {
+      fractionExample: { numerator: 2, denominator: 2 },
       type: 'multiple_choice', choices: ['1', '2', '3'], correctIndex: 1,
       question: text('How many halves make one whole?', 'Cik pušu veido vienu veselo?'),
       explanation: text('2 equal halves make one whole.', '2 vienādas puses veido vienu veselo.'),
@@ -32,11 +34,13 @@ function varyIntroductoryHalves(byId, lv) {
       explanation: text('1/2 colors one of the 2 equal parts. 2/2 colors both.', '1/2 iekrāso vienu no 2 vienādām daļām. 2/2 iekrāso abas.'),
     },
     'v2-easy-easy-fractions-parts-path-review-1': {
+      fractionExample: { numerator: 1, denominator: 2, compareTo: [2, 2] },
       type: 'true_false', isTrue: false, payload: { statement: '1/2 = 2/2' },
       question: text('Is one half the same amount as one whole?', 'Vai viena puse ir tikpat daudz kā viens vesels?'),
       explanation: text('No. 1/2 is one half; 2/2 is both halves.', 'Nē. 1/2 ir viena puse; 2/2 ir abas puses.'),
     },
     'v2-easy-easy-fractions-parts-path-review-2': {
+      fractionExample: { numerator: 1, denominator: 2 },
       type: 'multiple_choice', choices: ['0/2', '1/2', '2/2'], correctIndex: 1,
       question: text('A cookie is split into 2 equal pieces. Eat one piece. What fraction is left?', 'Cepums sadalīts 2 vienādos gabalos. Vienu gabalu apēd. Kāda daļa paliek?'),
       explanation: text('One of the 2 equal pieces remains. That is 1/2.', 'Paliek viens no 2 vienādajiem gabaliem. Tā ir 1/2.'),

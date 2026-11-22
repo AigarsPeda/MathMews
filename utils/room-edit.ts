@@ -66,8 +66,14 @@ export function createRoomPlacementDraft(target: RoomDecorationTarget, room?: Ro
 export function withRoomPlacementDraft<T extends RoomLayout>(room: T, draft?: RoomPlacementDraft | null): T {
   if (!draft) return room;
   const item = draft.item, offset = { x: 0, y: 0 };
-  if (item.kind === 'bed') return { ...room, bedId: draft.target.id, roomBedOffset: offset,
-    bedFlipped: undefined, bedScale: getBedPlacementScale(draft.target.id), bedRotationDegrees: undefined };
+  if (item.kind === 'bed') {
+    const detach = <I extends PlacedDecoration | PlacedToy>(items: I[] | undefined) =>
+      items?.some(i => i.support?.parentId === 'bed')
+        ? items.map(i => i.support?.parentId === 'bed' ? { ...i, support: undefined } : i) : items;
+    return { ...room, bedId: draft.target.id, roomBedOffset: offset,
+      placedToys: detach(room.placedToys), placedDecorations: detach(room.placedDecorations),
+      bedFlipped: undefined, bedScale: getBedPlacementScale(draft.target.id), bedRotationDegrees: undefined };
+  }
   if (item.kind === 'toy') return { ...room, placedToys: [...(room.placedToys ?? []), { ...item, offset, ...draft.initial } as PlacedToy] };
   return { ...room, placedDecorations: [...(room.placedDecorations ?? []), { ...item, offset, ...draft.initial } as PlacedDecoration] };
 }

@@ -7,8 +7,8 @@ import { useServerWallet, type ServerWallet } from "@/hooks/use-server-wallet";
 import { getWalletEnvironment } from "@/services/wallet/environment";
 import { DEFAULT_HOME_ROOM_ID, type HomeRoomId } from "@/constants/home-rooms";
 import { roomDecorationEntry, type RoomDecorationEntry, type RoomDecorationTarget } from '@/utils/room-decoration-entry';
-import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
-import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
+import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, worldClockReading, type WorldClock, type WeatherMode } from '@/utils/world-clock';
+import { removeRoomNavigationDoors, restCatInViewedRoom, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
 import { applyPuzzleAnswer, applyFeed, applyFeedBite, currentPuzzleStreak } from "@/utils/game-operations";
@@ -115,7 +115,7 @@ import {
 import { applyLifeRegen, canBuyLife } from "@/utils/lives";
 import { getLearningLevelLocation } from "@/constants/curriculum";
 import { beginTimedChallenge, settleChallengeTimeout } from "@/utils/timed-challenge";
-import { applyPetTimeDecay } from "@/utils/pet-care";
+import { applyPetTimeDecay, isPetHungry } from "@/utils/pet-care";
 import { reuseShallowEqual } from "@/utils/reuse-shallow-equal";
 import {
   createContext,
@@ -144,6 +144,7 @@ type GameContextValue = {
   feedPet: () => boolean;
   feedPetBite: (finished: boolean, amount?: number) => boolean;
   isReady: boolean;
+  catRestedAt?: number;
   hasCompletedOnboarding: boolean;
   pet: PetProfile;
   wallet: Wallet;
@@ -238,6 +239,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [save, setSaveState] = useState<GameSave>(createDefaultGameSave);
   const [initialWorldClock] = useState(createWorldClock);
   const [isReady, setIsReady] = useState(false);
+  const [catRestedAt, setCatRestedAt] = useState<number>();
   const [cloudRestoreCandidates, setCloudRestoreCandidates] = useState<
     CloudSaveSummary[]
   >([]);
@@ -396,6 +398,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     activeSaveIdRef.current = null;
   }, [userId]);
 
+  const restoreRoomSession = useCallback((snapshot: GameSave) => {
+    if (snapshot.hasCompletedOnboarding && snapshot.pet.type === 'cat') {
+      const now = Date.now();
+      const night = worldClockReading(snapshot.worldClock ?? initialWorldClock, now).period === 'night';
+      setCatRestedAt(now);
+      setSave({ ...snapshot, pet: restCatInViewedRoom(snapshot.pet, night && !isPetHungry(snapshot.pet.stats)) });
+    } else {
+      setCatRestedAt(undefined);
+      setSave(snapshot);
+    }
+  }, [initialWorldClock, setSave]);
+
   useCloudSaveSync({
     isGameReady: isReady,
     isAuthReady,
@@ -403,6 +417,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     save,
     getSave,
     setSave,
+    restoreRoomSession,
     skipNextPersist,
     activeSaveIdRef,
     cloudSyncRef,
@@ -427,7 +442,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         if (saveId) {
           activeSaveIdRef.current = saveId;
         }
-        setSave(loaded?.save ?? createDefaultGameSave());
+        restoreRoomSession(loaded?.save ?? createDefaultGameSave());
         setIsReady(true);
       })
       .catch(() => {
@@ -439,38 +454,41 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [setSave]);
+  }, [restoreRoomSession, setSave]);
+
+  const queuedLocalSave = useRef<GameSave | null>(null);
+  const persistLocalSave = useCallback((snapshot: GameSave) => {
+    if (queuedLocalSave.current === snapshot) return;
+    queuedLocalSave.current = snapshot;
+    void saveGameSave(snapshot).catch(() => {
+      if (queuedLocalSave.current === snapshot) queuedLocalSave.current = null;
+    });
+  }, []);
 
   useEffect(() => {
-    if (!isReady || !isAuthReady || (userId && save.accountOwnerId !== userId)) return;
+    if (!isReady || !isAuthReady || save !== saveRef.current || (userId && save.accountOwnerId !== userId)) return;
     if (skipNextPersist.current) {
       skipNextPersist.current = false;
       return;
     }
 
-    saveGameSave(save).catch(() => {
-      // Persistence failures should not block gameplay.
-    });
-  }, [isReady, isAuthReady, userId, save]);
+    persistLocalSave(save);
+  }, [isReady, isAuthReady, persistLocalSave, userId, save]);
 
-  const tickGameTime = useCallback((resolveSleep = false) => {
+  const tickGameTime = useCallback((resolveSleep = false, returningFromBackground = false) => {
     const now = Date.now();
-    setSave((current) => {
-      const progress = settleChallengeTimeout(current.progress, now);
-      const awayMs = Math.max(0, now - current.pet.lastCareAt);
-      const decayedPet = applyPetTimeDecay(current.pet, now);
-      return {
-        ...current,
-        pet: resolveSleep
-          ? resolveAsleepOnLoad(decayedPet, awayMs, now)
-          : decayedPet,
-        progress: {
-          ...progress,
-          lives: applyLifeRegen(progress.lives, now),
-        },
-      };
-    });
-  }, [setSave]);
+    const current = saveRef.current;
+    const progress = settleChallengeTimeout(current.progress, now);
+    const awayMs = Math.max(0, now - current.pet.lastCareAt);
+    const decayedPet = applyPetTimeDecay(current.pet, now);
+    const next = {
+      ...current,
+      pet: resolveSleep ? resolveAsleepOnLoad(decayedPet, awayMs, now) : decayedPet,
+      progress: { ...progress, lives: applyLifeRegen(progress.lives, now) },
+    };
+    if (returningFromBackground) restoreRoomSession(next);
+    else setSave(next);
+  }, [restoreRoomSession, setSave]);
 
   useEffect(() => {
     if (!isReady) return;
@@ -485,9 +503,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
         scheduleDayBoundary();
       }, midnight.getTime() - now);
     };
+    let backgrounded = AppState.currentState === 'background';
     const handleAppState = (state: AppStateStatus) => {
-      if (state === "active") {
-        tickGameTime(true);
+      if (state === 'background' && !backgrounded) {
+        backgrounded = true;
+        const current = saveRef.current;
+        if (current.hasCompletedOnboarding && current.pet.type === 'cat') {
+          setSave({ ...current, pet: restCatInViewedRoom(current.pet) });
+          // Queue the latest viewed room before the OS suspends React effects.
+          if (isAuthReady && (!userId || current.accountOwnerId === userId)) {
+            persistLocalSave(saveRef.current);
+          }
+        }
+      } else if (state === "active") {
+        tickGameTime(true, backgrounded);
+        backgrounded = false;
         scheduleDayBoundary();
       }
     };
@@ -501,7 +531,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       clearInterval(interval);
       clearTimeout(dayBoundary);
     };
-  }, [isReady, tickGameTime]);
+  }, [isAuthReady, isReady, persistLocalSave, setSave, tickGameTime, userId]);
 
   const setPet = useCallback((updater: (current: PetProfile) => PetProfile) => {
     setSave((current) => ({ ...current, pet: updater(current.pet) }));
@@ -667,13 +697,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: syncPetLayerOrder({
-        ...current.pet,
-        bedId: undefined,
+      pet: {
+        ...applyRoomObjectEdits(current.pet, [], ['bed']),
         bedFlipped: undefined,
         bedRotationDegrees: undefined,
         bedScale: undefined,
-      }),
+      },
     });
 
     return true;
@@ -1375,6 +1404,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const value = useMemo<GameContextValue>(
     () => ({
       ...actions,
+      catRestedAt,
       worldClock: save.worldClock ?? initialWorldClock,
       isReady: isReady && isAuthReady && (!userId || save.accountOwnerId === userId),
       hasCompletedOnboarding: save.hasCompletedOnboarding,
@@ -1392,7 +1422,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       cloudRestoreCheckComplete,
       cloudRestorePromptDismissed,
     }),
-    [actions, save.worldClock, save.accountOwnerId, save.hasCompletedOnboarding, save.pet, save.progress,
+    [actions, catRestedAt, save.worldClock, save.accountOwnerId, save.hasCompletedOnboarding, save.pet, save.progress,
       save.coinTransactions, save.pendingWalletPurchases, save.walletNotices, save.creditedPurchaseIds,
       initialWorldClock, isReady, isAuthReady, userId, wallet, isWalletReady,
       placementDraft, decorationEntry, cloudRestoreCandidates, cloudRestoreCheckComplete, cloudRestorePromptDismissed],

@@ -1,3 +1,4 @@
+import { acceptsSurfaceItem, surfaceContains, surfaceOutline } from '@/utils/room-support-surface';
 import { isSurfacePlaceable, NATIVE_MODEL_CATALOG, placeObjectOnRugs, projectWorld, unprojectFloor, type NativeRoomObject, type Vec3 } from '@/utils/native-room-world';
 import { roomItemAtPoint } from '@/utils/room-item-placement';
 import { transformRoomObject } from '@/utils/room-support';
@@ -25,14 +26,13 @@ export function createRoomDragPlacement(origin: NativeRoomObject, objects: Nativ
         return 6 / Math.max(1, Math.hypot(p.x - zero.x, p.y - zero.y) * zoom);
       };
       return { owner, height: owner.position[1] + top.max[1] * owner.scale + .002,
-        minX: top.min[0] * owner.scale, maxX: top.max[0] * owner.scale,
-        minZ: top.min[2] * owner.scale, maxZ: top.max[2] * owner.scale,
-        padX: padding([1, 0, 0]), padZ: padding([0, 0, 1]),
-        outline: [[top.min[0], top.min[2]], [top.max[0], top.min[2]], [top.max[0], top.max[2]], [top.min[0], top.max[2]]]
+        top, compatible: acceptsSurfaceItem(top, meta.surfaceUse),
+        padX: padding([1, 0, 0]) / owner.scale, padZ: padding([0, 0, 1]) / owner.scale,
+        outline: surfaceOutline(top)
           .map(([x, z]) => projectWorld(worldPoint(x, z), width)) };
     })).sort((a, b) => b.height - a.height);
   type Surface = typeof surfaces[number];
-  let held: Surface | undefined = surfaces.filter(surface => surface.owner.instanceId === origin.supportId)
+  let held: Surface | undefined = surfaces.filter(surface => surface.compatible && surface.owner.instanceId === origin.supportId)
     .sort((a, b) => Math.abs(a.height - origin.min[1]) - Math.abs(b.height - origin.min[1]))[0];
   const pose = (surface: Surface, point: RoomPoint): Vec3 => {
     const anchor = unprojectFloor(point, surface.height + (meta.center[1] - meta.min[1]) * origin.scale, width);
@@ -41,17 +41,20 @@ export function createRoomDragPlacement(origin: NativeRoomObject, objects: Nativ
   const fits = (surface: Surface, position: Vec3, retain = false) => hull.every(corner => {
     const local = rotate(corner.map((v, i) => v + position[i] - surface.owner.position[i]) as Vec3, -surface.owner.heading);
     const x = retain ? surface.padX : 0, z = retain ? surface.padZ : 0;
-    return local[0] >= surface.minX - x && local[0] <= surface.maxX + x
-      && local[2] >= surface.minZ - z && local[2] <= surface.maxZ + z;
+    return surface.compatible && surfaceContains(surface.top, local[0] / surface.owner.scale, local[2] / surface.owner.scale, x, z);
   });
   return (point: RoomPoint) => {
     // Prefer the captured board, including its height when one owner has several shelves.
     // The six-point exit margin prevents edge flicker; it never permits an invalid drop.
     if (held && !fits(held, pose(held, point), true)) held = undefined;
-    held ??= surfaces.find(surface => fits(surface, pose(surface, point)));
+    // A book already on the captured table can receive the dragged book.
+    // Unrelated overlapping shelves keep the original capture.
+    if (held) held = surfaces.find(surface => surface.owner.supportId === held!.owner.instanceId
+      && fits(surface, pose(surface, point))) ?? held;
+    else held = surfaces.find(surface => fits(surface, pose(surface, point)));
     if (held) {
       const position = pose(held, point);
-      return { object: { ...transformRoomObject(origin, position), supportId: held.owner.instanceId, rugLift: undefined },
+      return { object: { ...transformRoomObject(origin, position), supportId: held.owner.instanceId, movable: false, rugLift: undefined },
         unsupportedSurfaceId: fits(held, position) ? undefined : held.owner.instanceId };
     }
     const pointedAt = surfaces.find(surface => {

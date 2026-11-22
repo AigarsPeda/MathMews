@@ -2,6 +2,18 @@
   "loading": {
     "label": "Loading game"
   },
+  "cookieShare": {
+    "goal": "Share {{cookies}} equally between {{plates}} plates.",
+    "cookies_one": "{{count}} cookie",
+    "cookies_other": "{{count}} cookies",
+    "tray": "Cookie tray",
+    "watch": "Show me how",
+    "playing": "Sharing…",
+    "replay": "Watch again",
+    "ask": "Choose how many go on each plate and how many are left.",
+    "result": "{{each}} on each plate. {{left}} left on the tray.",
+    "diagram": "{{items}} cookies on the tray and {{plates}} plates."
+  },
   "common": {
     "back": "Back",
     "close": "Close",
@@ -160,7 +172,9 @@
     "extinguishFire": "Extinguish fire",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
+    "featherDragHint": "Drag to guide the feather",
     "catCommands": {
+      "scratchPost": "Scratch the post",
       "bowlEat": "Eat",
       "chairSit": "Sit on the rocking chair",
       "furnitureSit": "Jump up and sit",
@@ -215,6 +229,7 @@
       "feather": "Get those feathers, {{name}}!"
     },
     "decorateStart": "Let’s decorate!",
+    "surfaceMoveHint": "Tap the floor or a surface that fits, then tap Place here. You can also drag and release.",
     "dragSelectedHint": "Tap an empty spot to try a move. Or drag the item and release to place it.",
     "placeHere": "Place here",
     "turnItem": "Turn",
@@ -1288,6 +1303,7 @@
     "a11yGotIt": "Got it"
   },
   "play": {
+    "seeResult": "See result",
     "puzzleOf": "Puzzle {{number}} of {{total}}",
     "backToPath": "Back to path",
     "adjustAnswer": "Not quite. Adjust your answer and check again.",
@@ -1767,15 +1783,30 @@
     "parts": "{{count}} parts",
     "partitionResets": "New parts clear your shading.",
     "yourStrip": "Your strip",
+    "piecesCounted": "{{count}} of {{total}} equal parts",
     "shaded": "Shaded parts: {{count}} of {{total}}",
     "remove": "Unshade one part",
     "add": "Shade one part",
     "reset": "Start this strip again"
   },
+  "percentageSolution": {
+    "whole": "100% = {{whole}}",
+    "amount": "{{percent}}% of {{whole}} = {{amount}}",
+    "saved": "{{percent}}% off = {{amount}}",
+    "sale": "{{whole}} − {{amount}} = {{price}}",
+    "budget": "{{budget}} − {{prices}} = {{remaining}} left",
+    "coins_one": "{{count}} coin",
+    "coins_other": "{{count}} coins"
+  },
   "decimalModels": {
     "tenthsGuide": "The square is one whole. Each of its 10 equal strips is one tenth, or 0.1.",
     "hundredthsGuide": "100 squares = 1 whole.\n1 square = 0.01 · 1 row = 0.10 = 0.1",
+    "eachWhole": "Each square is one whole.",
     "oneWhole": "1 whole",
+    "countTenths_one": "{{count}} tenth",
+    "countTenths_other": "{{count}} tenths",
+    "countHundredths_one": "{{count}} hundredth",
+    "countHundredths_other": "{{count}} hundredths",
     "gridLabel": "Decimal grid",
     "shaded": "{{count}} of {{total}} parts shaded",
     "tapGrid": "Tap the grid to start.",
@@ -1826,6 +1857,7 @@
     "eraseShort": "Erase"
   },
   "bridge": {
+    "litreSquare": "1 square = 1 litre",
     "sameBottles": "Every bottle holds the same amount of water.",
     "bottles": "Bottles",
     "totalLitres": "Total litres",
@@ -1861,6 +1893,31 @@
     "moveBy": "Change x by {{x}} and y by {{y}}.",
     "linkedLinesTitle": "Linked quantities"
   },
+  "moneyReveal": {
+    "price": "Price",
+    "paid": "Paid",
+    "change": "Change",
+    "total": "Coin total",
+    "each": "Price each",
+    "sale": "Sale price",
+    "budget": "Budget",
+    "left": "Left over",
+    "itemCount": "Items you can buy · {{value}}"
+  },
+  "jugSolution": {
+    "ml": "{{value}} ml",
+    "litres": "{{value}} L",
+    "left": "{{volume}} left",
+    "cup": "Full cups · {{value}}",
+    "bowl": "Full bowls · {{value}}",
+    "bottle": "Bottles needed · {{value}}"
+  },
+  "clockSolution": {
+    "minutes": "{{value}} min",
+    "hours": "{{value}} h",
+    "nextDay": "next day",
+    "previousDay": "previous day"
+  },
   "everyday": {
     "cats": "Cats",
     "toys": "Toys",
@@ -1879,6 +1936,18 @@
     },
     "catCount": "Number of cats",
     "toyCount": "Number of toys",
+    "boxCubes_one": "{{count}} cube",
+    "boxCubes_other": "{{count}} cubes",
+    "boxLength": "{{n}} cm",
+    "boxVolume": "{{n}} cm³",
+    "boxLayer": "Layers filled  {{layer}} / {{height}}",
+    "boxBase": "Cubes per layer  {{w}} × {{d}} = {{area}}",
+    "gridSquare": "Square {{number}}",
+    "shapeCount": {
+      "sides": "Sides",
+      "corners": "Corners",
+      "symmetry": "Lines of symmetry"
+    },
     "ribbonPerCorner": "Mats: 1 ribbon at each corner",
     "priceEach": "Price each",
     "packPrice": "Whole pack price",
@@ -1917,6 +1986,11 @@
   "developer": {
     "title": "Developer modes",
     "enabled": "Test mode enabled",
+    "nextTopic": "Next topic",
+    "topicList": "{{total}} puzzle topics",
+    "taskFits": "Fits without scrolling",
+    "taskScroll": "Scrolls {{distance}} pt",
+    "repeatPuzzle": "Repeat puzzle",
     "sessionHint": "Choose a test screen below. All modes turn off when the app restarts.",
     "choose": "Choose a test screen",
     "open": "Open test screen",

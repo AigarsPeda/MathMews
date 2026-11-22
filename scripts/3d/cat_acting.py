@@ -87,6 +87,30 @@ def ball_toss(t):
     return paw, ball
 
 
+# Times within the eating action, after the bowl has arrived.
+BITE_CONTACTS = (.17, .405, .655)
+
+
+def meal_motion(t):
+    """Muzzle contact, jaw opening after the bite, and portion eaten."""
+    bite = chew = eaten = 0
+    for peak in BITE_CONTACTS:
+        bite += accent(t, peak-.085, peak, peak+.080)
+        chew += accent(t, peak+.012, peak+.075, peak+.15)
+        eaten += beat(t, [(peak, 0), (peak+.075, 1/3)])
+    return bite, chew, eaten
+
+
+def feather_location(t):
+    # The tuft crosses the first mitten, flicks away, then sweeps past the
+    # other. Its last dive ends between the extended paws on the floor.
+    x = beat(t, [(0,-.62),(.20,-.62),(.29,-.41),(.335,-.67),
+                 (.48,.41),(.535,.70),(.63,.35),(.75,.04),(.83,.04),(.96,-.60)])
+    z = beat(t, [(0,.92),(.19,.92),(.29,.56),(.35,.86),(.48,.62),
+                 (.55,.99),(.66,.84),(.76,.29),(.83,.27),(.96,.79)])
+    return x, -.74-.09*hold(t,.58,.71,.83,.97), z
+
+
 def performance(state, t):
     t = max(0, min(1, t))
     if t == 1 and state in ('idle', 'idle2', 'blinkIdle', 'sit', 'blinkSit', 'waiting', 'sad', 'cry', 'angryCute'):
@@ -247,6 +271,27 @@ def performance(state, t):
                     head=(.025*watch,0,.045*up), look=((.16-.59*up)*watch,-.06*up,.30*watch+.16*up),
                     ears=((-.12*up,.06*watch),(-.12*up,-.04*watch)),
                     tail=tail_pose(watch,(-.40,.05,.25,.32),-.10*up))
+    if state == 'scratchPost':
+        # Rise with the hind feet planted, rake one paw while the other braces,
+        # then reach long once with both before easing back to all fours.
+        brace = hold(t, .03, .22, .76, .97)
+        strokes = hold(t, .20, .30, .69, .77)
+        left = strokes * (.5 + .5*math.sin((t-.24)*math.tau*5))
+        right = strokes - left
+        return dict(plant=True, lift=.09*brace, back=.04*brace,
+                    paws=((0, -.29*brace, .91*brace-.28*left),
+                          (0, -.29*brace, .91*brace-.28*right), (0,0,0), (0,0,0)),
+                    wrists=(.72*brace-.18*left, .72*brace-.18*right, 0, 0),
+                    roll=.045*(left-right), look=(-.17*brace, 0, .04*(right-left)),
+                    tail=tail_pose(brace, (-.85,-.15,.08,.22), .08*(right-left)))
+    if state == 'knead':
+        weight = hold(t, .02, .15, .84, .98)
+        rock = math.sin(t*math.tau*3) * weight
+        left, right = max(0, rock), max(0, -rock)
+        return dict(plant=True, lift=-.065*weight, side=-.035*rock,
+                    paws=((0,-.05*left,.16*left), (0,-.05*right,.16*right), (0,0,0), (0,0,0)),
+                    wrists=(.26*left,.26*right,0,0), look=(.18*weight, .04*rock, 0),
+                    squint=1-.3*weight, roll=-.04*rock)
     if state == 'batToy':
         # A low hunting crouch, rear wiggle, then ONE lateral cut away from the
         # chest. Freeze the far-side follow-through before replacing the paw.
@@ -283,9 +328,11 @@ def performance(state, t):
     if state == 'featherChase':
         # Look up first, coil, then a two-paw forward pounce. The forepaws
         # land before the hind paws and the head arrives after the shoulders.
-        watch = hold(t,.03,.16,.42,.56)
-        track = beat(t,[(0,0),(.08,0),(.23,-.27),(.35,.25),(.48,0),(1,0)])
-        gather = accent(t,.40,.54,.64)
+        left = accent(t,.20,.29,.395)
+        right = accent(t,.39,.48,.565)
+        watch = hold(t,.03,.16,.51,.64)
+        track = feather_location(t)[0] * .65 * hold(t,.03,.16,.83,.97)
+        gather = accent(t,.49,.575,.65)
         flight = beat(t,[(0,0),(.58,0),(.67,1),(.71,.85),(.79,0),(1,0)])
         fore_flight = beat(t,[(0,0),(.58,0),(.67,1),(.70,.85),(.76,0),(1,0)])
         reach = hold(t,.57,.67,.82,.96)
@@ -293,14 +340,16 @@ def performance(state, t):
         land = accent(t,.70,.78,.94)
         tail = hold(t,.11,.30,.83,.98)
         return dict(plant=True,
-                    paws=((-.035*reach,-.24*reach,.24*(fore_flight-flight)+.07*replace),
-                          (.035*reach,-.24*reach,.24*(fore_flight-flight)+.07*replace),
+                    paws=((-.17*left-.035*reach,-.21*left-.24*reach,.35*left+.24*(fore_flight-flight)+.07*replace),
+                          (.17*right+.035*reach,-.21*right-.24*reach,.40*right+.24*(fore_flight-flight)+.07*replace),
                           (0,.035*flight,.035*flight),(0,.035*flight,.035*flight)),
+                    wrists=(.40*left+.22*fore_flight,.45*right+.22*fore_flight,0,0),
+                    side=.065*(left-right), roll=.11*(left-right),
                     chest=-.08*watch+.25*gather+.18*land-.08*flight, hips=-.14*gather-.06*land,
                     lift=-.18*gather-.18*land-.015*watch, hop=.24*flight,
                     back=.035*gather-.065*flight,
                     head=(0,-.06*land,.05*watch-.025*land),
-                    look=(-.32*watch+.16*gather+.13*land,0,track),
+                    look=(-.21*watch+.18*(left+right)+.28*land,.07*(left-right),track),
                     ears=((-.13*watch+.20*gather,.04*watch),(-.13*watch+.20*gather,-.04*watch)),
                     tail=tail_pose(tail,(-.90,-.06,.12,.18),-.25*track))
     if state == 'eating':

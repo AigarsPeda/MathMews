@@ -83,7 +83,7 @@ type HomeContentProps = {
 export default function HomeScreen() {
   const game = useGame();
   const { active: homeActive, reduceMotion } = useAnimationActivity();
-  return <HomeContent game={game} homeActive={homeActive} reduceMotion={reduceMotion} />;
+  return <HomeContent key={game.catRestedAt} game={game} homeActive={homeActive} reduceMotion={reduceMotion} />;
 }
 
 const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }: HomeContentProps) {
@@ -180,7 +180,7 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
     send: sendPetCommand,
     isCareBlocked,
     isCareAnimationPlaying,
-  } = usePetDisplay(pet, worldClock);
+  } = usePetDisplay(pet, worldClock, game.catRestedAt);
 
   const [requestedRoomCommand, setRequestedRoomCommand] = useState<{ roomId: HomeRoomId; command: RoomActivityCommand } | null>(null);
   const roomCommandSequence = useRef(0);
@@ -210,8 +210,8 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
     setRoomFailure(null);
   }, [roomFailure]);
 
-  const handleBedtime = useCallback((instanceId: string) => {
-    setRequestedRoomCommand({ roomId: 'bedroom', command: {
+  const handleBedtime = useCallback((roomId: HomeRoomId, instanceId: string) => {
+    setRequestedRoomCommand({ roomId, command: {
       id: ++roomCommandSequence.current, kind: 'bedSnuggle', instanceId, ambientPeriod: 'night',
     } });
   }, []);

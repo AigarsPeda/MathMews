@@ -16,6 +16,6 @@ export function getCatPlayActivity(id: string): CatPlayActivity | undefined {
 
 /** Placed-object play uses the same care reward as the matching cat action. */
 export function getRoomPlayHappinessBoost(kind: string, modelId?: string): number {
-  if (kind !== "toyPlay" && kind !== "mouseChase" && kind !== "plantPlay") return 0;
+  if (kind !== "toyPlay" && kind !== "mouseChase" && kind !== "plantPlay" && kind !== "scratchPost") return 0;
   return getCatPlayActivity(modelId?.startsWith("yarn") ? "yarn" : "ball")!.happinessBoost;
 }

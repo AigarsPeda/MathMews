@@ -22,7 +22,7 @@ const renderer = Reconciler({
   supportsMicrotasks: true, scheduleMicrotask: queueMicrotask,
 });
 
-async function harness() {
+async function harness(prepare = save => save) {
   const cache = new Map(), stored = new Map(), timers = new Map();
   let now = Date.now(), appStateListener;
   class ClockDate extends Date { static now() { return now; } }
@@ -73,7 +73,7 @@ async function harness() {
   }
   const initial = { ...load('@/utils/game-storage').createDefaultGameSave(), accountOwnerId: 'a', hasCompletedOnboarding: true,
     wallet: { coins: 100 }, walletAuthority: { user_id: 'a', environment: 'sandbox', balance: 100, revision: 1 } };
-  stored.set(load('@/types/save').GAME_SAVE_STORAGE_KEY, JSON.stringify(initial));
+  stored.set(load('@/types/save').GAME_SAVE_STORAGE_KEY, JSON.stringify(prepare(initial)));
   const api = load('@/contexts/GameProvider');
   function StateProbe() { value = api.useGame(); stateRenders++; return null; }
   function ActionProbe() { actions = (api.useGameActions ?? api.useGame)(); actionRenders++; return null; }
@@ -86,6 +86,13 @@ async function harness() {
     get value() { return value; }, get actions() { return actions; }, get save() { return cloud.getSave(); },
     get counts() { return { stateRenders, actionRenders, writes }; },
     async update(fn) { await act(async () => { fn(); }); if (errors.length) throw errors[0]; },
+    get storedSave() { return JSON.parse(stored.get(load('@/types/save').GAME_SAVE_STORAGE_KEY)); },
+    async appState(state) {
+      now += 1;
+      mocks['react-native'].AppState.currentState = state;
+      await act(async () => { appStateListener(state); });
+      if (errors.length) throw errors[0];
+    },
     async tickAfter(ms, resume = false) {
       now += ms;
       await act(async () => { if (resume) appStateListener('active'); else timers.get(60_000)(); });
@@ -117,6 +124,39 @@ test('care stats decay during idle ticks and catch up once on foreground resume'
     assert.equal(h.value.pet.stats, stats, 'Repeated active events cannot apply the absence twice');
     assert.equal(h.value.pet.stats.level, level);
   } finally { await h.close(); }
+});
+
+test('a closed app restores its cat in the last viewed room, including legacy saves', async () => {
+  const h = await harness(save => ({ ...save, pet: { ...save.pet, type: 'cat', homeRoomId: 'bathroom', catHomeRoomId: 'bedroom' } }));
+  let snapshot;
+  try {
+    assert.equal(h.value.pet.catHomeRoomId, 'bathroom', 'Cold launch repairs an old bedroom mismatch');
+    const firstSession = h.value.catRestedAt;
+    await h.update(() => h.actions.visitHomeRoom('kitchen'));
+    assert.equal(h.value.pet.catHomeRoomId, 'bathroom', 'Room browsing leaves the cat in place');
+    await h.appState('inactive'); await h.appState('active');
+    assert.equal(h.value.pet.catHomeRoomId, 'bathroom');
+    assert.equal(h.value.catRestedAt, firstSession, 'A temporary overlay keeps the running room session');
+    const beforeClose = h.counts.writes;
+    await h.appState('background');
+    await h.appState('background');
+    assert.equal(h.counts.writes, beforeClose + 1, 'The final room snapshot is queued once before suspension');
+    snapshot = h.storedSave;
+    assert.equal(snapshot.pet.homeRoomId, 'kitchen');
+    assert.equal(snapshot.pet.catHomeRoomId, 'kitchen');
+    assert.equal(snapshot.pet.isAsleep, true);
+    await h.appState('inactive'); await h.appState('active');
+    assert.ok(h.value.catRestedAt > firstSession);
+    assert.equal(h.value.pet.catHomeRoomId, 'kitchen');
+    assert.deepEqual(JSON.parse(JSON.stringify(h.value.pet.homeRooms)), snapshot.pet.homeRooms);
+    const returned = h.value.catRestedAt;
+    await h.appState('active'); assert.equal(h.value.catRestedAt, returned);
+  } finally { await h.close(); }
+  const restarted = await harness(() => snapshot);
+  try {
+    assert.equal(restarted.value.pet.homeRoomId, 'kitchen');
+    assert.equal(restarted.value.pet.catHomeRoomId, 'kitchen', 'The first room contains the cat after a process restart');
+  } finally { await restarted.close(); }
 });
 
 test('no-op game actions retain the save and do not render or persist', async () => {

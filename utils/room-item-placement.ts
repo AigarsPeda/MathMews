@@ -1,4 +1,5 @@
-import { FLOOR_Y, isSurfacePlaceable, placeObjectOnSurface, placeObjectOnRugs, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
+import { surfaceOutline } from '@/utils/room-support-surface';
+import { FLOOR_Y, hasRoomItemSupport, isLooseRoomToy, isSurfacePlaceable, placeObjectOnSurface, placeObjectOnRugs, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
 import type { RoomPoint } from '@/utils/room-activities';
 import { isCurtainDecorationId } from '@/constants/decoration-motion';
 import { isCatPetBedId } from '@/constants/cat-beds';
@@ -150,7 +151,7 @@ export function roomItemAtPoint(object: NativeRoomObject, point: RoomPoint, widt
   }
   const delta = desired.map((v, i) => v - center[i]);
   const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
-  return { ...object, supportId: undefined, rugLift: isSurfacePlaceable(object.modelId) ? undefined : object.rugLift,
+  return { ...object, supportId: undefined, movable: object.movable || isLooseRoomToy(object.modelId), rugLift: isSurfacePlaceable(object.modelId) ? undefined : object.rugLift,
     position: move(object.position), min: move(object.min), max: move(object.max),
     collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
 }
@@ -368,7 +369,8 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     const retained = new Set(world.objects.map(object => object.instanceId));
     for (const id of cache.keys()) if (!retained.has(id)) cache.delete(id);
   }
-  const obstacles = world.objects.filter(object => !ignored.has(object.instanceId)).map(object => {
+  const fixedObjects = world.objects.filter(object => !ignored.has(object.instanceId));
+  const obstacles = fixedObjects.map(object => {
     // These are exactly the inputs read by boxes/magnetBoxes. Keep the current
     // object separately so support, wall and other placement rules never go stale.
     const key = JSON.stringify([object.modelId, object.collidable, object.heading, object.scale, object.position]);
@@ -460,11 +462,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     return outsideRoom(after) <= outsideRoom(before) + .00001
       && collisions(after).every((hit, i) => hit.depth <= allowed[i].depth + .00001);
   };
-  const preservesSupport = (object: NativeRoomObject) => {
-    if (!object.supportId) return true;
-    const resting = placeObjectOnSurface({ ...object, supportId: undefined }, world.objects, world.width);
-    return resting.supportId === object.supportId && Math.abs(resting.position[1] - object.position[1]) < .00001;
-  };
+  const preservesSupport = (object: NativeRoomObject) => hasRoomItemSupport(object, world.objects);
   const objectSnapCandidates = (object: NativeRoomObject, zoom: number, snapGaps: boolean): NativeRoomObject[] => {
     if (isCurtainDecorationId(object.modelId)) return [];
     const footprint = roomItemFootprint(object);
@@ -643,33 +641,35 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     }
     return best;
   }
+  function unsupportedTarget(candidate: NativeRoomObject, point: RoomPoint) {
+    // A pointed-at board is an explicit surface intent. If the base cannot
+    // fit, keep the attempt invalid instead of silently dropping to the floor.
+    if (!candidate.supportId && isSurfacePlaceable(candidate.modelId)) {
+      for (const owner of fixedObjects) {
+        if (owner.instanceId === candidate.instanceId) continue;
+        for (const top of NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []) {
+          const corners = surfaceOutline(top)
+            .map(([x, z]) => projectWorld(rotate([x, top.max[1], z], owner.heading).map((v, i) => v * owner.scale + owner.position[i]) as Vec3, world.width));
+          const sides = corners.map((a, i) => { const b = corners[(i + 1) % corners.length]; return (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x); });
+          if (sides.every(value => value >= 0) || sides.every(value => value <= 0)) return owner.instanceId;
+        }
+      }
+    }
+  }
   return {
     canPlace,
     feedback,
     /** The visible candidate and release use the same snapping and geometry. */
-    preview(id: string, point: RoomPoint, zoom = 1, heldSnap?: NativeRoomObject, snapping = true) {
-      const original = world.objects.find(object => object.instanceId === id);
+    preview(id: string, point: RoomPoint, zoom = 1, heldSnap?: NativeRoomObject, snapping = true, pose?: NativeRoomObject) {
+      const original = pose ?? world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
-      const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
+      const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), fixedObjects, world.width, true);
       const anchor = heldSnap && roomItemAnchor(heldSnap, world.width);
       const candidate = snapping && heldSnap && anchor
-        && Math.hypot(anchor.x - point.x, anchor.y - point.y) * zoom <= OBJECT_SNAP_POINTS * 1.5 && canPlace(heldSnap)
+        && Math.hypot(anchor.x - point.x, anchor.y - point.y) * zoom <= OBJECT_SNAP_POINTS * 1.5 && (!pose || pose.heading === heldSnap.heading && pose.scale === heldSnap.scale) && canPlace(heldSnap)
         ? heldSnap : placeObjectOnRugs(snapping ? snapObject(moved, zoom) : moved, world.objects);
       const details = feedback(candidate);
-      // A pointed-at board is an explicit surface intent. If the base cannot
-      // fit, keep the attempt invalid instead of silently dropping to the floor.
-      if (!candidate.supportId && isSurfacePlaceable(candidate.modelId)) {
-        for (const owner of world.objects) {
-          if (owner.instanceId === id || ignoredIds.includes(owner.instanceId)) continue;
-          for (const top of NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []) {
-            const corners = [[top.min[0], top.min[2]], [top.max[0], top.min[2]], [top.max[0], top.max[2]], [top.min[0], top.max[2]]]
-              .map(([x, z]) => projectWorld(rotate([x, top.max[1], z], owner.heading).map((v, i) => v * owner.scale + owner.position[i]) as Vec3, world.width));
-            const sides = corners.map((a, i) => { const b = corners[(i + 1) % corners.length]; return (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x); });
-            if (sides.every(value => value >= 0) || sides.every(value => value <= 0)) { details.unsupportedSurfaceId = owner.instanceId; break; }
-          }
-          if (details.unsupportedSurfaceId) break;
-        }
-      }
+      details.unsupportedSurfaceId = unsupportedTarget(candidate, point);
       return { object: candidate, point: roomItemAnchor(candidate, world.width), feedback: details,
         accepted: !details.blockers.length && !details.boundaries.length && !details.unsupportedSurfaceId,
         snapped: candidate.position.some((value, i) => Math.abs(value - moved.position[i]) > .00001) };
@@ -713,7 +713,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     },
     /** A small turn near an edge may need a small positional correction. */
     rotate(before: NativeRoomObject, after: NativeRoomObject) {
-      if (canPlace(after)) return after;
+      if (preservesSupport(after) && canPlace(after)) return after;
       const footprint = roomItemFootprint(after);
       const floorContact = roomItemFloorContactFootprint(after);
       const shift = [0, 0, 0] as Vec3;
@@ -729,24 +729,25 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
         const point = projectWorld(candidate.position, world.width);
         return Math.hypot(point.x - zero.x, point.y - zero.y) <= OBJECT_SNAP_POINTS
           && preservesSupport(candidate) && canPlace(candidate);
-      }) ?? (outsideRoom(after) <= outsideRoom(before) + .00001
+      }) ?? (preservesSupport(after) && outsideRoom(after) <= outsideRoom(before) + .00001
         && collisions(after).every((hit, i) => hit.depth <= allowed[i].depth + .00001) ? after : undefined);
     },
     /** Drag previews follow the pointer freely; contact matters only at release. */
     move(id: string, point: RoomPoint) {
       const original = world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
-      const object = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
+      const object = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), fixedObjects, world.width, true);
       return { object, point: roomItemAnchor(object, world.width) };
     },
     /** An invalid drop returns to the saved pose without changing the room. */
     drop(id: string, point: RoomPoint, { zoom = 1, snapInsideWalls = true } = {}) {
       const original = world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
-      const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
+      const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), fixedObjects, world.width, true);
       const candidate = placeObjectOnRugs(snapObject(moved, zoom, snapInsideWalls), world.objects);
       const details = feedback(candidate);
-      const accepted = details.boundaries.length === 0 && details.blockers.length === 0;
+      details.unsupportedSurfaceId = unsupportedTarget(candidate, point);
+      const accepted = details.boundaries.length === 0 && details.blockers.length === 0 && !details.unsupportedSurfaceId;
       const object = accepted ? candidate : original;
       return { accepted, object, point: roomItemAnchor(object, world.width), feedback: accepted ? undefined : details };
     },

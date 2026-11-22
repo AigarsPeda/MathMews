@@ -3,8 +3,9 @@ import type { CatAnimationId } from "@/constants/cat-animation-clips";
 // New authored clips are immediately available to room activity steps.
 export type CatRoomAnimation = CatAnimationId;
 export type CatWalkAnimation = Extract<CatAnimationId, `walk${string}`>;
-export const ROOM_ONE_SHOT_CLIPS: readonly CatAnimationId[] = ["sniff", "lookUp", "wakeStretch", "curlUp", "restLoafEnter", "restCrescentEnter", "restSideEnter", "restLoafWake", "restCrescentWake", "restSideWake", "jumpOn", "jumpOff", "hop", "eating"];
+export const ROOM_ONE_SHOT_CLIPS: readonly CatAnimationId[] = ["knead", "scratchPost", "sniff", "lookUp", "wakeStretch", "curlUp", "restLoafEnter", "restCrescentEnter", "restSideEnter", "restLoafWake", "restCrescentWake", "restSideWake", "jumpOn", "jumpOff", "hop", "eating"];
 
+export const CAT_DAY_NAP_MS = 20_000;
 export const SOFA_JUMP_DURATION_MS = 900;
 export const CAT_WALK_CYCLES_PER_SECOND = 2.25;
 export const CAT_WALK_STRIDE_UNITS = 0.8;

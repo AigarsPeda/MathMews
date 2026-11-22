@@ -1,3 +1,11 @@
+import { NumberLineReveal } from '@/components/puzzle/NumberLineReveal';
+import type { HopRoute } from '@/utils/number-line-reveal';
+import { RatioReveal } from '@/components/puzzle/RatioReveal';
+import { PercentageReveal } from '@/components/puzzle/PercentageReveal';
+import type { PercentagePlan } from '@/utils/percentage-reveal';
+import { DecimalReveal } from '@/components/puzzle/DecimalReveal';
+import { FractionReveal } from '@/components/puzzle/FractionReveal';
+import type { FractionRevealPlan } from '@/utils/fraction-reveal';
 import { BridgeTask } from "@/components/puzzle/BridgeTask";
 import { PuzzleResponseTask } from '@/components/puzzle/PuzzleResponseTask';
 import type { ResponseValue } from '@/utils/puzzle-response';
@@ -53,6 +61,11 @@ import {
 } from "@/utils/puzzle-type";
 
 type PuzzleTaskViewProps = {
+  lineRoute?: HopRoute | null;
+  percentagePlan?: PercentagePlan | null;
+  fractionPlan?: FractionRevealPlan | null;
+  onSolutionShown?: () => void;
+  onUseHelp?: () => void;
   puzzle: Puzzle;
   responseValue?: ResponseValue;
   onResponseChange?: (value: ResponseValue) => void;
@@ -99,6 +112,7 @@ type PuzzleTaskViewProps = {
 };
 
 export function PuzzleTaskView({
+  lineRoute, percentagePlan, fractionPlan, onSolutionShown, onUseHelp,
   puzzle,
   responseValue = null, onResponseChange,
   bridge, onBridgeChange,
@@ -134,9 +148,14 @@ export function PuzzleTaskView({
   onSwapOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
-  if (puzzle.response && onResponseChange) return <PuzzleResponseTask puzzle={puzzle} value={responseValue} onChange={onResponseChange} answered={answered} incorrectAttempt={incorrectAttempt} isCorrect={isCorrect} />;
+  if (onSolutionShown && lineRoute) return <NumberLineReveal route={lineRoute} onSolutionShown={onSolutionShown} />;
+  if (onSolutionShown && puzzle.type === 'ratio_table') return <RatioReveal puzzle={puzzle} onSolutionShown={onSolutionShown} />;
+  if (onSolutionShown && percentagePlan) return <PercentageReveal plan={percentagePlan} onSolutionShown={onSolutionShown} />;
+  if (onSolutionShown && (puzzle.type === 'decimal_grid' || puzzle.type === 'decimal_place_value')) return <DecimalReveal puzzle={puzzle} onSolutionShown={onSolutionShown} />;
+  if (fractionPlan && onSolutionShown) return <FractionReveal plan={fractionPlan} onSolutionShown={onSolutionShown} />;
+  if (puzzle.response && onResponseChange) return <PuzzleResponseTask onSolutionShown={onSolutionShown} puzzle={puzzle} value={responseValue} onChange={onResponseChange} answered={answered} incorrectAttempt={incorrectAttempt} isCorrect={isCorrect} />;
   if (isBridgePuzzle(puzzle) && onBridgeChange) return <BridgeTask puzzle={puzzle} value={bridge ?? null} onChange={onBridgeChange} answered={answered} />;
-  if (puzzle.type === "geometry_measure") return <GeometryMeasureTask puzzle={puzzle} value={geometry} onChange={onGeometryChange} answered={answered} />;
+  if (puzzle.type === "geometry_measure") return <GeometryMeasureTask onSolutionShown={onSolutionShown} puzzle={puzzle} value={geometry} onChange={onGeometryChange} answered={answered} />;
   if (puzzle.type === "decimal_grid") return <DecimalGridTask puzzle={puzzle} value={decimalGrid} onChange={onDecimalGridChange} answered={answered} />;
   if (puzzle.type === "decimal_place_value") return <DecimalPlaceValueTask puzzle={puzzle} value={decimalPlace} onChange={onDecimalPlaceChange} answered={answered} />;
   if (puzzle.type === "fraction_number_line") return <FractionNumberLineTask puzzle={puzzle} value={numberLineValue} onChange={onSelectNumberLineValue} answered={answered} />;
@@ -262,6 +281,7 @@ export function PuzzleTaskView({
   if (balancePuzzle) {
     return (
       <BalanceTask
+        onSolutionShown={onSolutionShown}
         puzzle={balancePuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -305,6 +325,7 @@ export function PuzzleTaskView({
     return (
       <FairShareTask
         puzzle={fairSharePuzzle}
+        onUseHelp={onUseHelp}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
@@ -375,6 +396,7 @@ export function PuzzleTaskView({
 
   return (
     <MultipleChoiceTask
+      onSolutionShown={onSolutionShown}
       puzzle={multipleChoicePuzzle}
       selectedIndex={selectedIndex}
       incorrectAttempt={incorrectAttempt}

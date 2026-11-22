@@ -109,6 +109,27 @@ def window_area_lightmap(objects):
   material.node_tree.links.new(texture.outputs['Color'],shader.inputs['Emission Color'])
   shader.inputs['Emission Strength'].default_value=1
  bpy.data.objects.remove(light,do_unlink=True)
+def animate_meal_bowl(objects,root):
+ pieces=scope['bowl_kibble'](0,.183)
+ for piece in pieces:piece.parent=root
+ objects.extend(pieces)
+ parts=[obj for obj in objects if obj!=root]
+ count,fps=scope['CAT_CLIPS']['eating']
+ frames=round(count/fps*24)
+ scene=bpy.context.scene
+ scene.render.fps=24
+ scene.frame_start,scene.frame_end=1,frames+1
+ for frame in range(frames+1):
+  t=frame/frames
+  scope['pose_bowl'](parts,0,scope['care_action_time']('eating',t),scope['smoothstep']((t-.875)/.125))
+  for obj in parts:
+   for prop in ('location','rotation_euler','scale'):obj.keyframe_insert(data_path=prop,frame=frame+1)
+ for obj in parts:
+  action=obj.animation_data.action
+  track=obj.animation_data.nla_tracks.new();track.name='Eating'
+  track.strips.new('Eating',1,action);obj.animation_data.action=None
+ scene.frame_set(1)
+
 def items():
  selected=[a.split('=',1)[1] for a in ARGS if a.startswith('--id=')]
  existing_metadata=json.loads((OUT/'catalog.json').read_text()) if (OUT/'catalog.json').exists() else {}
@@ -168,7 +189,9 @@ def items():
    for o in objects:
     if o.animation_data and o.animation_data.action:
      action=o.animation_data.action;action.name=id+' motion';track=o.animation_data.nla_tracks.new();track.name='Motion';track.strips.new('Motion',1,action);o.animation_data.action=None
-  export(OUT/(id+'.glb'),objects,animated)
+  meal_bowl=id in ('bowlTan','bowlBlue','bowlPurple','bowlPink')
+  if meal_bowl:animate_meal_bowl(objects,root)
+  export(OUT/(id+'.glb'),objects,animated or meal_bowl)
   def yup(v):return [v[0],v[2],-v[1]]
   metadata[id]={'kind':kind,'renderScale':render_scale,'center':yup(center),'min':[lo[0],lo[2],-hi[1]],'max':[hi[0],hi[2],-lo[1]],'animated':animated,'wind':wind}
   if interaction_parts:metadata[id]['interactionParts']=interaction_parts
@@ -256,19 +279,8 @@ def food_spill():
  for frame in range(frames+1):
   t=frame/frames
   contact_time=scope['care_action_time']('eating',t)
-  for i,piece in enumerate(pieces):
-   # Three pieces are displaced as the lowered muzzle first touches food;
-   # smaller spills follow each munch. Arcs clear the rim and bounce once.
-   born=.17+max(0,i-2)*.07
-   flight=max(0,min(1,(contact_time-born)/.12))
-   angle=(-2.7,-.4,-1.6,-2.3,-.8,-2.9,-1.2,-.15)[i]
-   radius=.24+(.25+.025*(i%3))*flight
-   bounce=math.sin(math.pi*max(0,min(1,(contact_time-born-.12)/.10)))
-   z=.193*(1-flight)+.035*flight+1.16*flight*(1-flight)+.06*bounce
-   appear=scope['smoothstep']((contact_time-born)/.012)
-   piece.location=(radius*math.cos(angle),radius*math.sin(angle),z)
-   piece.scale=(.045*appear,.037*appear,.03*appear)
-   piece.rotation_euler=(flight*2.4,flight*3.1,angle)
+  scope['pose_eating_food'](pieces,contact_time,center_y=0)
+  for piece in pieces:
    piece.scale*=1-scope['smoothstep']((t-.875)/.125)
    for prop in ('location','rotation_euler','scale'):piece.keyframe_insert(data_path=prop,frame=frame+1)
  for piece in pieces:
@@ -297,14 +309,23 @@ def feeding_effects():
   export(OUT/(id+'-eating-effect.glb'),[root,*pieces],True)
   print('FEEDING_EFFECT',id,flush=True)
 
+def guided_feather():
+ clear()
+ root=scope['play_props']('featherChase')
+ export(OUT/'guided-feather.glb',[root,*root.children_recursive])
+
 def cats():
+ guided_feather()
  from game_cat import export_cats
  export_cats(scope,ARGS,export)
  import runpy
  renderer=runpy.run_path(str(ROOT/'scripts/3d/render-native-branding.py'))
  renderer['regenerate'](renderer['selected_skins'](ARGS))
-if '--food-spill' in ARGS:food_spill()
-if '--feeding-effects' in ARGS:feeding_effects()
-if '--cats' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:items()
-if '--items' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:
- cats()
+if '--guided-feather' in ARGS:
+ guided_feather()
+else:
+ if '--food-spill' in ARGS:food_spill()
+ if '--feeding-effects' in ARGS:feeding_effects()
+ if '--cats' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:items()
+ if '--items' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:
+  cats()

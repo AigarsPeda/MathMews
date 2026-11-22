@@ -1,5 +1,6 @@
 import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
+import { CookieSharingBoard } from "@/components/puzzle/CookieSharingBoard";
 import { QuantityTaskScene } from "@/components/puzzle/QuantityTaskScene";
 import type { FairSharePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
@@ -11,6 +12,7 @@ type FairShareTaskProps = {
   isCorrect: boolean;
   answered: boolean;
   incorrectAttempt?: boolean;
+  onUseHelp?: () => void;
   onSelect: (index: number) => void;
 };
 
@@ -20,6 +22,7 @@ export function FairShareTask({
   isCorrect,
   answered,
   incorrectAttempt = false,
+  onUseHelp,
   onSelect,
 }: FairShareTaskProps) {
   const { items, people, choices } = puzzle.payload;
@@ -30,7 +33,9 @@ export function FairShareTask({
 
   return (
     <View style={styles.wrap}>
-      <QuantityTaskScene key={puzzle.id} model={{ kind: "share", items, groups: people, object: puzzle.payload.object }} disabled={answered} showExpression={false} />
+      {puzzle.payload.object === "cookie"
+        ? <CookieSharingBoard onUseHelp={onUseHelp} key={puzzle.id} items={items} plates={people} disabled={answered} />
+        : <QuantityTaskScene key={puzzle.id} model={{ kind: "share", items, groups: people, object: puzzle.payload.object }} disabled={answered} showExpression={false} />}
 
       <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
         {choices.map((choice, index) => {

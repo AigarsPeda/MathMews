@@ -60,10 +60,10 @@ for frame in range(72):
     t = frame/71
     scope['pose_eating_food'](pieces, t)
     for i, piece in enumerate(pieces):
-        born = .18+i*.065
+        born = scope['BITE_CONTACTS'][i//3]+.006*(i%3)
         if t <= born:
             assert piece.scale.length == 0, 'Food must not appear before its munch beat'
-        if t >= born+.18:
+        if t >= born+.145:
             distance = math.hypot(piece.location.x, piece.location.y+.85)
             assert distance > .40, 'Spills must land outside the bowl'
             assert piece.location.z-piece.scale.z >= 0, 'Spills must stay above the floor'

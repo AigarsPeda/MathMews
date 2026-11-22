@@ -1,4 +1,4 @@
-import { BalanceScale } from '@/components/puzzle/BalanceScale';
+import { BalanceModel } from '@/components/puzzle/BalanceModel';
 import { BridgeTask } from '@/components/puzzle/BridgeTask';
 import { EverydayDiagram } from '@/components/puzzle/EverydayDiagram';
 import { FractionPieChart } from '@/components/puzzle/FractionPieChart';
@@ -22,22 +22,31 @@ import { Pressable, StyleSheet, View } from 'react-native';
 const ignore = () => {};
 
 /** Show the alternate question's givens without the original answer controls. */
-export function PuzzleResponseModel({ puzzle }: { puzzle: Puzzle }) {
+export function PuzzleResponseModel({ puzzle, value = null, checked = false, onSolutionShown }: {
+  puzzle: Puzzle; value?: ResponseValue; checked?: boolean; onSolutionShown?: () => void;
+}) {
   if (puzzle.type === 'multiple_choice' || !puzzle.type) return <>
-    {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} /> : null}
-    {puzzle.taskVisual ? <QuantityTaskScene model={puzzle.taskVisual} disabled showExpression={puzzle.difficulty !== 'hard'} /> : null}
+    {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} onSolutionShown={onSolutionShown} /> : null}
+    {puzzle.taskVisual ? <QuantityTaskScene onSolutionShown={onSolutionShown} model={puzzle.taskVisual} disabled showExpression={puzzle.difficulty !== 'hard'} /> : null}
   </>;
   if (isBridgePuzzle(puzzle)) {
     const model = puzzle.type === 'coordinate_map' && puzzle.payload.mode === 'plot'
       ? { ...puzzle, payload: { ...puzzle.payload, mode: 'translate' as const, start: puzzle.payload.end, end: { x: puzzle.payload.end.x === puzzle.payload.max ? -1 : 1, y: 0 } } } : puzzle;
     return <BridgeTask puzzle={model} value={null} onChange={ignore} answered readOnly />;
   }
-  if (puzzle.type === 'geometry_measure') return <GeometryMeasureTask puzzle={puzzle} value={null} onChange={ignore} answered readOnly />;
+  if (puzzle.type === 'geometry_measure') return <GeometryMeasureTask onSolutionShown={onSolutionShown} puzzle={puzzle} value={null} onChange={ignore} answered readOnly />;
   if (puzzle.type === 'number_line') return <>
     <Text style={styles.expression}>{puzzle.payload.start} {puzzle.payload.jump < 0 ? '−' : '+'} {Math.abs(puzzle.payload.jump)} = ?</Text>
     <NumberLineTrack min={puzzle.payload.min} max={puzzle.payload.max} start={puzzle.payload.start} value={puzzle.payload.start} disabled />
   </>;
-  if (puzzle.type === 'balance') return <BalanceScale left={<Text style={styles.expression}>{puzzle.payload.leftDisplay}</Text>} right={<Text style={styles.expression}>{puzzle.payload.rightValue}</Text>} />;
+  if (puzzle.type === 'balance') {
+    const response = puzzle.response;
+    let choice: string | null = null;
+    if (response?.kind === 'choose' && value !== null) choice = response.options[Number(value)] ?? null;
+    if (checked && response?.kind === 'judge') choice = response.proposed;
+    if (checked && response?.kind === 'write' && typeof value === 'string') choice = value;
+    return <BalanceModel model={puzzle.payload} choice={choice} checked={checked} onSolutionShown={onSolutionShown} />;
+  }
   if (puzzle.type === 'true_false') return <Text style={styles.expression}>{puzzle.payload.statement.split('=')[0].trim()} = ?</Text>;
   if (puzzle.type === 'fix_mistake') return <View style={styles.facts}>{puzzle.payload.wrongWork.map((s, i) => <Text key={i} style={styles.expression}>{s}</Text>)}</View>;
   if (puzzle.type === 'pair_sum') return <View style={styles.tiles}>{puzzle.payload.numbers.map((n, i) => <Text key={i} style={styles.tile}>{n}</Text>)}</View>;
@@ -73,8 +82,8 @@ export function PuzzleResponseModel({ puzzle }: { puzzle: Puzzle }) {
   return null;
 }
 
-type Props = { puzzle: Puzzle; value: ResponseValue; onChange: (value: ResponseValue) => void; answered: boolean; incorrectAttempt?: boolean; isCorrect: boolean };
-export function PuzzleResponseTask({ puzzle, value, onChange, answered, incorrectAttempt = false, isCorrect }: Props) {
+type Props = { onSolutionShown?: () => void; puzzle: Puzzle; value: ResponseValue; onChange: (value: ResponseValue) => void; answered: boolean; incorrectAttempt?: boolean; isCorrect: boolean };
+export function PuzzleResponseTask({ onSolutionShown, puzzle, value, onChange, answered, incorrectAttempt = false, isCorrect }: Props) {
   const { t, i18n } = useTranslation();
   const response = puzzle.response;
   if (!response) return null;
@@ -83,7 +92,7 @@ export function PuzzleResponseTask({ puzzle, value, onChange, answered, incorrec
   const disabled = answered;
   const change = (next: ResponseValue) => { if (!disabled) onChange(next); };
   return <View style={styles.wrap} testID="puzzle-response">
-    <PuzzleResponseModel puzzle={puzzle} />
+    <PuzzleResponseModel puzzle={puzzle} value={value} checked={answered || incorrectAttempt} onSolutionShown={onSolutionShown} />
     {response.kind === 'choose' ? <MultipleChoiceTask puzzle={{ ...puzzle, type: 'multiple_choice', choices: response.options, correctIndex: response.correctIndex, taskVisual: undefined, ...('everyday' in puzzle ? { everyday: undefined } : {}) }} selectedIndex={typeof value === 'string' && value !== '' ? Number(value) : null} onSelect={index => change(String(index))} answered={answered} incorrectAttempt={incorrectAttempt} isCorrect={isCorrect} />
       : response.kind === 'judge' ? <View style={styles.wrap}>
         <Text style={styles.instruction}>{t('activityMix.judge')}</Text>

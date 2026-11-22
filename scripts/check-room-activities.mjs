@@ -124,12 +124,13 @@ let meals = 0;
 let bites = 0;
 let fullness = 75, fed = 0;
 const activityCompletions = [];
+let releaseBall;
 let interaction = 1, enabled = true, roomVisible = true, hookRoom = mouseRoom;
 function render() {
   index = 0; effects = [];
   // The VM supplies a dependency-aware hook dispatcher instead of mounting React.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const result = useRoomActivity(hookRoom, fullness, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), (finished, amount) => { bites++; fed += amount; if (finished) meals++; }, id => roomArrivals.push(id), roomVisible, false, undefined, (kind,id) => activityCompletions.push({kind,id}));
+  const result = useRoomActivity(hookRoom, fullness, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), (finished, amount) => { bites++; fed += amount; if (finished) meals++; }, id => roomArrivals.push(id), roomVisible, false, undefined, (kind,id) => activityCompletions.push({kind,id}), undefined, releaseBall);
   effects.forEach(fn => fn()); return result;
 }
 assert.equal(render().activity, null);
@@ -443,7 +444,10 @@ for (const reduced of [false, true]) {
       hookRoom = { ...hookRoom, hungry: bite === 1, asleep: false }; render();
     }
   }
-  advance(reduced ? 600 : plan.steps[2].durationMs); render();
+  for (const step of plan.steps.slice(2)) {
+    assert.ok(step.animation === 'wash' || step.returnHome);
+    advance(reduced ? 600 : step.durationMs); render();
+  }
   assert.equal(meals, before + 1, 'Completing the meal feeds exactly once');
   assert.equal(render().activity, null);
   advance(60000); render(); assert.equal(meals, before + 1);
@@ -672,7 +676,9 @@ hookRoom = { ...hookRoom, hungry: false }; render();
 assert.equal(render().activity.plan.kind, 'bowlEat', 'Stat updates keep the active command');
 assert.ok(Math.abs(render().activity.plan.steps[activeMeal.stepIndex].native.elapsed - 1.2) < 1e-6, 'An unrelated update preserves the animation clock');
 reportCat(eating.native.path.at(-1)); advance(eating.durationMs - 1200);
-assert.equal(render().activity.plan.steps[render().activity.stepIndex].returnHome, true, 'The meal finishes at its original deadline');
+assert.equal(render().mealProgress, null, 'The meal finishes at its original deadline');
+if (render().activity.plan.steps[render().activity.stepIndex].animation === 'wash') completeDynamicStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].returnHome, true);
 
 beginDynamicMeal();
 const beforeRemovingFood = meals;
@@ -788,7 +794,10 @@ enabled = false; render(); advance(0);
 hookRoom = { ...furnished, nativeWorld: nativeRoom.buildNativeRoomWorld(furnished) };
 reportCat(hookRoom.nativeWorld.home);
 enabled = true; render(); render().startActivity('sofaSleep'); render(); advance(0);
-for (let i = 0; i < 3; i++) completeDynamicStep();
+for (const step of render().activity.plan.steps) {
+  if (step.hold) break;
+  completeDynamicStep();
+}
 const napIndex = render().activity.stepIndex;
 assert.equal(render().activity.plan.steps[napIndex].animation, 'curlSleep');
 const restingPosition = [petX.get(), petY.get()];
@@ -833,7 +842,7 @@ for (const reduced of [false, true]) {
   for (let i = 0; render().activity && i < 10; i++) {
     const state = render().activity, step = state.plan.steps[state.stepIndex];
     animations.push(reduced ? step.mood : step.animation);
-    assert.equal(meals, before + (step.returnHome ? 1 : 0), 'Feeding finishes at the bowl, not after the walk home');
+    assert.equal(meals, before + (state.stepIndex > state.plan.steps.findLastIndex(s => s.mood === 'eating') ? 1 : 0), 'Feeding finishes at the bowl, not after the walk home');
     if (step.animation === 'eating') {
       const bowl = hookRoom.nativeWorld.objects.find(o => o.instanceId === 'left-bowl');
       const arrived = step.native.path[0];
@@ -1376,6 +1385,7 @@ assert.equal(nativeRoom.prepareNativeStep(blockedNap,blockedNap.steps[0],nativeR
 for(const flipped of [false,true])for(const counter of [false,true]) {
   const options=windowKitchen(flipped,counter),{plan,step,position}=prepareKitchenPlan(options,'windowWatch');
   assert.equal(step.animation,'blinkSit');assert.ok(Number.isFinite(step.native.heading));
+  assert.equal(step.native.watchingWindow, 'kitchen-target');
   assert.equal(Boolean(plan.sofaApproach),counter,'A clear countertop is used instead of the sill; absent counters use the floor');
   assert.equal(step.targetInstanceId,counter?'counter':undefined);
   assert.ok(counter?position[1]>nativeRoom.FLOOR_Y+.2:position[1]===nativeRoom.FLOOR_Y);
@@ -1987,6 +1997,10 @@ for (const mode of [{ native: true }, { native: false }, { reduced: true }, { na
       assert.notEqual(roomActivityStepKey(render().activity), key);
       if (helping < helpings - 1) assertMealProgress((helping + 1) * 5, total);
     }
+    if (render().activity.plan.steps[render().activity.stepIndex].animation === 'wash') {
+      assert.equal(render().mealProgress, null);
+      finishMealStep();
+    }
     assert.equal(render().activity.plan.steps[render().activity.stepIndex].returnHome, true);
     assert.equal(render().mealProgress, null);
     finishMealStep();
@@ -2062,3 +2076,102 @@ for (const mode of [{ native: true }, { native: false }, { reduced: true }, { hi
   assert.equal(meals, before.meals + 1);
 }
 console.log('Verified second-helping bowl relocation preserves the total and schedules only remaining helpings in native/timer/hidden/Reduce Motion modes.');
+
+for (const mode of ['native','interrupted','afterContact','miss','simple','reduced']) {
+  slots.forEach(value => value?.cleanup?.()); slots.length = 0; timers.clear();
+  visibility = { active: true, reduceMotion: mode === 'reduced' }; roomVisible = true; enabled = true;
+  const layout = { ...room, width: 390, height: 420, sizeScale: 1.15, petSize: 48,
+    homeOffset: { x: 0, y: .12 }, hungry: false, asleep: false,
+    decorations: [{ instanceId: 'seat', decorationId: 'sofaA', offset: { x: 0, y: 0 }, scale: 1.3 }],
+    toys: [{ instanceId: 'ball', toyId: 'blueBall', scale: .7, offset: { x: .3, y: .3 } }] };
+  const [owner, toy] = nativeRoom.buildNativeRoomWorld(layout).objects;
+  const top = nativeRoom.NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces[0];
+  layout.toys[0].support = { parentId: 'seat', heading: 0, position: [
+    (top.min[0]+top.max[0])/2,top.max[1]+(.002-nativeRoom.NATIVE_MODEL_CATALOG[toy.modelId].min[1]*toy.scale)/owner.scale,
+    (top.min[2]+top.max[2])/2] };
+  hookRoom = { ...layout, nativeWorld: nativeRoom.buildNativeRoomWorld(layout), nativeStepCompletion: mode !== 'simple' };
+  let releases = 0;
+  releaseBall = () => { releases++; return true; };
+  render(); reportCat(hookRoom.nativeWorld.home); render();
+  render().startActivity('toyPlay','ball'); render(); advance(0); render();
+  finishMealStep(); finishMealStep();
+  const activity = render().activity, key = roomActivityStepKey(activity), swat = activity.plan.steps[activity.stepIndex];
+  assert.ok(swat.sofaBallRoll,mode);
+  assert.equal(releases,0);
+  assert.equal(render().releaseSofaBall('stale',swat.sofaBallRoll),false);
+  if (mode === 'interrupted') {
+    render().returnHome(); render(); advance(0); render();
+    assert.equal(render().releaseSofaBall(key,swat.sofaBallRoll),false);
+    assert.equal(releases,0);
+    assert.equal(render().activity.plan.steps[0].animation,'jumpOff');
+    continue;
+  }
+  if (mode === 'native' || mode === 'afterContact') {
+    assert.equal(render().releaseSofaBall(key,swat.sofaBallRoll),true);
+    assert.equal(render().releaseSofaBall(key,swat.sofaBallRoll),false);
+  }
+  if (mode === 'afterContact') {
+    render().returnHome(); render(); advance(0); render();
+    assert.equal(render().activity.plan.steps[0].animation, 'jumpOff');
+    assert.equal(render().releaseSofaBall(key, swat.sofaBallRoll), false);
+    assert.equal(releases, 1, 'Interrupting after contact preserves the single committed landing');
+    continue;
+  }
+  finishMealStep();
+  assert.equal(releases,mode === 'miss' ? 0 : 1,mode);
+  assert.equal(render().activity.stepIndex,3,'Dismount after the swat');
+  finishMealStep();
+  const after = render().activity;
+  assert.equal(!!after.plan.steps[after.stepIndex].chaseReleasedBall,mode !== 'miss',mode);
+}
+console.log('Verified single-release sofa play, interrupted and missed swats, dismounts, floor chases, simple graphics and Reduce Motion.');
+
+// A post keeps its hanging-toy game as well as direct, planted rope scratching.
+{
+  const post = { toyId: 'scratchPostGreen', instanceId: 'sisal', offset: { x: 0, y: 0 }, scale: 1.5 };
+  const options = { ...room, width: 390, height: 420, petSize: 48, sizeScale: 1.15,
+    toys: [post], decorations: [], homeOffset: { x: -.35, y: .12 } };
+  const world = nativeRoom.buildNativeRoomWorld(options);
+  const commands = load('@/constants/room-commands').getRoomCommands({ ...post, kind: 'toy' });
+  assert.deepEqual(Array.from(commands, command => command.kind), ['toyPlay', 'scratchPost']);
+  const scratch = buildRoomActivity({ ...options, nativeWorld: world }, 0, 'scratchPost', post.instanceId);
+  const approach = nativeRoom.prepareNativeStep(scratch, scratch.steps[0], nativeRoom.catScreenPoint(world.home,world), world, nativeRoom.FLOOR_Y);
+  assert.equal(approach.native.blocked, false);
+  scratch.steps[0] = approach;
+  const contact = nativeRoom.prepareNativeStep(scratch, scratch.steps[1], approach.position, world, nativeRoom.FLOOR_Y);
+  assert.equal(contact.animation, 'scratchPost');
+  assert.ok(contact.native.scratchingPost.radius > 0 && contact.native.scratchingPost.top > world.home[1]);
+  assert.equal(contact.native.treePlay, false);
+  assert.ok(buildRoomActivity({ ...options, nativeWorld: world }, 0, 'toyPlay', post.instanceId).steps.some(s => s.animation === 'batToy'));
+  assert.equal(buildRoomActivity({ ...options, nativeWorld: world }, 0, 'scratchPost', 'missing'), null);
+
+  const groom = buildRoomActivity(mealRoom, 1, 'bowlEat', foodBowl.instanceId, { bites: 0, total: 12 });
+  assert.equal(groom.steps.filter(step => step.animation === 'wash').length, 1);
+  assert.equal(groom.steps.at(-3).animation, 'eating');
+  assert.equal(groom.steps.at(-2).animation, 'wash');
+  assert.ok(groom.steps.at(-1).returnHome);
+  const kneading = buildRoomActivity(napRoom, 1, 'bedSleep', 'bed');
+  assert.equal(kneading.steps.findIndex(s => s.animation === 'knead')+1,kneading.steps.findIndex(s => s.animation === 'curlUp'));
+  assert.ok(!buildRoomActivity(chairOptions,1,'sofaSleep','rocker').steps.some(s => s.animation === 'knead'));
+}
+console.log('Verified post contact and independent batting, one post-meal groom, and kneading on a soft bed.');
+
+{
+  const { followFeather } = load('@/utils/guided-feather');
+  const cat = [0,nativeRoom.FLOOR_Y,0], heading = Math.PI/4, scale = .4, width = 390;
+  const close = nativeRoom.projectWorld([.76*scale*Math.SQRT1_2,cat[1]+.25*scale,.76*scale*Math.SQRT1_2],width);
+  for (const fps of [30,60,120]) {
+    let pose = followFeather({x: close.x-40,y:close.y},cat,heading,scale,width,1/fps);
+    pose = followFeather(close,cat,heading,scale,width,1/fps,pose);
+    assert.ok(pose.swat > 0 && !pose.pin);
+    const flick = followFeather({ x: close.x + 170, y: close.y - 140 },cat,heading,scale,width,1/fps,pose);
+    assert.deepEqual(flick.strike, pose.target, 'The paw finishes its reachable strike when the feather moves out of reach');
+    for (let i=0;i<fps/2;i++) pose = followFeather(close,cat,heading,scale,width,1/fps,pose);
+    assert.equal(pose.pin,true);
+    const screen = nativeRoom.projectWorld(pose.target,width);
+    assert.ok(Math.hypot(close.x-screen.x,close.y-screen.y)<1e-6);
+    pose = followFeather({ x: close.x+65, y: close.y-25 },cat,heading,scale,width,1/fps,pose);
+    assert.equal(pose.pin,false);
+  }
+}
+console.log('Verified feather swats on a quick pass, pins on a reachable hold, and releases at 30/60/120 FPS.');

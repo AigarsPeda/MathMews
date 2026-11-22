@@ -1,3 +1,4 @@
+import { countingCadence } from '@/utils/puzzle-motion';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { DiagramColors, PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
@@ -5,7 +6,7 @@ import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 
 type NumberLineTrackProps = {
   min: number;
@@ -59,7 +60,7 @@ export function NumberLineTrack({
     } else {
       const steps = Math.max(1, Math.round(Math.abs(targetX - position.value) / spacing));
       const duration = steps === 1 ? 600 : Math.min(1800, steps * 400);
-      const timing = steps === 1 ? { duration } : { duration, easing: Easing.linear };
+      const timing = steps === 1 ? { duration } : { duration, easing: countingCadence };
       // Preserve the visible height if another number is tapped mid-hop.
       bounce.value %= 1;
       bounce.value = withTiming(steps, timing);

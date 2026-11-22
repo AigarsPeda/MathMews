@@ -1,3 +1,6 @@
+import { lineValue, numberLineRoute } from '@/utils/number-line-reveal';
+import { percentageRevealPlan } from '@/utils/percentage-reveal';
+import { fractionRevealPlan } from '@/utils/fraction-reveal';
 import { getCatPlanReward } from "@/constants/cat-plan-rewards";
 import type { BridgeState } from "@/utils/bridge-models";
 import type { ResponseValue } from '@/utils/puzzle-response';
@@ -49,6 +52,7 @@ import {
   getOperatorSlotCount,
   getPuzzleType,
 } from "@/utils/puzzle-type";
+import { hasCountingAnimation } from "@/utils/puzzle-counting";
 import { moderateScale } from "@/utils/scale";
 import { getTimedRunReward, isChallengeOpen } from "@/utils/timed-challenge";
 import * as Haptics from "expo-haptics";
@@ -161,8 +165,9 @@ function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam, replaySes
 
 export type PuzzleLayoutMeasurement = { puzzleId: string; viewportHeight: number; contentHeight: number };
 
-export function PlaySession({ session, replaySession = false, onLayoutMeasured }: {
+export function PlaySession({ session, replaySession = false, onLayoutMeasured, preview }: {
   session: LearningSession; replaySession?: boolean;
+  preview?: { onExit: () => void; onRepeat: () => void; onNext: () => void };
   /** Native layout review only; observing does not change the screen or player state. */
   onLayoutMeasured?: (measurement: PuzzleLayoutMeasurement) => void;
 }) {
@@ -201,6 +206,24 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
     (MathOperator | null)[]
   >(() => createEmptyOperators(puzzle));
   const [answered, setAnswered] = useState(false);
+  const [solutionShown, setSolutionShown] = useState(false);
+  const [openResult, setOpenResult] = useState(false);
+  const markSolutionShown = useCallback(() => setSolutionShown(true), []);
+  const [fractionStrip, setFractionStrip] = useState<FractionStripState | null>(null);
+  const [fractionSelectedSlices, setFractionSelectedSlices] = useState<number[]>([]);
+  const [challengeAnswer, setChallengeAnswer] = useState<ChallengeAnswer | null>(null);
+  const lineRoute = useMemo(() => numberLineRoute(puzzle), [puzzle]);
+  const percentagePlan = useMemo(() => percentageRevealPlan(puzzle, challengeAnswer), [puzzle, challengeAnswer]);
+  const fractionPlan = useMemo(() => fractionRevealPlan(puzzle, fractionStrip, fractionSelectedSlices), [puzzle, fractionStrip, fractionSelectedSlices]);
+  const diagramKind = 'everyday' in puzzle ? puzzle.everyday?.model.kind : undefined;
+  const holdDiagramResult = !!lineRoute || puzzle.type === 'ratio_table' || !!percentagePlan || !!fractionPlan || puzzle.type === 'decimal_grid' || puzzle.type === 'decimal_place_value' || puzzle.type === 'geometry_measure' || ['bars', 'money', 'shapes', 'grid', 'solid'].some(kind => kind === diagramKind);
+  const visualSolution = puzzle.type === 'balance' || diagramKind === 'clock' || diagramKind === 'capacity' || holdDiagramResult || ('taskVisual' in puzzle && !!puzzle.taskVisual && hasCountingAnimation(puzzle.taskVisual));
+  const showingSolution = answered && visualSolution && !openResult;
+  useEffect(() => {
+    if (!showingSolution || !solutionShown) return;
+    const timer = setTimeout(() => setOpenResult(true), holdDiagramResult ? 1600 : 850);
+    return () => clearTimeout(timer);
+  }, [holdDiagramResult, showingSolution, solutionShown, puzzle.id]);
   const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
   const [editingRetry, setEditingRetry] = useState(false);
   const taskScroll = useRef<ScrollView>(null);
@@ -218,10 +241,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   const [geometry, setGeometry] = useState<number | null>(null);
   const [decimalGrid, setDecimalGrid] = useState<number | null>(null);
   const [decimalPlace, setDecimalPlace] = useState<DecimalPlaceState | null>(null);
-  const [fractionStrip, setFractionStrip] = useState<FractionStripState | null>(null);
   const [placeValue, setPlaceValue] = useState<PlaceValueState | null>(null);
-  const [challengeAnswer, setChallengeAnswer] = useState<ChallengeAnswer | null>(null);
-  const [fractionSelectedSlices, setFractionSelectedSlices] = useState<number[]>([]);
   const fractionPieces = fractionSelectedSlices.length;
   const [pairIndices, setPairIndices] = useState<number[]>([]);
   const [numberOrder, setNumberOrder] = useState<number[]>(() =>
@@ -255,7 +275,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(nextPuzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
-    setLastAttempt(null); setEditingRetry(false); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
+    setLastAttempt(null); setEditingRetry(false); setRetryCount(0); setIsDraggingTile(false); setSolutionShown(false); setOpenResult(false); setAnswered(false); setIsCorrect(false);
     setCoinsEarned(0); setShowVisualHelp(false); setShowLives(false);
   }
   useEffect(() => {
@@ -284,7 +304,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(puzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
-    setLastAttempt(null); setEditingRetry(false); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
+    setLastAttempt(null); setEditingRetry(false); setRetryCount(0); setIsDraggingTile(false); setSolutionShown(false); setOpenResult(false); setAnswered(false); setIsCorrect(false);
     submittedAnswer.current = null; matchingAttempt.current = null;
     attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }, [beginChallenge, level.id, puzzle, recordInteraction, challengeMode]);
@@ -305,6 +325,15 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   }), [puzzle, responseValue, bridge, geometry, decimalGrid, decimalPlace, fractionStrip, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
   const draftKey = JSON.stringify(draftAnswer);
   const offerRetry = !answered && hasLives && !!lastAttempt && draftKey === lastAttempt.key && !editingRetry;
+  let displayQuestion = puzzle.response?.prompt ?? puzzle.question;
+  if (answered && lineRoute && !lineRoute.divisions) {
+    const start = lineRoute.stops[0];
+    const distance = lineRoute.stops[lineRoute.stops.length - 1] - start;
+    displayQuestion = t('puzzleTypes.numberLinePrompt', {
+      start: lineValue(start),
+      jump: t(distance < 0 ? 'puzzleTypes.jumpBack' : 'puzzleTypes.jumpForward', { count: Math.abs(distance) }),
+    });
+  }
   const canCheck = hasLives && challengePlayable && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
   const progressSteps = lesson.levels.map((item, index) => replaySession ? index < position.current - 1 || answered && index === position.current - 1
     : item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id));
@@ -324,13 +353,17 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
       replay: next.replay ? "1" : undefined } } : undefined;
   }, [difficulty, isCorrect, lessonFinished, lesson, progress, entryCompleted, puzzle.id]);
 
-  const handleOpenVisualHelp = useCallback(() => {
-    if (answered || !hasVisualHelp) return;
+  const recordHelp = useCallback(() => {
     recordInteraction();
     triggerHaptic();
     recordLearningHelp(puzzle.id);
+  }, [recordInteraction, recordLearningHelp, puzzle.id]);
+
+  const handleOpenVisualHelp = useCallback(() => {
+    if (answered || !hasVisualHelp) return;
+    recordHelp();
     setShowVisualHelp(true);
-  }, [answered, hasVisualHelp, recordInteraction, recordLearningHelp, puzzle.id, setShowVisualHelp]);
+  }, [answered, hasVisualHelp, recordHelp, setShowVisualHelp]);
 
   const handlePurchaseVisualHelp = useCallback(() => {
     recordInteraction();
@@ -338,8 +371,9 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   }, [purchaseVisualHelp, puzzle.id, recordInteraction, visualHelpCost]);
 
   const exitToPath = useCallback(() => {
-    router.dismissTo({ pathname: "/puzzles", params: { difficulty, topic: lesson.topicId } });
-  }, [difficulty, lesson.topicId, router]);
+    if (preview) preview.onExit();
+    else router.dismissTo({ pathname: "/puzzles", params: { difficulty, topic: lesson.topicId } });
+  }, [difficulty, lesson.topicId, router, preview]);
 
   const handleCheckAnswer = useCallback(() => {
     if (!canCheck || !draftAnswer || submittedAnswer.current === draftKey) return;
@@ -351,6 +385,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
       return;
     }
     if (correct) {
+      if (visualSolution) taskScroll.current?.scrollTo({ y: 0, animated: false });
       setAnswered(true);
       setLastAttempt(null);
     } else {
@@ -360,7 +395,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
       setRetryCount(count => count + 1);
       attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
-  }, [canCheck, draftAnswer, draftKey, puzzle, answerPuzzle, t, retryCount]);
+  }, [canCheck, draftAnswer, draftKey, puzzle, answerPuzzle, t, retryCount, visualSolution]);
 
   const handleInlineMistake = useCallback(() => {
     const accepted = applyAnswerResult({ correct: false, puzzle,
@@ -545,10 +580,10 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
           <PuzzleContentTransition key={puzzle.id} style={styles.scrollContent}
             onLayout={onLayoutMeasured ? event => reportLayout({ contentHeight: event.nativeEvent.layout.height }) : undefined}>
           {!challengePlayable ? <TimedChallengeIntro {...challengeIntroProps} /> : <>
-          <PuzzleCard puzzle={puzzle.response?.prompt ? { ...puzzle, question: puzzle.response.prompt } : puzzle} />
+          <PuzzleCard showObjects={!(answered && (lineRoute || percentagePlan))} puzzle={displayQuestion === puzzle.question ? puzzle : { ...puzzle, question: displayQuestion }} />
 
           <View style={styles.taskArea}>
-            {!puzzle.response && !["order_numbers", "multiple_choice", "balance", "fair_share", "function_machine", "fix_mistake", "estimate", "place_value", "fraction_strip", "decimal_grid", "decimal_place_value", "geometry_measure", "sort_buckets", "repair_pattern", "route_grid", "budget_plan", "operation_path", "find_all_pairs", "ratio_table", "signed_line", "coordinate_map", "equation_board"].includes(getPuzzleType(puzzle)) && !('payload' in puzzle && puzzle.payload && 'guided' in puzzle.payload && puzzle.payload.guided) && !(progress.completedPuzzleIds ?? []).some(
+            {!(answered && lineRoute) && !puzzle.response && !["order_numbers", "multiple_choice", "balance", "fair_share", "function_machine", "fix_mistake", "estimate", "place_value", "fraction_strip", "decimal_grid", "decimal_place_value", "geometry_measure", "sort_buckets", "repair_pattern", "route_grid", "budget_plan", "operation_path", "find_all_pairs", "ratio_table", "signed_line", "coordinate_map", "equation_board"].includes(getPuzzleType(puzzle)) && !('payload' in puzzle && puzzle.payload && 'guided' in puzzle.payload && puzzle.payload.guided) && !(progress.completedPuzzleIds ?? []).some(
               (id) =>
                 puzzles.find((item) => item.id === id)?.type === puzzle.type,
             ) && (
@@ -557,6 +592,11 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
               </Text>
             )}
             <PuzzleTaskView
+              onUseHelp={recordHelp}
+              lineRoute={lineRoute}
+              percentagePlan={percentagePlan}
+              fractionPlan={fractionPlan}
+              onSolutionShown={answered && visualSolution ? markSolutionShown : undefined}
               puzzle={puzzle}
               responseValue={responseValue}
               onResponseChange={setResponseValue}
@@ -606,7 +646,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
             />
 
           </View>
-          {!answered && hasVisualHelp ? (
+          {!answered && hasVisualHelp && !(puzzle.type === "fair_share" && puzzle.payload.object === "cookie" && !puzzle.response) ? (
             <Pressable
               testID="puzzle-picture-help"
               style={styles.visualHelpBtn}
@@ -646,11 +686,12 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
             <Text style={styles.lifeActionText}>{t("lives.workedExample")}</Text>
           </Pressable> : null}
           <PuzzleButton
-            label={t(!hasLives ? "lives.refillToRetry" : offerRetry ? "play.tryAgain" : "play.checkAnswer")}
-            accessibilityLabel={t(!hasLives ? "lives.refillToRetry" : offerRetry ? "play.tryAgain" : "play.checkAnswer")}
-            accessibilityState={{ disabled: hasLives && !offerRetry && !canCheck }}
-            disabled={hasLives && !offerRetry && !canCheck}
+            label={t(showingSolution ? "play.seeResult" : !hasLives ? "lives.refillToRetry" : offerRetry ? "play.tryAgain" : "play.checkAnswer")}
+            accessibilityLabel={t(showingSolution ? "play.seeResult" : !hasLives ? "lives.refillToRetry" : offerRetry ? "play.tryAgain" : "play.checkAnswer")}
+            accessibilityState={{ disabled: !showingSolution && hasLives && !offerRetry && !canCheck }}
+            disabled={!showingSolution && hasLives && !offerRetry && !canCheck}
             onPress={() => {
+              if (showingSolution) { setOpenResult(true); return; }
               if (!hasLives) { setShowLives(true); return; }
               if (offerRetry) {
                 setEditingRetry(true);
@@ -670,7 +711,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
           </Pressable>
         </View>}
 
-        {answered ? (
+        {answered && !showingSolution ? (
           <ResultOverlay
             visible
             decorationLessonId={earnedDecoration?.lessonId}
@@ -696,6 +737,12 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
             secondaryLabel={t(earnedDecoration ? "catPlans.placeInHouse" : "play.backToPath")}
             onBuyLife={undefined}
             coins={wallet.coins}
+            {...(preview && {
+              continueLabel: t("developer.nextTopic"),
+              onContinue: preview.onNext,
+              secondaryLabel: t("developer.repeatPuzzle"),
+              onGoHome: preview.onRepeat,
+            })}
           />
         ) : null}
 

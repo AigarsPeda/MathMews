@@ -27,31 +27,33 @@ export function buildRugSurfaces(world?: NativeRoomWorld): RugSurface[] {
   });
 }
 
-/** Lift the animated cat onto a rug before the edge of a paw reaches it. */
-export function rugSupportLift(position: Vec3, paws: Vec3[], surfaces: RugSurface[], scale: number): number {
+/** Blend floor contact into the compressible pile under the toe pads. */
+export function rugPawLift(baseY: number, paw: Vec3, surfaces: RugSurface[], scale: number, walking = false): number {
   'worklet';
   let lift = 0;
-  // The toe pads extend beyond their exported bone pivots. Begin stepping up
-  // one pad width ahead of the edge; full clearance is reached on first contact.
+  // The paw pivot is narrower than its pad. Support spreads across the pad
+  // as it crosses the edge, then settles below the top of the pile.
   const radius = .20 * scale;
   for (const surface of surfaces) {
     if (surface.halfX <= 0 || surface.halfZ <= 0) continue;
-    for (const paw of paws) {
-      const dx = paw[0] - surface.position[0], dz = paw[2] - surface.position[2];
-      const x = dx * surface.cos - dz * surface.sin - surface.centerX;
-      const z = dx * surface.sin + dz * surface.cos - surface.centerZ;
-      const inside = surface.round
-        ? (1 - Math.hypot(x / surface.halfX, z / surface.halfZ)) * Math.min(surface.halfX, surface.halfZ)
-        : Math.min(surface.halfX - Math.abs(x), surface.halfZ - Math.abs(z));
-      const weight = Math.max(0, Math.min(1, (inside + radius * 2) / Math.max(radius, .0001)));
-      if (weight === 0) continue;
-      const height = FLOOR_Y + (surface.height + .002 - FLOOR_Y) * weight;
-      // Reclining clips lower a paw pivot below its standing height. Include
-      // the toe pad beneath that pivot, while lifted walking paws retain the
-      // model's floor origin as their lowest required support plane.
-      const bottom = Math.min(position[1], paw[1] - .105 * scale);
-      lift = Math.max(lift, height - bottom);
-    }
+    const thickness = Math.max(0, surface.height - FLOOR_Y);
+    const support = thickness - Math.min(thickness * .40, .055 * scale);
+    const dx = paw[0] - surface.position[0], dz = paw[2] - surface.position[2];
+    const x = dx * surface.cos - dz * surface.sin - surface.centerX;
+    const z = dx * surface.sin + dz * surface.cos - surface.centerZ;
+    const inside = surface.round
+      ? (1 - Math.hypot(x / surface.halfX, z / surface.halfZ)) * Math.min(surface.halfX, surface.halfZ)
+      : Math.min(surface.halfX - Math.abs(x), surface.halfZ - Math.abs(z));
+    // A reclining paw can overlap an edge with the toe while its joint is outside.
+    const coverage = walking ? (inside + radius) / (2 * radius) : (inside + 2 * radius) / radius;
+    const overlap = Math.max(0, Math.min(1, coverage));
+    const weight = overlap * overlap * (3 - 2 * overlap);
+    if (weight === 0) continue;
+    // Reclining clips lower a paw pivot below its standing height. Include
+    // the toe pad beneath that pivot, while lifted walking paws retain the
+    // model's floor origin as their lowest required support plane.
+    const bottom = Math.min(baseY, paw[1] - .105 * scale);
+    lift = Math.max(lift, (FLOOR_Y + support - bottom) * weight);
   }
   return lift;
 }

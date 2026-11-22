@@ -36,6 +36,7 @@ type UseCloudSaveSyncOptions = {
   userId: string | null;
   save: GameSave;
   getSave?: () => GameSave;
+  restoreRoomSession?: (save: GameSave) => void;
   setSave: Dispatch<SetStateAction<GameSave>>;
   skipNextPersist: MutableRefObject<boolean>;
   activeSaveIdRef: MutableRefObject<string | null>;
@@ -51,6 +52,7 @@ export function useCloudSaveSync({
   userId,
   save,
   getSave,
+  restoreRoomSession,
   setSave,
   skipNextPersist,
   activeSaveIdRef,
@@ -153,19 +155,21 @@ export function useCloudSaveSync({
 
     (async () => {
       let saveId = activeSaveIdRef.current ?? (await getActiveSaveId());
-      const prepared = await prepareAccountGame(userId, getSave?.() ?? saveRef.current, saveId, await getLocalSaveUpdatedAt());
+      const previous = getSave?.() ?? saveRef.current;
+      const prepared = await prepareAccountGame(userId, previous, saveId, await getLocalSaveUpdatedAt());
       if (!active) return;
-      const local = { save: prepared.save, clientUpdatedAt: prepared.clientUpdatedAt };
       saveId = prepared.saveId;
       if (saveId) await setActiveSaveId(saveId); else await clearActiveSaveId();
       if (!active) return;
       activeSaveIdRef.current = saveId;
       skipNextPersist.current = true;
-      setSave(prepared.save);
+      if (prepared.save.pet !== previous.pet && restoreRoomSession) restoreRoomSession(prepared.save);
+      else setSave(prepared.save);
       // setSave may normalize the snapshot. Compare with that committed value,
       // not the unnormalized input, when the network request finishes.
       const baseline = getSave?.() ?? prepared.save;
-      await restoreGameSaveSnapshot(prepared.save, prepared.clientUpdatedAt);
+      const local = { save: baseline, clientUpdatedAt: prepared.clientUpdatedAt };
+      await restoreGameSaveSnapshot(baseline, prepared.clientUpdatedAt);
       if (!active) return;
 
       if (!saveId) {
@@ -198,7 +202,8 @@ export function useCloudSaveSync({
 
       if (merged !== current) {
         skipNextPersist.current = false;
-        setSave(merged);
+        if (remote && merged === remote.save && restoreRoomSession) restoreRoomSession(merged);
+        else setSave(merged);
       }
 
       const snapshot = getSave?.() ?? merged;
@@ -235,6 +240,7 @@ export function useCloudSaveSync({
     isGameReady,
     onInitialCloudCheckComplete,
     onRestorableCloudSaves,
+    restoreRoomSession,
     setSave,
     skipNextPersist,
     userId,

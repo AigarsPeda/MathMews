@@ -8,7 +8,7 @@ export function getPlaceValueTokens(state: PlaceValueState): PracticeToken[] {
     const loose = index - state.tens * 10;
     return {
       id: `unit-${index}`, label: '', shape: 'part', cornerRadius: 1,
-      width: 9, height: 9, tone: bundled ? 'blue' : 'primary',
+      width: 9, height: 9, delayMs: 34 * (index % 10), tone: bundled ? 'blue' : 'primary',
       x: bundled ? 28 + index % 10 * 9 : 190 + loose % 5 * 18,
       y: bundled ? 12 + Math.floor(index / 10) * 14 : 12 + Math.floor(loose / 5) * 18,
     };

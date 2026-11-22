@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/immutability */
 /* Native asset requires are statically resolved by Metro. */
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { followFeather, type FeatherTouch, type FeatherResponse } from '@/utils/guided-feather';
 import { rockingChairContact, type RockingMotion } from '@/utils/native-rocking-chair';
 import { catPacedPath, catWalkTiming, catCurveStride, catJumpPoint, catJumpAim, catJumpEffort, CAT_JUMP_PREPARE, catMotionSample, CAT_LANDING_WALK_PHASE, CAT_JUMP_TAKEOFF, CAT_JUMP_TOUCHDOWN, CAT_JUMP_HIND_TOUCHDOWN, catPathFromPosition, catPathPoint, catTravelProgress, catWalkExitRate, type CatTravelMotion, type CatMotionLeg } from '@/utils/native-cat-locomotion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -14,7 +15,7 @@ import { resolveTailContact, tailJointAngle, tailParentAxis, type TailContact } 
 import { isCatFeederDecorationId } from '@/constants/cat-supplies-decorations';
 import { pawReachWeight, pawSurfaceTarget, type PawObjectTarget } from '@/utils/native-paw-contact';
 import { limbAim, reachingElbow } from '@/utils/native-hanging-toy';
-import { buildRugSurfaces, rugSupportLift } from '@/utils/native-ground-support';
+import { buildRugSurfaces, rugPawLift } from '@/utils/native-ground-support';
 import { catTurnDuration, catTurnPaw, catTurnPawOrientation, catTurnPose } from '@/utils/native-cat-turn';
 import { CAT_GAITS, catSpeedGait, matchCatGaitPhase, catGaitContact, catGaitSwing, catWalkSwingOffset, type CatGait } from '@/utils/native-cat-gaits';
 import { catLaunchPaw, catLaunchSpine, catLaunchStep } from '@/utils/native-cat-walk-launch';
@@ -60,6 +61,9 @@ type Props = {
   onStepComplete?: (index: number) => void;
   positionValue?: ISharedValue<Vec3>;
   rockingMotion?: ISharedValue<RockingMotion>;
+  featherTouch?: ISharedValue<FeatherTouch | undefined>;
+  featherPosition?: ISharedValue<Vec3 | undefined>;
+  windowLeaf?: ISharedValue<Vec3 | undefined>;
   animationTimeValue?: ISharedValue<{ name: string; time: number }>;
   hangingBall?: ISharedValue<Vec3>;
   floorToy?: ISharedValue<PawObjectTarget | undefined>;
@@ -73,7 +77,7 @@ type Props = {
 export function useCatModel(skinId?: string, present = true) {
   return useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false, addToScene: present });
 }
-export function NativeCatActor({ model, playback, world, travel, activityKey, commandAttention, hungry = false, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, floorToy, plantLeaf, pawPositions, initialPosition, registerPickEntities, reduceMotion = false }: Props) {
+export function NativeCatActor({ model, playback, windowLeaf, featherTouch, featherPosition, world, travel, activityKey, commandAttention, hungry = false, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, floorToy, plantLeaf, pawPositions, initialPosition, registerPickEntities, reduceMotion = false }: Props) {
   'use no memo';
   const { transformManager } = useFilamentContext();
   const asset = model.state === 'loaded' ? model.asset : undefined;
@@ -167,11 +171,12 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       duration: segment.model ? segment.model.duration / segment.model.rate : meta[0] / meta[1], reverse: segment.reverse ?? false,
       loop: segment.loop ?? loop ?? false };
   }), [loop, playback]);
-  const command = useSharedValue({ id: 0, activityKey, commandAttention, bowlTarget, segments, travel, world, active, reduceMotion, rugSurfaces,
+  const homeAnchor = world?.homeAnchor ?? world?.home;
+  const command = useSharedValue({ id: 0, homeAnchor, activityKey, commandAttention, bowlTarget, segments, travel, world, active, reduceMotion, rugSurfaces,
     recoveryPosition: undefined as Vec3 | undefined, steering: undefined as ReturnType<typeof movingCatRoute> });
-  const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; home?: Vec3 }>({ id: 0 });
+  const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; homeAnchor?: Vec3 }>({ id: 0 });
   const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
-    position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1, blendSeconds: .12,
+    position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, homeAnchor, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1, blendSeconds: .12,
     recoveringAction: false, recoveryTime: 1, recoveryPose: [] as number[][], recoveryOffsets: [] as ReturnType<typeof catPoseCorrection>[],
     blendApplied: 1, blendEased: false, idleOffset: 0, napReverseEntry: false,
     interruptedFades: [] as { clip: number; time: number; progress: number; seconds: number; eased: boolean }[],
@@ -180,6 +185,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     sourcePath: [] as Vec3[], sourceDuration: 0, sourceJump: false, jumpPhase: 0, jumpOffset: 0, jumpDuration: 0, jumpArcHeight: 0, jumpFrom: [0, 0, 0] as Vec3,
     preparation: 0, prepareTarget: undefined as Vec3 | undefined, preparedJump: false, gatherYaw: 0,
     noticeId: undefined as number | undefined, noticeTime: 2,
+    feather: undefined as FeatherResponse | undefined,
     playTargets: [null,null] as (Vec3 | null)[], playTime: 0, playId: -1,
     turnElapsed: 0, turnDuration: 0, turnFrom: 0, turnAngle: 0,
     turnFeet: [] as Vec3[], turnNeutral: [] as Vec3[], turnLeg: -1,
@@ -218,14 +224,14 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         distance: pathLength(path),
         duration: route.legs ? route.legs.reduce((sum, leg) => sum + leg.duration, 0) : timing.duration };
     }
-    const movedHome = !travel && previous.home && world && previous.home.some((v, i) => v !== world.home[i]);
+    const movedHome = !travel && previous.homeAnchor && homeAnchor && previous.homeAnchor.some((v, i) => v !== homeAnchor[i]);
     const sameSegments = previous.segments?.length === segments.length && segments.every((segment, i) => {
       const old = previous.segments![i];
       return old.name === segment.name && old.duration === segment.duration && old.loop === segment.loop && old.reverse === segment.reverse;
     });
     const changed = previous.activityKey !== activityKey || !sameSegments || previous.travel !== travel || movedHome || !!recoveryPosition;
     const id = changed ? ++nextCommandRevision : previous.id;
-    commandRevision.current = { id, activityKey, segments, travel, home: world?.home };
+    commandRevision.current = { id, activityKey, segments, travel, homeAnchor };
     // Publish one complete snapshot. Separate read/modify/write effects can
     // overwrite a new movement revision with an older drawing-thread snapshot.
     const moving=changed && frame.ready && !frame.sourceJump && !frame.routeLegs.length
@@ -235,8 +241,8 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       && frame.turnElapsed>=frame.turnDuration && (previousClip==='idle' || previousClip==='walk'&&frame.elapsed>=frame.routeDuration);
     const landed=changed && frame.ready && frame.sourceJump && frame.landingPending && frame.jumpPhase>=CAT_LANDING_WALK_PHASE;
     const steering=(moving||departing||landed)&&!reduceMotion && !recoveryPosition ? movingCatRoute(travel,frame.position,frame.heading,(departing?0:frame.gaitSpeed)*(world?.catScale??1),world,departing||landed,landed) : undefined;
-    command.value = { id, activityKey, commandAttention, bowlTarget, segments, travel: nextTravel, world, active, reduceMotion, rugSurfaces, recoveryPosition, steering };
-  }, [activityKey, active, command, commandAttention, bowlTarget, initialPosition, reduceMotion, rugSurfaces, segments, state, travel, world]);
+    command.value = { id, homeAnchor, activityKey, commandAttention, bowlTarget, segments, travel: nextTravel, world, active, reduceMotion, rugSurfaces, recoveryPosition, steering };
+  }, [activityKey, active, command, commandAttention, bowlTarget, homeAnchor, initialPosition, reduceMotion, rugSurfaces, segments, state, travel, world]);
   const clips = useMemo(() => {
     if (!animator)
       return {};
@@ -483,9 +489,10 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
           }
         }
       }
-      else if (request.world && (!frameState.ready || frameState.home.some((v, i) => v !== request.world!.home[i])))
+      else if (request.world && (!frameState.ready || request.homeAnchor?.some((v, i) => v !== frameState.homeAnchor?.[i]))) {
         frameState.position = request.recoveryPosition ?? (!frameState.ready && initialPosition ? initialPosition : request.world.home);
-      if (request.world) frameState.home = request.world.home;
+      }
+      frameState.homeAnchor = request.homeAnchor;
     }
     const deltaSeconds = request.active ? Math.min(1 / 15, Math.max(0, timeSinceLastFrame)) : 0;
     frameState.expressionTime+=deltaSeconds;
@@ -506,6 +513,14 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     let segment = request.segments[frameState.index];
     if (!segment)
       return;
+    const touch = segment.name === 'featherChase' && !request.reduceMotion && featherTouch?.value;
+    const previousFeather = newCommand ? undefined : frameState.feather;
+    const guided = touch && request.world ? followFeather(touch, frameState.position, frameState.heading,
+      request.world.catScale, request.world.width, deltaSeconds, previousFeather) : undefined;
+    if (guided) frameState.elapsed = Math.min(frameState.elapsed, segment.duration*.82);
+    else if (previousFeather) frameState.elapsed = segment.duration*.87;
+    if (featherPosition && (guided || previousFeather || newCommand)) featherPosition.value = guided?.target;
+    frameState.feather = guided;
     if (!segment.loop && !frameState.complete && frameState.elapsed >= (request.reduceMotion ? .6 : segment.duration)) {
       notify('step', [request.id, frameState.index]);
       if (frameState.index < request.segments.length - 1) {
@@ -727,7 +742,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     const wakingNap = !!journey?.sleepPose && clipName === 'curlUp' && segment.reverse && !frameState.napReverseEntry;
     const sleepClip = journey?.sleepPose && (clipName === 'curlUp' || clipName === 'curlSleep')
       ? `rest${journey.sleepPose}${wakingNap ? 'Wake' : clipName === 'curlUp' ? 'Enter' : 'Sleep'}` : clipName;
-    const selectedClip=walking && frameState.launchStarted ? walkClip : steppingTurn ? 'idle' : sleepClip;
+    const selectedClip=guided ? guided.pin || guided.swat ? 'batToy' : 'lookUp' : walking && frameState.launchStarted ? walkClip : steppingTurn ? 'idle' : sleepClip;
     const clip = clips[lightJump && (selectedClip==='jumpOn'||selectedClip==='jumpOff') ? selectedClip+'Light' : selectedClip] ?? clips[selectedClip] ?? clips.idle;
     if (!clip)
       return;
@@ -744,6 +759,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     // Held commands retain their scheduler semantics while the awake cat
     // continues breathing, blinking and shifting its gaze after the clip ends.
     if(resting)time=(frameState.elapsed+frameState.idleOffset)%clip.duration;
+    if (guided) time = clip.duration * (guided.pin ? .59 : guided.swat ? .37+.45*(1-guided.swat/.46) : .48);
     if (segment.reverse && !wakingNap)
       time = clip.duration - time;
     if (request.reduceMotion)
@@ -1261,17 +1277,30 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     const floorPush = journey?.jump && segment.name === 'jumpOn' && hopPhase !== undefined
       && hopPhase <= CAT_JUMP_TAKEOFF && frameState.position[1] <= FLOOR_Y + .001;
     if (request.rugSurfaces?.length && supportingPaws.length) {
-      const paws = supportingPaws.map(paw => {
+      const lifts = supportingPaws.map(paw => {
         const p = transformManager.getWorldTransform(paw).translation;
         // Contact IK corrects compression below the pad. Keep it from lifting
         // the whole cat a second time on a rug.
-        return floorLanding || floorPush ? [p[0], Math.max(p[1], frameState.position[1]+.10*scale), p[2]] as Vec3 : p;
+        const pivot: Vec3 = floorLanding || floorPush ? [p[0], Math.max(p[1], frameState.position[1]+.10*scale), p[2]] : p;
+        return rugPawLift(frameState.position[1], pivot, request.rugSurfaces, scale, walking);
       });
-      const lift = rugSupportLift(frameState.position, paws, request.rugSurfaces, scale);
+      // Across an edge the torso follows the average height, while each foot
+      // keeps its original stride relative to the surface directly beneath it.
+      const crossing = walking && turningRig && !request.reduceMotion && !posingFeet && !crawling;
+      const lift = crossing ? lifts.reduce((sum, height) => sum + height, 0) / lifts.length : Math.max(...lifts);
       if (lift > 0) {
         frameState.supportLift = lift;
         transformManager.setTransform(entity, transform.translate([0, lift, 0]));
         renderedPosition = [frameState.position[0], frameState.position[1] + lift, frameState.position[2]];
+        if (crossing) {
+          for (const [i, leg] of turningRig.legs.entries()) {
+            const offset = lifts[i] - lift;
+            if (Math.abs(offset) < .001 * scale) continue;
+            const sole = transformManager.getWorldTransform(leg.paw);
+            const [x, y, z] = sole.translation;
+            placeCatPaw(transformManager, leg, [x, y + offset, z], sole.data, frameState.heading, scale);
+          }
+        }
       }
     }
     if (turningRig && request.world) {
@@ -1416,6 +1445,29 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         }
       }
     }
+    const post = journey?.scratchingPost;
+    if ((post || guided) && turningRig && !posingFeet && !turning && !request.reduceMotion) {
+      const phase = time / clip.duration;
+      for (let i = 0; i < 2; i++) {
+        const leg = turningRig.legs[i];
+        const sole = transformManager.getWorldTransform(leg.paw);
+        const paw = sole.translation;
+        let goal: Vec3, weight: number;
+        if (post) {
+          // Keep the authored alternating height, and bring each pad to its side of the rope.
+          const dx = paw[0]-post.center[0], dz = paw[2]-post.center[2];
+          const radius = post.radius+.035*scale, d = Math.max(.001,Math.hypot(dx,dz));
+          goal = [post.center[0]+radius*dx/d, Math.min(post.top,paw[1]), post.center[2]+radius*dz/d];
+          weight = Math.max(0, Math.min(1,(phase-.07)/.15,(.94-phase)/.16));
+        } else if (guided && (guided.pin || guided.strike && guided.paw === i)) {
+          const side = guided.pin ? (i ? 1 : -1)*.086*scale : 0;
+          const point = guided.pin ? guided.target : guided.strike!;
+          goal = [point[0] + side * Math.cos(frameState.heading), point[1], point[2] - side * Math.sin(frameState.heading)];
+          weight = guided.pin ? Math.min(1,(guided.still-.38)*7) : Math.sin(Math.PI*(1-guided.swat/.46));
+        } else continue;
+        if (weight > 0) placeCatPaw(transformManager,leg,paw.map((v,k)=>v+(goal[k]-v)*weight) as Vec3,sole.data,frameState.heading,scale);
+      }
+    }
     const looseToy=floorToy?.value;
     const floorTarget=looseToy?.instanceId===request.travel?.playTargetId?looseToy:undefined;
     const pawTarget = request.travel?.plantPlay ? plantLeaf?.value : request.travel?.treePlay ? hangingBall?.value : floorTarget?.position;
@@ -1491,8 +1543,9 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         ? hopPhase !== undefined ? Math.max(0, 1 - hopPhase / .24)
           : Math.max(0, Math.min(1, (frameState.elapsed - frameState.routeDuration + .48) / .32)) : 0;
       const watchingToy = journey?.watchToy && floorTarget;
-      const target = watchingToy ? floorTarget.position : perchWeight ? perch : food ?? frameState.lookTarget;
-      const gazeWeight = watchingToy ? 1 : perchWeight || (resting || food ? rest.look : 0);
+      const watchedLeaf = journey?.watchingWindow ? windowLeaf?.value : undefined;
+      const target = guided?.target ?? watchedLeaf ?? (watchingToy ? floorTarget.position : perchWeight ? perch : food ?? frameState.lookTarget);
+      const gazeWeight = guided || watchedLeaf || watchingToy ? 1 : perchWeight || (resting || food ? rest.look : 0);
       const head=transformManager.getWorldTransform(turningRig.head);
       const angle=target?Math.atan2(target[0]-head.translation[0],target[2]-head.translation[2])-frameState.heading:0;
       const noticeTarget=request.commandAttention?.target;
@@ -1502,15 +1555,15 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       // Airborne balance, contact performances and supported turns own the
       // head. Ears can acknowledge a queued tap without disturbing those poses.
       const noticeHead=!posingFeet && !crawling && (resting || walking || hopPhase!==undefined && hopPhase>=CAT_LANDING_WALK_PHASE);
-      const yawLimit = watchingToy || food ? .38 : .16;
-      const pitchLimit = watchingToy || food || perchWeight ? .24 : .07;
+      const yawLimit = guided ? .67 : watchedLeaf || watchingToy || food ? .38 : .16;
+      const pitchLimit = guided ? .44 : watchedLeaf || watchingToy || food || perchWeight ? .24 : .07;
       const gazeYaw = Math.atan2(Math.sin(angle), Math.cos(angle));
       const gazePitch = target ? -Math.atan2(target[1] - (perchWeight ? frameState.position[1] : head.translation[1]),
         Math.hypot(target[0] - head.translation[0], target[2] - head.translation[2])) : 0;
       const acknowledge = noticeHead && notice.look > 0;
       const yaw = acknowledge ? notice.yaw : Math.max(-yawLimit, Math.min(yawLimit, gazeYaw)) * gazeWeight;
       const pitch = acknowledge ? notice.pitch : Math.max(-pitchLimit, Math.min(pitchLimit, gazePitch)) * gazeWeight;
-      const blend=1-Math.exp(-deltaSeconds*(noticeHead&&frameState.noticeTime<1.6?8:resting?7:35));
+      const blend=1-Math.exp(-deltaSeconds*(watchedLeaf ? 3.5 : noticeHead&&frameState.noticeTime<1.6?8:resting?7:35));
       frameState.attentionYaw+=(yaw-frameState.attentionYaw)*blend;
       frameState.attentionPitch+=(pitch-frameState.attentionPitch)*blend;
       const jump=hopPhase!==undefined&&expressionTo?catJumpExpression(hopPhase,expressionFrom,expressionTo,scale):undefined;
@@ -1529,7 +1582,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         steppingTurn?Math.max(-.22,Math.min(.22,frameState.turnAngle))*(1-(turnPhase??1)):0,
         walking?frameState.gaitSpeed:0,resting || !!food);
       const earBlend=1-Math.exp(-deltaSeconds*14);
-      frameState.earYaw+=(Math.max(-.35,Math.min(.35,reaction.yaw+notice.earYaw))-frameState.earYaw)*earBlend;
+      frameState.earYaw+=(Math.max(-.35,Math.min(.35,reaction.yaw+notice.earYaw+(watchedLeaf ? .35*gazeYaw : 0)))-frameState.earYaw)*earBlend;
       for(let i=0;i<ears.length;i++) {
         frameState.earPitch[i]+=((i?reaction.right:reaction.left)-notice.earLift-frameState.earPitch[i])*earBlend;
         const joint=ears[i];
@@ -1692,7 +1745,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         } : undefined });
     }
     state.value = frameState;
-  }, [animationTimeValue, animator, clips, command, ears, eatingProps, entity, frontLegs, hangingBall, floorToy, initialPosition, notify, pawPositions, plantLeaf, positionValue, rockingMotion, recoveryJoints, state, supportingPaws, tail, transformManager, turningRig]);
+  }, [windowLeaf, featherTouch, featherPosition, animationTimeValue, animator, clips, command, ears, eatingProps, entity, frontLegs, hangingBall, floorToy, initialPosition, notify, pawPositions, plantLeaf, positionValue, rockingMotion, recoveryJoints, state, supportingPaws, tail, transformManager, turningRig]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   return null;
 }

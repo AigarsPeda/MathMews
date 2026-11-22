@@ -21,7 +21,7 @@ const FILLED_COLOR = DiagramColors.fractionFill;
 const EMPTY_COLOR = DiagramColors.fractionSurface;
 const STROKE_COLOR = DiagramColors.fractionEdge;
 
-function createWedgePath(
+export function createWedgePath(
   cx: number,
   cy: number,
   radius: number,

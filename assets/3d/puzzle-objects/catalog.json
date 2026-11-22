@@ -10,7 +10,10 @@
     "cookie",
     "parcel",
     "planting-tile",
-    "carriage"
+    "carriage",
+    "paw-orange",
+    "paw-grey",
+    "paw-white"
   ],
   "render": "transparent Blender Eevee orthographic PNG"
 }
