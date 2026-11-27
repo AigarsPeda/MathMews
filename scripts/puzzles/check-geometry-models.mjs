@@ -9,7 +9,7 @@ export function checkGeometryModels({load}) {
  const {distanceAtStops}=load('@/utils/puzzle-motion');
  const {checkPuzzleAnswer}=load('@/utils/puzzle-type');
  const {getPuzzleDraftAnswer,getPuzzleAttemptHint}=load('@/utils/puzzle-attempt');
- const {getVisualExplanation}=load('@/constants/visual-explanations');
+ const {helpKeyFor}=load('@/constants/help-examples');
  const puzzles=Object.fromEntries(['en','lv','ru'].map(locale=>[locale,readPuzzles(locale, 'hard')]));
  const en=puzzles.en.filter(p=>p.type==='geometry_measure');assert.equal(en.length,30);
  const labels=['en','lv','ru'].map(l=>JSON.parse(fs.readFileSync(`locales/${l}.json`)).geometryModels);
@@ -44,7 +44,7 @@ export function checkGeometryModels({load}) {
   for(const bad of [NaN,Infinity,target+.5])assert.equal(checkGeometryAnswer(p,bad),false);
   let entered=null;for(const digit of String(target))entered=appendGeometryDigit(entered,Number(digit));
   assert.ok(checkPuzzleAnswer(p,getPuzzleDraftAnswer(p,{geometry:entered})));
-  assert.equal(getVisualExplanation(p).keyframes.length,3);
+  assert.equal(helpKeyFor(p), mode.toLowerCase().includes('area') ? 'area' : 'perimeter');
   if(mode==='compare'){assert.equal(w*h,other.width*other.height,'Equal-area comparison really has equal area');comparisons.add(target);}
   if(mode==='area'&&w*h!==2*(w+h))assert.equal(getPuzzleAttemptHint(p,{kind:'geometry',value:2*(w+h)}).key,'geometryAreaNotBoundary');
   if(mode==='perimeter'&&w*h!==2*(w+h))assert.equal(getPuzzleAttemptHint(p,{kind:'geometry',value:w*h}).key,'geometryBoundaryNotArea');

@@ -2178,7 +2178,6 @@
     "pack": "Komplektā: {{count}}",
     "quantity": "Daudzums: {{count}}",
     "discount": "Atlaide: {{percent}}%",
-    "workedExample": "Cits piemērs",
     "shopItems": {
       "apple": "Ābols",
       "cookie": "Cepums",
@@ -2188,17 +2187,6 @@
       "cupcake": "Kēksiņš"
     },
     "catCount": "Kaķu skaits",
-    "showExample": "Parādīt piemēru",
-    "barHelp": {
-      "read": "Nolasi grupas vērtību skalā stabiņa augšmalas līmenī.",
-      "total": "Saskaiti visu stabiņu vērtības.",
-      "difference": "Sāc pie zemākā stabiņa augšmalas un skaiti līdz augstākā stabiņa augšmalai.",
-      "most": "Atrodi augstāko stabiņu un nolasi grupas burtu.",
-      "least": "Atrodi zemāko stabiņu un nolasi grupas burtu.",
-      "mean": "Saskaiti grupu vērtības un izdali ar grupu skaitu.",
-      "range": "No lielākās vērtības atņem mazāko.",
-      "missing": "No kopskaita atņem katras zināmās grupas vērtību."
-    },
     "basket": "Tavā grozā",
     "chartKey": "Apzīmējumi · {{title}}",
     "toyCount": "Rotaļlietu skaits",

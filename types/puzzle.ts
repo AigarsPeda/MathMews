@@ -51,7 +51,6 @@ export type PuzzleType =
 
 export type MathOperator = "+" | "-" | "×" | "÷";
 
-/** Quantities shown in the task itself, separate from worked picture help. */
 export type HelpTemplate =
   | 'fraction_unit_set' | 'fraction_decimal_link' | 'fraction_compare_common' | 'fraction_compare_unit'
   | 'fraction_compare_same_numerator' | 'fraction_compare_half' | 'easy_fraction_half' | 'easy_fraction_compare'
@@ -73,6 +72,7 @@ export type HelpTemplate =
   | 'estimate' | 'fair_share' | 'fraction_equivalent' | 'fraction_match'
   | 'pattern_next' | 'function_machine' | 'order_numbers';
 
+/** Quantities shown in the task itself, separate from worked picture help. */
 export type QuantityTaskModel = { object?: PuzzleObject } & (
   | { kind: "join" | "take_away"; left: number; right: number }
   | { kind: "array"; rows: number; columns: number }

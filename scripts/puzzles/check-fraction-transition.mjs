@@ -11,7 +11,7 @@ export function checkFractionTransition({ load }) {
   const lessons = read('data/puzzle-curriculum.json').lessons.filter(l => l.difficulty === 'medium' && l.topicId === 'fractions').slice(0, 6);
   const extras = read('data/puzzle-path-extras.json');
   const { getLearningReview } = load('@/constants/learning-review');
-  const { getVisualExplanation } = load('@/constants/visual-explanations');
+  const { helpKeyFor } = load('@/constants/help-examples');
   const { shufflePuzzleChoices } = load('@/utils/puzzle-practice');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   assert.equal(lessons.length, 6);
@@ -60,10 +60,8 @@ export function checkFractionTransition({ load }) {
           [...v.targets, ...v.fractions].forEach(bounded);
           v.fractions.forEach(f => assert.equal(v.targets.filter(t => equal(f, t)).length, 1));
         }
-        const help = getVisualExplanation(p);
-        assert.equal(help.keyframes.length, 3);
-        for (const [, n, d] of JSON.stringify(help).matchAll(/(\d+)\s*\/\s*(\d+)/g)) bounded([Number(n), Number(d)]);
-        if (p.type === 'compare') assert.match(help.keyframes[2].scene.result, /[<>]/, 'Comparison help actually demonstrates an inequality');
+        assert.match(helpKeyFor(p), /^fraction_/, p.id);
+        if (p.type === 'compare') assert.equal(helpKeyFor(p), 'fraction_compare');
       }
       for (let day = 20500; day < 20533; day++) {
         const q = getLearningReview(lesson, day), source = [q.diagram?.colored, q.diagram?.parts];

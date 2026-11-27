@@ -11,7 +11,7 @@ export function checkHardFractionTransition({ load }) {
   const hard = lessons.filter(l => l.difficulty === 'hard' && l.topicId === 'fractions');
   const finale = lessons.find(l => l.id === 'medium-fractions-explore-10');
   const { getLearningReview } = load('@/constants/learning-review');
-  const { getVisualExplanation } = load('@/constants/visual-explanations');
+  const { helpKeyFor } = load('@/constants/help-examples');
   const { getQuantityTaskTokens, getQuantityTaskHeight } = load('@/utils/quantity-task-scene');
   const { shufflePuzzleChoices } = load('@/utils/puzzle-practice');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
@@ -34,7 +34,7 @@ export function checkHardFractionTransition({ load }) {
           const [a, b] = [v.optionA, v.optionB].map(fraction);
           [a, b].forEach(f => bounded(f, max));
           assert.equal(p.correctIndex, a[0] * b[1] > b[0] * a[1] ? 0 : 1);
-          assert.match(getVisualExplanation(p).keyframes[2].scene.result, /[<>]/);
+          assert.equal(helpKeyFor(p), 'fraction_compare');
         }
         if (p.type === 'fraction_equivalent') {
           const source = [v.numerator, v.denominator];

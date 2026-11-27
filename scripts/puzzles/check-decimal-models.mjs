@@ -8,7 +8,7 @@ export function checkDecimalModels({ load }) {
   const { decimalLabel, checkDecimalGrid, decimalGridCell, initialDecimalPlace, changeDecimalPlace, decimalTotal, checkDecimalPlace }=load('@/utils/decimal-models');
   const { checkPuzzleAnswer }=load('@/utils/puzzle-type');
   const { getPuzzleDraftAnswer, getPuzzleAttemptHint }=load('@/utils/puzzle-attempt');
-  const { getVisualExplanation }=load('@/constants/visual-explanations');
+  const { helpKeyFor }=load('@/constants/help-examples');
   const en=readPuzzles('en', 'medium'), lv=readPuzzles('lv', 'medium');
   const boards=en.filter(p=>p.type.startsWith('decimal_'));assert.equal(boards.length,30);
   const messageKeys = ['en', 'lv', 'ru'].map(locale => {
@@ -27,7 +27,7 @@ export function checkDecimalModels({ load }) {
     const q=lv.find(q=>q.id===p.id), {hundredths:n,digits}=p.payload;
     assert.deepEqual(q.payload,p.payload);assert.ok(Number.isInteger(n)&&n>=0&&n<300);
     if(digits===1) assert.equal(n%10,0);
-    assert.equal(getVisualExplanation(p).keyframes.length,3);
+    assert.equal(helpKeyFor(p), 'decimals');
     assert.equal(checkPuzzleAnswer(p,{kind:'choice',index:0}),false);
     assert.equal(getPuzzleDraftAnswer(p,{decimalGrid:null,decimalPlace:null}),null);
     if(p.type==='decimal_grid') {

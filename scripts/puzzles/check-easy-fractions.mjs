@@ -18,7 +18,7 @@ export function checkEasyFractions({ load }) {
   const lessons = track.slice(4);
   const extras = read('data/puzzle-path-extras.json');
   const { getLearningReview } = load('@/constants/learning-review');
-  const { getVisualExplanation } = load('@/constants/visual-explanations');
+  const { helpKeyFor } = load('@/constants/help-examples');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   const { shufflePuzzleChoices } = load('@/utils/puzzle-practice');
   const { PUZZLE_PATHS } = load('@/constants/puzzle-path');
@@ -39,7 +39,7 @@ export function checkEasyFractions({ load }) {
       if (p.type === 'fraction_build') assert.equal(v.denominator, 2);
       if (p.type === 'fraction_match') assert.ok(v.pairs.every(pair => pair.denominator === 2));
       if (p.type === 'sort_buckets') assert.ok([...v.targets, ...v.fractions].every(([, d]) => d === 2));
-      assert.equal(getVisualExplanation(p).keyframes.length, 3, `${p.id}: picture help remains available`);
+      assert.match(helpKeyFor(p), /^fraction_/, `${p.id}: picture help remains available`);
       for (let seed = 0; seed < 12; seed++) {
         const shuffled = shufflePuzzleChoices(p, `intro-halves/${seed}`);
         if (p.type === 'multiple_choice' || p.type === 'compare' || p.type === 'true_false') {
@@ -93,10 +93,7 @@ export function checkEasyFractions({ load }) {
           [...v.targets, ...v.fractions].forEach(f => familiar(f, p.id));
           v.fractions.forEach(f => assert.equal(v.targets.filter(t => equal(t, f)).length, 1));
         }
-        // Include worked examples: a simple question must not open help about ninths.
-        const help = getVisualExplanation(p);
-        assert.equal(help.keyframes.length, 3);
-        for (const [, n, d] of JSON.stringify(help).matchAll(/(\d+)\s*\/\s*(\d+)/g)) familiar([Number(n), Number(d)], `${p.id} help`);
+        assert.match(helpKeyFor(p), /^fraction_/, p.id);
       }
       for (let day = 20500; day < 20533; day++) {
         const q = getLearningReview(lesson, day);

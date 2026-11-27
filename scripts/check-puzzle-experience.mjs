@@ -380,7 +380,7 @@ function screen(puzzle, { proofAudit, fontScale = 1, final = false, hasFollowing
     '@/contexts/GameProvider': { useGame: () => game },
     '@/contexts/LocaleProvider': { useLocale: () => ({ locale }) },
     '@/constants/curriculum': { ...curriculum, getLevelPuzzles: (_, __, step) => [nextPuzzles.find(item => item.id === step.id) ?? puzzle] },
-    '@/constants/visual-explanations': { hasVisualExplanation: () => true },
+    '@/constants/help-examples': { helpKeyFor: () => 'add' },
     '@/utils/puzzle-practice': { shufflePuzzleChoices: value => value },
     'expo-router': { useRouter: () => router },
     'expo-haptics': { ImpactFeedbackStyle: { Light: 'light', Medium: 'medium' }, impactAsync() {} },

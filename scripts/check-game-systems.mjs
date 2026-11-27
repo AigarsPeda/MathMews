@@ -30,14 +30,12 @@ function load(id) {
 const { getPuzzlesByDifficulty, computePetWisdom } = load('@/constants/puzzles');
 const { checkPuzzleAnswer, getValidPairs } = load('@/utils/puzzle-type');
 const { shufflePuzzleChoices } = load("@/utils/puzzle-practice");
-const { getVisualExplanation } = load('@/constants/visual-explanations');
+const { helpKeyFor, HELP_EXAMPLES } = load('@/constants/help-examples');
 const helpLocales = {
   en: load('@/locales/visual-help/en').visualHelpEn,
   lv: load('@/locales/visual-help/lv').visualHelpLv,
   ru: load('@/locales/visual-help/ru').visualHelpRu,
 };
-// Check the visual quantities and arrangements, not just their captions.
-const { VISUAL_PRACTICE } = load('@/constants/visual-practice');
 const { getPracticeTokenBounds, PRACTICE_BOARD_WIDTH, PRACTICE_BOARD_HEIGHT } = load('@/utils/practice-token-layout');
 function assertTokenFits(token, location) {
   if (token.visible === false) return;
@@ -59,65 +57,6 @@ for (const change of [{ x: 0 }, { x: 300 }, { y: 0 }, { y: 140 }, { height: 100 
   assert.throws(() => assertTokenFits({ ...counter, ...change }, 'clipped counter'), /rendered bounds/);
 }
 assert.throws(() => assertTokenFits({ id: 'wide-label', label: '123456', shape: 'plain', x: 270, y: 70 }, 'wide text'), /rendered bounds/);
-const visibleTokens = frame => frame.scene.tokens.filter(token => token.visible !== false);
-const objects = (frame, label) => visibleTokens(frame).filter(token => token.label === label);
-const unitFractionHelp = VISUAL_PRACTICE.fraction_unit_set;
-for (const [step, frame] of unitFractionHelp.entries()) {
-  const dots = objects(frame, '●');
-  assert.equal(dots.length, 18, 'Unit-fraction help conserves all eighteen dots');
-  assert.deepEqual([50, 150, 250].map(x => dots.filter(t => t.x === x).length), [6, 6, 6], 'One third is one of three equal columns');
-  assert.equal(dots.filter(t => t.tone === 'primary').length, step === 0 ? 0 : 6);
-  for (const dot of dots) {
-    assertTokenFits(dot, `fraction_unit_set/step-${step + 1}`);
-    const original = unitFractionHelp[0].scene.tokens.find(t => t.id === dot.id);
-    assert.deepEqual([dot.x, dot.y, dot.width, dot.height, dot.scale], [original.x, original.y, original.width, original.height, original.scale], 'Highlighting keeps each dot inside the same bounds throughout the transition');
-  }
-  for (const locale of Object.values(helpLocales)) assert.ok(locale.lessons.fraction_unit_set[`s${step}`]?.trim());
-}
-assert.equal(unitFractionHelp[2].scene.result, '1/3 × 18 = 6');
-
-assert.deepEqual(Array.from(VISUAL_PRACTICE.multiplication, frame => objects(frame, '🧸').length), [3, 6, 9]);
-assert.equal(objects(VISUAL_PRACTICE.subtraction.at(-1), '🍎').length, 5);
-assert.equal(objects(VISUAL_PRACTICE.all_but.at(-1), '🐑').length, 2);
-assert.ok(VISUAL_PRACTICE.addition.every(frame => objects(frame, '🎈').length === 6), 'Joining conserves all six objects');
-for (const [key, total, leftover] of [['division', 8, 0], ['fair_share', 9, 1]]) {
-  const lesson = VISUAL_PRACTICE[key];
-  assert.ok(lesson.every(frame => objects(frame, '🍪').length === total), 'Sharing conserves the objects');
-  const final = objects(lesson.at(-1), '🍪');
-  assert.equal(final.filter(token => token.x < 150).length, 4);
-  assert.equal(final.filter(token => token.x > 150).length, 4);
-  assert.equal(final.filter(token => token.x === 150).length, leftover);
-}
-assert.deepEqual(Array.from(VISUAL_PRACTICE.fraction_build, frame => visibleTokens(frame).filter(token => token.shape === 'part' && token.tone !== 'muted').length), [0, 1, 2]);
-const sorted = visibleTokens(VISUAL_PRACTICE.order_numbers.at(-1)).sort((a, b) => a.x - b.x).map(token => token.label);
-assert.deepEqual(Array.from(sorted), ['2', '6', '8'], 'Tile positions actually show ascending order');
-// Geometry help must explain the quantities, not just change an equation caption.
-for (const [key, expected] of [['geometry_compare', [0,14,36]], ['geometry_missing_perimeter', [0,13,5]]]) {
-  const lesson = VISUAL_PRACTICE[key];
-  assert.deepEqual(Array.from(lesson, frame => visibleTokens(frame).filter(t => t.id.includes('-edge-') && t.tone === 'primary').length), expected);
-  assert.ok(lesson.every(frame => JSON.stringify(frame.scene.tokens.map(t => t.id)) === JSON.stringify(lesson[0].scene.tokens.map(t => t.id))), 'Unit edges keep their identity when highlighted or removed');
-}
-const areaHelp = VISUAL_PRACTICE.geometry_missing_area;
-assert.ok(areaHelp.every(frame => visibleTokens(frame).filter(t => t.id.startsWith('area-unit-')).length === 18), 'Splitting area conserves eighteen square units');
-assert.ok(areaHelp.every(frame => visibleTokens(frame).filter(t => t.id.startsWith('area-unit-')).every(t => t.width === t.height && t.cornerRadius === 0)), 'Area units render as squares, not rounded counters');
-const columns = visibleTokens(areaHelp[1]).filter(t => t.id.startsWith('area-unit-'));
-assert.deepEqual([90,210].map(x => columns.filter(t => t.x === x).length), [9,9], 'Divide area into two equal columns of nine');
-assert.deepEqual(Array.from(VISUAL_PRACTICE.geometry_missing_perimeter, frame => visibleTokens(frame).filter(t => t.id.startsWith('side-edge-')).length), [26,13,5], 'Halve the boundary, then remove the known width');
-for (const [key, lesson] of Object.entries(VISUAL_PRACTICE)) {
-  for (const [index, frame] of lesson.entries()) for (const token of frame.scene.tokens) {
-    assertTokenFits(token, `${key}/step-${index + 1}`);
-  }
-  const hasMovement = lesson.some((frame, index) => {
-    if (index === 0) return false;
-    const before = visibleTokens(lesson[index - 1]), after = visibleTokens(frame);
-    return before.length !== after.length || after.some(token => {
-      const previous = before.find(other => other.id === token.id);
-      return !previous || previous.x !== token.x || previous.y !== token.y || previous.tone !== token.tone || previous.scale !== token.scale
-        || (previous.label !== token.label && /^\d+$/.test(previous.label) && /^\d+$/.test(token.label));
-    });
-  });
-  assert.ok(hasMovement, `${key}: steps demonstrate a changing quantity or spatial relationship`);
-}
 const totalPuzzles = ['easy', 'medium', 'hard'].reduce((sum, tier) => sum + getPuzzlesByDifficulty('en', tier).length, 0);
 let count = 0;
 for (const tier of ['easy', 'medium', 'hard']) {
@@ -182,23 +121,10 @@ for (const tier of ['easy', 'medium', 'hard']) {
       if (variant.type === 'fair_share') assert.ok(checkPuzzleAnswer(variant, answer));
       else if ('correctIndex' in variant) assert.equal(checkPuzzleAnswer(variant, { kind: 'choice', index: variant.correctIndex }), true);
     }
-    const help = getVisualExplanation(p);
-    assert.equal(help.puzzleId, p.id);
-    assert.ok(help.keyframes.length >= 3);
-    const title = help.titleKey.split('.').slice(1).reduce((value, key) => value?.[key], helpLocales[locale]);
-    assert.ok(typeof title === 'string' && title.length > 0, `${locale}/${p.id}: help title must be localized`);
-    const sceneKinds = new Set(help.keyframes.map(frame => frame.scene.kind));
-    assert.equal(sceneKinds.size, 1, 'Keep the same scene mounted throughout the example');
-    for (const frame of help.keyframes) if (frame.scene.kind === 'practice') {
-      assert.equal(new Set(frame.scene.tokens.map(token => token.id)).size, frame.scene.tokens.length, `${p.id}: each moving token needs a unique identity`);
-    }
-    for (const frame of help.keyframes) {
-      assert.notEqual(frame.captionKey, p.question);
-      assert.notEqual(frame.captionKey, p.hint);
-      assert.notEqual(frame.captionKey, p.explanation);
-      const caption = frame.captionKey.split('.').slice(1).reduce((value, key) => value?.[key], helpLocales[locale]);
-      assert.ok(typeof caption === 'string' && caption.length > 0, `${locale}/${p.id}: help caption must be localized`);
-    }
+    const key = helpKeyFor(p);
+    assert.ok(key, p.id);
+    const help = HELP_EXAMPLES[key];
+    for (const field of ['title', 'question', 'rule']) assert.ok(helpLocales[locale].examples[key][field]?.trim(), `${p.id}: localized help ${field}`);
     const privateFields = new Set(['question', 'hint', 'explanation', 'payload', 'visualHelp', 'correctIndex', 'choices', 'isTrue']);
     const independentPuzzle = new Proxy(p, {
       get(target, key) {
@@ -206,12 +132,7 @@ for (const tier of ['easy', 'medium', 'hard']) {
         return target[key];
       },
     });
-    assert.deepEqual(getVisualExplanation(independentPuzzle), help);
-    if (p.id === 'easy-mc-06') {
-      assert.equal(help.keyframes[0].scene.prompt, '4 < ? < 7');
-      assert.equal(help.keyframes.at(-1).scene.result, '4 < 5 < 7');
-      assert.ok(!help.keyframes.some(frame => [frame.scene.prompt, frame.scene.result, ...frame.scene.tokens.map(token => token.label)].some(label => /\b11\b/.test(label ?? ""))), "Odd-number example must not reveal this puzzle's answer");
-    }
+    assert.equal(helpKeyFor(independentPuzzle), key);
     const checkNumbers = value => { if (typeof value === 'number') assert.ok(Number.isFinite(value), `${p.id}: visual values must be finite`); else if (value && typeof value === 'object') Object.values(value).forEach(checkNumbers); };
     checkNumbers(help);
   }

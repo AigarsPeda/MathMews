@@ -2157,7 +2157,6 @@
     "pack": "Pack of {{count}}",
     "quantity": "Quantity: {{count}}",
     "discount": "{{percent}}% off",
-    "workedExample": "A different example",
     "shopItems": {
       "apple": "Apple",
       "cookie": "Cookie",
@@ -2167,17 +2166,6 @@
       "cupcake": "Cupcake"
     },
     "catCount": "Number of cats",
-    "showExample": "Play example",
-    "barHelp": {
-      "read": "Read the group’s value where its bar meets the scale.",
-      "total": "Add the values of all the bars.",
-      "difference": "Start at the shorter bar and count up to the taller bar.",
-      "most": "Find the tallest bar and read its group letter.",
-      "least": "Find the shortest bar and read its group letter.",
-      "mean": "Add the group values, then divide by the number of groups.",
-      "range": "Subtract the smallest value from the largest.",
-      "missing": "Subtract each known group from the total."
-    },
     "basket": "In your basket",
     "chartKey": "Chart key · {{title}}",
     "toyCount": "Number of toys",

@@ -35,7 +35,7 @@ function load(id) {
 }
 const { getPuzzlesByDifficulty, computePetWisdom, PUZZLE_CONTENT_VERSION } = load('@/constants/puzzles');
 const { checkPuzzleAnswer, getValidPairs } = load('@/utils/puzzle-type');
-const { getVisualExplanation } = load('@/constants/visual-explanations');
+const { helpKeyFor } = load('@/constants/help-examples');
 const curriculum = load('@/constants/curriculum');
 const { getPuzzleCompanionMessage } = load('@/utils/puzzle-companion');
 const companionContext = { correct:true,kind:'practice',finalStage:false,practiceFinished:false,replay:false,retries:0,completedCount:1,puzzleId:'example' };
@@ -337,7 +337,7 @@ for (const lesson of LEARNING_CATALOG.lessons) {
   }
   assert.equal(practice.length, lesson.format === 'path' ? 7 : 4);
   if (lesson.format === 'path') {
-    assert.ok(practice.every(p => p.everyday), 'New topic practice has authored diagrams and separate worked examples');
+    assert.ok(practice.every(p => p.everyday), 'New topic practice has authored diagrams');
     continue; // Mathematical and visual variety are verified by check-everyday-topics.
   }
   if (BRIDGE_PLANS.some(p => p.id === lesson.id)) assert.ok(practice.every(p=>BRIDGE_TYPES.includes(p.type)), 'Bridge lessons teach one model with fading guidance');
@@ -464,10 +464,10 @@ for(const locale of ['en','lv','ru']) {
         assert.equal(checkPuzzleAnswer(puzzle,{kind:'pairs',pairs:[[0,0],...pairs.slice(1)]}),false);
         assert.equal(checkPuzzleAnswer(puzzle,{kind:'pairs',pairs:[[0.5,1],...pairs.slice(1)]}),false);
       }
-      const help=getVisualExplanation(puzzle);
-      for(const frame of help.keyframes) assert.equal(typeof frame.captionKey.split('.').slice(1).reduce((v,key)=>v?.[key],helpLocale),'string',`${puzzle.id}: help captions`);
+      const help=helpKeyFor(puzzle);
+      assert.ok(helpLocale.examples[help]?.rule.trim(), `${puzzle.id}: localized help caption`);
       const forbidden=new Set(['question','hint','explanation','payload','visualHelp','correctIndex','choices','isTrue']);
-      assert.deepEqual(getVisualExplanation(new Proxy(puzzle,{get(target,key){assert.ok(!forbidden.has(key),'Worked examples must remain independent');return target[key];}})),help);
+      assert.deepEqual(helpKeyFor(new Proxy(puzzle,{get(target,key){assert.ok(!forbidden.has(key),'Worked examples must remain independent');return target[key];}})),help);
     }
   }
 }

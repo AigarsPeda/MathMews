@@ -7,7 +7,7 @@ export function checkBridgeModels({load}){
  const {ratioGroups,bridgeTarget,checkBridgeAnswer,transformEquation}=load('@/utils/bridge-models');
  const {getPuzzleDraftAnswer}=load('@/utils/puzzle-attempt');
  const {getLearningReview}=load('@/constants/learning-review');
- const {getVisualExplanation}=load('@/constants/visual-explanations');
+ const {helpKeyFor}=load('@/constants/help-examples');
  const {checkPuzzleAnswer}=load('@/utils/puzzle-type');
  const catalog=JSON.parse(fs.readFileSync('data/puzzle-curriculum.json'));
  const lists=Object.fromEntries(['en','lv','ru'].map(l=>[l,['easy','medium','hard'].flatMap(d=>readPuzzles(l, d))]));
@@ -57,7 +57,7 @@ export function checkBridgeModels({load}){
    if(p.difficulty==='medium')assert.equal(q.min,0);
    if(p.difficulty==='hard')assert.ok(q.min<0);
   }
-  assert.equal(getVisualExplanation(p).keyframes.length,3);
+  assert.equal(helpKeyFor(p), ({ signed_line: 'number_line', equation_board: 'balance', ratio_table: 'ratio', coordinate_map: 'coordinates' })[p.type]);
   for(const locale of ['lv','ru']){const other=lists[locale].find(x=>x.id===p.id);assert.deepEqual(other.payload,q);assert.equal(other.type,p.type);assert.notEqual(other.question,p.question);assert.ok(checkPuzzleAnswer(other,{kind:'bridge',state}));}
  }
  for(const plan of BRIDGE_PLANS){

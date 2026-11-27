@@ -8,7 +8,7 @@ export function checkFractionModels({ load }) {
   const { validFractionPoint, validFractionStrip, fractionTickAt, partitionFractionStrip } = load('@/utils/fraction-models');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   const { getPuzzleDraftAnswer, getPuzzleAttemptHint } = load('@/utils/puzzle-attempt');
-  const { getVisualExplanation } = load('@/constants/visual-explanations');
+  const { helpKeyFor } = load('@/constants/help-examples');
   const read = locale => ['easy','medium','hard'].flatMap(d => readPuzzles(locale, d));
   const en = read('en'), lv = read('lv');
   const labels = ['en','lv'].map(l => JSON.parse(fs.readFileSync(`locales/${l}.json`)));
@@ -25,7 +25,7 @@ export function checkFractionModels({ load }) {
     assert.ok(Number.isInteger(n) && Number.isInteger(d) && d > 0 && n > 0 && n <= d);
     assert.equal(checkPuzzleAnswer(p,{kind:'choice',index:0}),false);
     assert.equal(getPuzzleDraftAnswer(p,{numberLine:null,fractionStrip:null}),null);
-    assert.equal(getVisualExplanation(p).keyframes.length,3);
+    assert.equal(helpKeyFor(p), p.type === 'fraction_number_line' ? 'fraction_line' : p.helpTemplate === 'fraction_strip_equivalent' ? 'fraction_equivalent' : 'fraction_parts');
     if(p.type==='fraction_number_line') {
       const divisions=p.payload.divisions;
       assert.ok(Number.isInteger(divisions) && divisions>=2 && divisions<=8);
