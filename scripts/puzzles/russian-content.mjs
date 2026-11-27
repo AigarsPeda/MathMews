@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { ruForm } from './count-forms.mjs';
 
 const translations = JSON.parse(fs.readFileSync(new URL('../../locales/puzzle-text/ru.json', import.meta.url), 'utf8'));
 const numberPattern = /\d+(?:\.\d+)?/g;
@@ -10,7 +11,9 @@ export function russianText(text) {
   const key = text.replace(numberPattern, value => `__N${numbers.push(value) - 1}__`);
   const translated = translations[key];
   if (!translated) throw new Error(`Missing Russian puzzle translation: ${key}`);
-  return translated.replace(/__N(\d+)__/g, (_, index) => numbers[Number(index)].replace('.', ','));
+  // {__N0__|one|few|many} prints the number and its agreeing phrase.
+  return translated.replace(/\{(__N(\d+)__)\|([^{}]+)\}/g, (_, slot, index, forms) =>
+    slot + ' ' + ruForm(numbers[index], ...forms.split('|'))).replace(/__N(\d+)__/g, (_, index) => numbers[Number(index)].replace('.', ','));
 }
 
 /** Localize display text only. IDs, quantities, answers and scene data stay shared. */
