@@ -25,7 +25,7 @@ export default function SceneFixture() {
   const [selected, setSelected] = useState<number | null>(null);
   if (!__DEV__) return <Redirect href="/" />;
   const puzzle = kind === "compare" ? puzzles.find(p => p.type === "compare" && p.payload.object === compareObject && (compareObject !== "mouse" || p.id === (largeArray ? "v2-easy-numbers-tens-2" : "v2-easy-numbers-small-2")))!
-    : kind === "share" ? puzzles.find(p => p.type === "fair_share" && p.payload.items === (largeArray ? 31 : 23))!
+    : kind === "share" ? puzzles.find(p => p.id === (largeArray ? "v2-medium-division-parcels-3" : "v2-medium-division-leftovers-1"))!
     : puzzles.find(p => p.id === (kind === "join" ? "v2-easy-addition-join-3"
       : kind === "take_away" ? "v2-easy-subtraction-lesson-1-boss-1"
       : largeArray ? "v2-hard-measurement-rates-1" : "v2-medium-multiplication-facts-1"))!;
@@ -33,7 +33,8 @@ export default function SceneFixture() {
   function change(next: QuantityTaskModel["kind"] | "compare") { setKind(next); setLargeArray(false); setLocked(false); setSelected(null); setRevision(n=>n+1); }
   return <I18nextProvider i18n={language}><SafeAreaView style={{ flex: 1, backgroundColor: "#FFF5EB" }}>
     <ScrollView contentContainerStyle={{ padding: 20, gap: 18 }}>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+      {/* Keep the fixture controls clear of the simulator’s floating developer button. */}
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, paddingRight: 44 }}>
         <Button label="Add" onPress={()=>change("join")} /><Button label="Subtract" onPress={()=>change("take_away")} />
         <Button label="Rows" onPress={()=>change("array")} /><Button label="Share" onPress={()=>change("share")} />
         <Button label="Mice" onPress={()=>{setCompareObject("mouse");change("compare");}} />
@@ -44,7 +45,7 @@ export default function SceneFixture() {
         : <QuantityTaskScene key={kind+revision} model={model} disabled={locked} />}
       {kind === "array" ? <Button label="Use 12 rows" onPress={()=>{ setLargeArray(true); setLocked(false); setRevision(n=>n+1); }} /> : null}
       {kind === "share" ? <Button label="Use parcels" onPress={()=>{ setLargeArray(true); setLocked(false); setRevision(n=>n+1); }} /> : null}
-      {kind === "compare" && compareObject === "mouse" ? <Button label="Use 18 mice" onPress={()=>{ setLargeArray(true); setLocked(false); setSelected(null); }} /> : null}
+      {kind === "compare" && compareObject === "mouse" ? <Button label="Larger mouse trays" onPress={()=>{ setLargeArray(true); setLocked(false); setSelected(null); }} /> : null}
       <Button label={locked ? "Unlock scene" : "Lock scene"} onPress={()=>setLocked(value=>!value)} />
       <Button label="Latviski" onPress={()=>void language.changeLanguage("lv")} />
       <Button label="English" onPress={()=>void language.changeLanguage("en")} />

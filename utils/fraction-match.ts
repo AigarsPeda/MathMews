@@ -61,6 +61,9 @@ export function buildFractionMatchCards(
     const j = Math.abs(seed) % (i + 1);
     [next[i], next[j]] = [next[j], next[i]];
   }
+  if (next.length === 4 && isFractionMatchPair(next[0], next[1])) {
+    [next[1], next[3]] = [next[3], next[1]];
+  }
   return next;
 }
 

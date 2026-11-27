@@ -1,12 +1,13 @@
-import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
-import type { FractionBuildPuzzle } from "@/types/puzzle";
-import { moderateScale } from "@/utils/scale";
-import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { TappableFractionPie, usePieSize } from '@/components/puzzle/fraction/TappableFractionPie';
+import { FractionNotation } from '@/components/puzzle/fraction/FractionNotation';
+import { useFirstQuantityEncounter } from '@/components/puzzle/counting/QuantityPractice';
+import { IdleHint } from '@/components/puzzle/kit/PracticeAffordances';
+import type { FractionBuildPuzzle } from '@/types/puzzle';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
-type FractionBuildTaskProps = {
+type Props = {
   puzzle: FractionBuildPuzzle;
   shadedPieces: number;
   selectedSlices: readonly number[];
@@ -16,147 +17,39 @@ type FractionBuildTaskProps = {
   onToggleSlice: (index: number) => void;
 };
 
-export function FractionBuildTask({
-  puzzle,
-  shadedPieces,
-  selectedSlices,
-  answered,
-  isCorrect,
-  onChangeShaded,
-  onToggleSlice,
-}: FractionBuildTaskProps) {
+export function FractionBuildTask({ puzzle, shadedPieces, selectedSlices, answered, isCorrect, onChangeShaded, onToggleSlice }: Props) {
   const { t } = useTranslation();
-  const { numerator, denominator } = puzzle.payload;
-  const canRemove = shadedPieces > 0;
-  const canAdd = shadedPieces < denominator;
-
-  return (
-    <View style={styles.wrap}>
-      {!puzzle.payload.hideTarget || (answered && isCorrect) ? <View style={styles.fractionDisplay}>
-        <Text style={styles.numerator}>{numerator}</Text>
-        <View style={styles.fractionBar} />
-        <Text style={styles.denominator}>{denominator}</Text>
-      </View> : null}
-
-      <View style={styles.chartCard}>
-        <FractionPieChart
-          denominator={denominator}
-          shaded={shadedPieces}
-          selectedSlices={selectedSlices}
-          onToggleSlice={onToggleSlice}
-          size={moderateScale(156)}
-          showResult={answered}
-          isCorrect={isCorrect}
-        />
-      </View>
-
-      {!answered ? (
-        <View style={styles.controls}>
-          <View style={styles.pieceControls}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.pieceBtn,
-                !canRemove && styles.pieceBtnDisabled,
-                pressed && canRemove && styles.pieceBtnPressed,
-              ]}
-              disabled={!canRemove}
-              onPress={() => onChangeShaded(shadedPieces - 1)}
-              accessibilityRole="button"
-              accessibilityLabel={t("puzzleTypes.removePiece")}
-            >
-              <Text style={styles.pieceBtnSymbol}>−</Text>
-              <Text style={styles.pieceBtnLabel}>{t("puzzleTypes.piece")}</Text>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [
-                styles.pieceBtn,
-                !canAdd && styles.pieceBtnDisabled,
-                pressed && canAdd && styles.pieceBtnPressed,
-              ]}
-              disabled={!canAdd}
-              onPress={() => onChangeShaded(shadedPieces + 1)}
-              accessibilityRole="button"
-              accessibilityLabel={t("puzzleTypes.addPiece")}
-            >
-              <Text style={styles.pieceBtnSymbol}>+</Text>
-              <Text style={styles.pieceBtnLabel}>{t("puzzleTypes.piece")}</Text>
-            </Pressable>
-          </View>
-        </View>
-      ) : null}
+  const { numerator, denominator, hideTarget } = puzzle.payload;
+  const { fontScale } = useWindowDimensions();
+  const size = usePieSize();
+  const first = useFirstQuantityEncounter('fraction-build', !answered);
+  const [touched, setTouched] = useState(false);
+  const toggle = (index: number) => {
+    if (answered) return;
+    setTouched(true);
+    onToggleSlice(index);
+  };
+  const given = hideTarget && !(answered && isCorrect) ? '?' : numerator;
+  return <View style={styles.wrap}>
+    <View nativeID="play-entry-model" accessible accessibilityRole={answered ? 'image' : 'adjustable'}
+      accessibilityLabel={t('fractionModels.shaded', { count: shadedPieces, total: denominator })}
+      accessibilityValue={{ min: 0, max: denominator, now: shadedPieces }}
+      accessibilityActions={answered ? undefined : [{ name: 'increment' }, { name: 'decrement' },
+        ...Array.from({ length: denominator }, (_, i) => ({ name: `slice-${i}`,
+          label: `${i + 1} · ${t(selectedSlices.includes(i) ? 'fractionModels.remove' : 'fractionModels.add')}` }))]}
+      onAccessibilityAction={({ nativeEvent: { actionName } }) => {
+        if (answered) return;
+        setTouched(true);
+        if (actionName === 'increment' && shadedPieces < denominator) onChangeShaded(shadedPieces + 1);
+        if (actionName === 'decrement' && shadedPieces > 0) onChangeShaded(shadedPieces - 1);
+        if (actionName.startsWith('slice-')) toggle(Number(actionName.slice(6)));
+      }}>
+      <TappableFractionPie size={size} denominator={denominator} shaded={shadedPieces} selectedSlices={selectedSlices}
+        onToggleSlice={toggle} showResult={answered} enter={!answered} />
+      {!answered && <IdleHint movable firstEncounter={first} interacted={touched || shadedPieces > 0}
+        from={{ x: size * (.5 + .3 * Math.sin(Math.PI / denominator)), y: size * (.5 - .3 * Math.cos(Math.PI / denominator)) }} />}
     </View>
-  );
+    <FractionNotation numerator={given} denominator={denominator} compact={fontScale >= 1.5} />
+  </View>;
 }
-
-const styles = StyleSheet.create({
-  wrap: {
-    gap: moderateScale(8),
-    alignItems: "center",
-  },
-  fractionDisplay: {
-    alignItems: "center",
-    gap: moderateScale(2),
-  },
-  numerator: {
-    fontSize: moderateScale(36),
-    fontWeight: "800",
-    color: GameColors.text,
-    fontVariant: ["tabular-nums"],
-  },
-  fractionBar: {
-    width: moderateScale(56),
-    height: moderateScale(4),
-    borderRadius: moderateScale(2),
-    backgroundColor: GameColors.primary,
-  },
-  denominator: {
-    fontSize: moderateScale(36),
-    fontWeight: "800",
-    color: GameColors.text,
-    fontVariant: ["tabular-nums"],
-  },
-  chartCard: {
-    padding: moderateScale(12),
-  },
-  controls: {
-    width: "100%",
-    gap: moderateScale(8),
-  },
-  pieceControls: {
-    flexDirection: "row",
-    gap: moderateScale(10),
-    width: "100%",
-  },
-  pieceBtn: {
-    flex: 1,
-    minHeight: moderateScale(56),
-    borderRadius: moderateScale(16),
-    borderWidth: 2,
-    borderBottomWidth: 4,
-    borderColor: GameColors.primary,
-    backgroundColor: GameColors.selectedSurface,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: moderateScale(6),
-    paddingHorizontal: moderateScale(10),
-  },
-  pieceBtnPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-  },
-  pieceBtnDisabled: {
-    opacity: 0.45,
-  },
-  pieceBtnSymbol: {
-    fontSize: moderateScale(22),
-    fontWeight: "800",
-    color: GameColors.text,
-  },
-  pieceBtnLabel: {
-    fontSize: moderateScale(15),
-    fontWeight: "700",
-    color: GameColors.text,
-    letterSpacing: 0.4,
-  },
-});
+const styles = StyleSheet.create({ wrap: { alignItems: 'center', gap: 4 } });

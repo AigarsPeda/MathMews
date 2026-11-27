@@ -1,61 +1,41 @@
-import { glide } from '@/utils/puzzle-motion';
-import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { IconText } from "@/components/ui/IconText";
 import { PuzzleObjectImage } from "./PuzzleObjectImage";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { PuzzleColors as GameColors, Quantity, Ink, Motion } from "@/constants/puzzle-theme";
 import type { PracticeToken } from "@/types/visual-explanation";
 import { getPracticeTokenSize, PRACTICE_BOARD_HEIGHT, PRACTICE_BOARD_WIDTH } from "@/utils/practice-token-layout";
 import { moderateScale } from "@/utils/scale";
 import { useAnimationActivity } from '@/hooks/use-animation-activity';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { cancelAnimation, FadeIn, ReduceMotion, useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useDerivedValue, type SharedValue } from "react-native-reanimated";
+import { Caption, Focus } from './kit/Focus';
+import { RevealSurface } from './kit/RevealSurface';
+import { useRevealBeats } from './kit/useRevealBeats';
 
-type PracticeScene = { prompt?: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number; durationMs?: number; staggerMs?: number };
+type PracticeScene = { prompt?: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number };
 
-function MovingToken({ token, ratio, delay, durationMs, motion }: { token: PracticeToken; ratio: number; delay: number; durationMs: number; motion: boolean }) {
-  const x = useSharedValue(token.x);
-  const y = useSharedValue(token.y);
-  const opacity = useSharedValue(token.visible === false ? 0 : 1);
-  const scale = useSharedValue(token.scale ?? 1);
-  const fill = useSharedValue(token.tone === "muted" ? 0 : 1);
-  const lane = useSharedValue(0);
-  const previous = useRef({ x: token.x, y: token.y });
-  useEffect(() => {
-    const duration = motion ? durationMs : 0;
-    const wait = duration > 0 ? delay : 0;
-    for (const value of [x, y, opacity, scale, fill, lane]) cancelAnimation(value);
-    lane.value = 0;
-    x.value = withDelay(wait, withTiming(token.x, { duration, easing: glide }));
-    y.value = withDelay(wait, withTiming(token.y, { duration, easing: glide }));
-    opacity.value = withDelay(wait, withTiming(token.visible === false ? 0 : 1, { duration }));
-    scale.value = withTiming(token.scale ?? 1, { duration });
-    fill.value = withDelay(wait, withTiming(token.tone === "muted" ? 0 : 1, { duration }));
-    if (token.arc && (previous.current.x !== token.x || previous.current.y !== token.y)) {
-      lane.value = withDelay(wait, withSequence(
-        withTiming(motion ? token.arc : 0, { duration: duration / 2 }),
-        withTiming(0, { duration: duration / 2 }),
-      ));
-    }
-    previous.current = { x: token.x, y: token.y };
-    return () => { for (const value of [x, y, opacity, scale, fill, lane]) cancelAnimation(value); };
-  }, [token.x, token.y, token.visible, token.scale, token.tone, token.arc, motion, durationMs, delay, x, y, opacity, scale, fill, lane]);
-  const movingStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateX: x.value * ratio }, { translateY: (y.value + lane.value) * ratio }, { scale: scale.value }],
-  }));
-  const fillStyle = useAnimatedStyle(() => ({ opacity: fill.value * (token.shape === "part" ? 1 : .16) }));
+function MovingToken({ token, from, ratio, delay, span, position, moving, arrived }: { token: PracticeToken; from: PracticeToken; ratio: number; delay: number; span: number; position: SharedValue<number>; moving: boolean; arrived: boolean }) {
+  const progress = useDerivedValue(() => moving ? Math.min(1, Math.max(0, (position.value * span - delay) / Motion.step)) : 1);
+  const traveling = from.x !== token.x || from.y !== token.y;
+  const movingStyle = useAnimatedStyle(() => {
+    const part = progress.value;
+    return { opacity: Number(from.visible !== false) * (1 - part) + Number(token.visible !== false) * part,
+      transform: [{ translateX: (from.x + (token.x - from.x) * part) * ratio },
+        { translateY: (from.y + (token.y - from.y) * part + (traveling ? token.arc ?? 0 : 0) * Math.sin(Math.PI * part)) * ratio },
+        { scale: (from.scale ?? 1) * (1 - part) + (token.scale ?? 1) * part }] };
+  });
+  const fillStyle = useAnimatedStyle(() => ({ opacity: (Number(from.tone !== 'muted') * (1 - progress.value) + Number(token.tone !== 'muted') * progress.value) * (token.shape === 'part' ? 1 : .16) }));
   const plain = token.shape === "plain";
   const dimensions = getPracticeTokenSize(token);
   const size = dimensions.width * ratio;
   const height = dimensions.height * ratio;
   const shapeStyle = token.cornerRadius === undefined ? undefined : { borderRadius: token.cornerRadius * ratio };
-  const color = token.tone === "primary" ? GameColors.primary : token.tone === "blue" ? "#246FA8" : GameColors.secondary;
+  const color = token.tone === "primary" ? Quantity.violet.fill : token.tone === "blue" ? Quantity.teal.fill : Ink.guide;
   return (
     <Animated.View
       testID={`practice-token-${token.id}`}
       accessible={token.visible !== false && token.label.length > 0}
-      accessibilityLabel={token.label}
+      accessibilityLabel={arrived ? token.label : from.label}
       accessibilityElementsHidden={token.visible === false}
       importantForAccessibility={token.visible === false ? "no-hide-descendants" : "auto"}
       style={[
@@ -69,40 +49,51 @@ function MovingToken({ token, ratio, delay, durationMs, motion }: { token: Pract
           <Animated.View style={[StyleSheet.absoluteFill, styles.tokenShape, shapeStyle, { backgroundColor: color }, fillStyle]} />
         </View>
       ) : null}
-      {token.object ? <PuzzleObjectImage object={token.object} primary={token.tone === "primary"} /> : <Animated.View key={token.label} entering={FadeIn.duration(250).reduceMotion(ReduceMotion.System)}>
+      {token.object ? <PuzzleObjectImage object={token.object} tone={token.tone === "primary" ? "secondary" : "primary"} size={Math.min(size, height)} /> : <View>
         <IconText style={[
           styles.tokenText,
-          { fontSize: (plain ? 21 : 25) * ratio, color: token.tone === "primary" ? GameColors.primary : GameColors.text },
+          { fontSize: (plain ? 21 : 25) * ratio, color: GameColors.text },
         ]}>
-          {token.label}
+          {arrived ? token.label : from.label}
         </IconText>
-      </Animated.View>}
+      </View>}
     </Animated.View>
   );
 }
 
-export function VisualPracticeBoard({ prompt, tokens, result, compact = false, boardHeight = PRACTICE_BOARD_HEIGHT, durationMs = 600, staggerMs = 55 }: PracticeScene) {
-  const { active, reduceMotion } = useAnimationActivity();
+export function VisualPracticeBoard(scene: PracticeScene) {
+  const key = JSON.stringify([scene.prompt, scene.tokens, scene.result]);
+  const [frame, setFrame] = useState({ key, from: scene.tokens, to: scene.tokens, changed: false });
+  if (key !== frame.key) setFrame({ key, from: frame.to, to: scene.tokens, changed: true });
+  return <PracticeFrame key={key} {...scene} from={frame.from} moving={frame.changed || !!scene.result} />;
+}
+
+function PracticeFrame({ prompt, tokens, result, compact = false, boardHeight = PRACTICE_BOARD_HEIGHT, from, moving }: PracticeScene & { from: PracticeToken[]; moving: boolean }) {
+  const { active } = useAnimationActivity();
+  const previous = new Map(from.map(token => [token.id, token]));
+  const delays = tokens.map((token, index) => token.delayMs ?? Math.min(index, 5) * Motion.stagger);
+  const span = Motion.step + Math.max(0, ...delays);
+  const beats = useRevealBeats(moving ? 1 : 0, { step: span, minTotal: 0 });
+  const { skip } = beats;
+  useEffect(() => { if (moving && !active) skip(); }, [moving, active, skip]);
   const [width, setWidth] = useState(0);
   const ratio = width / PRACTICE_BOARD_WIDTH;
-  return (
+  const body = (
     <View style={[styles.stage, compact && styles.compactStage]}>
-      {prompt ? <Text style={styles.prompt}>{prompt}</Text> : null}
+      {prompt ? <Focus dimmed={moving && !!result && beats.settled}><Caption strong style={styles.prompt}>{prompt}</Caption></Focus> : null}
       <View testID="practice-board" style={[styles.board, { aspectRatio: PRACTICE_BOARD_WIDTH / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
-          <MovingToken key={token.id} token={token} ratio={ratio} delay={token.delayMs ?? Math.min(i, 5) * staggerMs} durationMs={durationMs} motion={active && !reduceMotion} />
+          <MovingToken key={token.id} token={token} from={previous.get(token.id) ?? {...token, visible: false}} ratio={ratio} delay={delays[i]} span={span} position={beats.position} moving={moving && active && !beats.reduced} arrived={!moving || !active || beats.reduced || beats.landed > 0} />
         )) : null}
       </View>
       {!compact || result ? <View style={styles.resultHost}>
-        {result ? (
-          <Animated.Text key={result} entering={FadeIn.duration(300).reduceMotion(ReduceMotion.System)}
-            style={styles.result} accessibilityLiveRegion="polite">
-            {result}
-          </Animated.Text>
+        {result && beats.settled ? (
+          <Focus active><Caption strong style={styles.result}>{result}</Caption></Focus>
         ) : null}
       </View> : null}
     </View>
   );
+  return moving ? <RevealSurface beats={beats}>{body}</RevealSurface> : body;
 }
 
 const styles = StyleSheet.create({
@@ -114,5 +105,5 @@ const styles = StyleSheet.create({
   tokenShape: { borderRadius: moderateScale(8) },
   tokenText: { fontWeight: "800", textAlign: "center" },
   resultHost: { minHeight: moderateScale(28), justifyContent: "center" },
-  result: { fontSize: moderateScale(18), fontWeight: "800", color: GameColors.primary, textAlign: "center" },
+  result: { fontSize: moderateScale(18), fontWeight: "800", color: Ink.text, textAlign: "center" },
 });

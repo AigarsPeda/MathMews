@@ -2,6 +2,14 @@ import type { Puzzle } from '@/types/puzzle';
 
 export type ResponseValue = string | boolean | null;
 
+/** The quantity or claim represented by a response, before display formatting. */
+export function responseContent(response: Puzzle['response'], value: ResponseValue) {
+  if (value === null || !response) return undefined;
+  if (response.kind === 'judge') return response.proposed;
+  if (typeof value !== 'string' || value === '') return undefined;
+  return response.kind === 'choose' ? response.options[Number(value)] : value;
+}
+
 export function responseComplete(puzzle: Puzzle, value: ResponseValue): boolean {
   const response = puzzle.response;
   if (!response || value === null) return false;

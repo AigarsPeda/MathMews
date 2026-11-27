@@ -1,25 +1,29 @@
-import { glide } from '@/utils/puzzle-motion';
 import type { DecimalGridPuzzle, DecimalPlaceValuePuzzle } from '@/types/puzzle';
-import { changeDecimalPlace, decimalLabel, initialDecimalPlace, type DecimalPlaceState } from '@/utils/decimal-models';
+import { changeDecimalPlace, decimalLabel, decimalTotal, initialDecimalPlace, type DecimalPlaceState } from '@/utils/decimal-models';
 
 export type DecimalPuzzle = DecimalGridPuzzle | DecimalPlaceValuePuzzle;
 
-export function decimalRevealModel(puzzle: DecimalPuzzle) {
-  const total = puzzle.payload.hundredths;
+export function decimalRevealModel(puzzle: DecimalPuzzle, selected?: readonly number[], submitted?: DecimalPlaceState) {
+  const total = puzzle.type === 'decimal_grid' && selected ? selected.length * 100 / puzzle.payload.scale
+    : submitted ? decimalTotal(submitted) : puzzle.payload.hundredths;
   const grid = puzzle.type === 'decimal_grid';
   const scale = grid ? puzzle.payload.scale : puzzle.payload.digits === 1 ? 10 : 100;
   const steps = [0];
   let amount = 0;
   while (amount < total) {
     const remaining = total - amount;
-    amount += !grid && remaining >= 100 ? 100 : remaining >= 10 ? 10 : 1;
+    const chunk = 10;
+    amount += !grid && remaining >= 100 ? 100 : remaining >= 10
+      ? Math.min(chunk, Math.floor(remaining / 10) * 10)
+      : grid ? Math.min(4, remaining) : 1;
     steps.push(amount);
   }
   let exchange;
   if (puzzle.type === 'decimal_place_value' && puzzle.payload.mode !== 'build') {
     const { mode, exchangeUnit: unit } = puzzle.payload;
-    const before = initialDecimalPlace(puzzle);
-    const after = changeDecimalPlace(puzzle, before, { kind: mode, unit });
+    const initial = initialDecimalPlace(puzzle);
+    const after = submitted ?? changeDecimalPlace(puzzle, initial, { kind: mode, unit });
+    const before = submitted ?? initial;
     const size = unit === 'tenths' ? 100 : 10;
     exchange = { mode, unit, before, after, size, start: (Math.floor(total / size) - 1) * size };
   }
@@ -27,13 +31,32 @@ export function decimalRevealModel(puzzle: DecimalPuzzle) {
 }
 export type DecimalRevealModel = ReturnType<typeof decimalRevealModel>;
 
+/** Each beat fills the next group using exactly one donor per empty cell. */
+export function decimalGroupingMasks(mask: readonly number[], stops: readonly number[]) {
+  const cells = new Set(mask);
+  const donors = mask.filter(index => index >= mask.length);
+  let next = 0, donor = 0;
+  const first = { cells: mask, moving: [] as number[] };
+  return [first, ...stops.slice(1).map(stop => {
+    const moving: number[] = [];
+    for (; next < stop; next++) {
+      if (cells.has(next)) continue;
+      const from = donors[donor++];
+      cells.delete(from);
+      cells.add(next);
+      moving.push(from, next);
+    }
+    return { cells: [...cells], moving };
+  })];
+}
+
 export function decimalFillAt(steps: readonly number[], beat: number) {
   'worklet';
   const last = steps.length - 1;
   const position = Math.max(0, Math.min(last, beat));
   const i = Math.floor(position);
   if (i === last) return steps[last];
-  const progress = glide((position - i) / .82);
+  const progress = position - i;
   return steps[i] + (steps[i + 1] - steps[i]) * progress;
 }
 

@@ -1,4 +1,5 @@
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { CookieDeal } from '@/components/puzzle/CookieSharingBoard';
 import { EverydayDiagram } from "@/components/puzzle/EverydayDiagram";
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
@@ -31,14 +32,17 @@ export function VisualHelpSheet({
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [progress, setProgress] = useState(0);
+  const [play, setPlay] = useState(0);
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const isNumberLine = getPuzzleType(puzzle) === "number_line";
   const explanation = getVisualExplanation(puzzle);
+  const cookieExample = puzzle.type === 'fair_share' && puzzle.payload.object === 'cookie'
+    ? { items: puzzle.payload.items === 7 ? 8 : 7, plates: puzzle.payload.people === 2 ? 3 : 2 } : null;
   const example = puzzle.type === 'multiple_choice' ? puzzle.everyday?.example : undefined;
   if (isNumberLine) explanation.keyframes = NUMBER_LINE_EXAMPLES[direction];
   const key = `${visible}-${puzzle.id}`;
   const [previousKey, setPreviousKey] = useState(key);
-  if (key !== previousKey) { setPreviousKey(key); setProgress(0); setDirection("forward"); }
+  if (key !== previousKey) { setPreviousKey(key); setPlay(0); setProgress(0); setDirection("forward"); }
   return (
     <AppBottomSheet backgroundColor={GameColors.background} visible={visible} onClose={onClose} expanded>
       <ScrollView
@@ -50,7 +54,7 @@ export function VisualHelpSheet({
       >
         <View style={styles.card}>
           <Text style={styles.title}>
-            {example ? t('everyday.workedExample') : t(explanation.titleKey)}
+            {example || cookieExample ? t('everyday.workedExample') : t(explanation.titleKey)}
           </Text>
           <Text style={styles.subtitle}>
             {t("visualHelp.numberLine.subtitle")}
@@ -74,10 +78,18 @@ export function VisualHelpSheet({
             </View>
           ) : null}
 
-          {example ? <>
+          {cookieExample ? <>
+            <Text style={styles.exampleQuestion}>{t('cookieShare.goal', { cookies: t('cookieShare.cookies', { count: cookieExample.items }), plates: cookieExample.plates })}</Text>
+            <CookieDeal items={cookieExample.items} plates={cookieExample.plates} />
+          </> : example ? <>
             <Text style={styles.exampleQuestion}>{example.question}</Text>
-            <EverydayDiagram model={example.model} />
-            <Text style={styles.exampleExplanation}>{example.explanation}</Text>
+            <EverydayDiagram key={play} model={example.model} onSolutionShown={play ? finishExample : undefined} />
+            {example.model.kind === 'bars'
+              ? <Text style={styles.exampleExplanation}>{t('everyday.barHelp.' + example.model.task)}</Text>
+              : <Text style={styles.exampleExplanation}>{example.explanation}</Text>}
+            {!play && <Pressable style={styles.replay} accessibilityRole="button" onPress={() => setPlay(1)}>
+              <Text style={styles.replayText}>{t('everyday.showExample')}</Text>
+            </Pressable>}
           </> : <VisualExplanationPlayer explanation={explanation} progress={progress} onProgressChange={setProgress} stepByStep={isNumberLine} />}
 
           <Pressable
@@ -101,7 +113,11 @@ export function VisualHelpSheet({
   );
 }
 
+const finishExample = () => {};
+
 const styles = StyleSheet.create({
+  replay: { minHeight: 48, justifyContent: "center", paddingHorizontal: 16, backgroundColor: GameColors.progressTrack, borderBottomWidth: 3, borderRadius: 12, borderColor: GameColors.cardBorder },
+  replayText: { fontSize: 16, fontWeight: "800", color: GameColors.text },
   exampleQuestion: { color: GameColors.text, fontSize: 20, lineHeight: 28, fontWeight: '700', textAlign: 'center' },
   exampleExplanation: { color: GameColors.text, fontSize: 17, lineHeight: 26, alignSelf: 'stretch' },
   scroll: {
@@ -140,7 +156,8 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(44),
     padding: moderateScale(10),
     borderRadius: moderateScale(12),
-    borderWidth: 2,
+    backgroundColor: GameColors.progressTrack,
+    borderBottomWidth: 3,
     borderColor: GameColors.cardBorder,
     alignItems: "center",
     justifyContent: "center",
@@ -155,7 +172,7 @@ const styles = StyleSheet.create({
     color: GameColors.text,
   },
   directionTextSelected: {
-    color: "#FFFFFF",
+    color: GameColors.card,
   },
   closeBtn: {
     width: "100%",
@@ -174,7 +191,7 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
   },
   closeBtnTextPrimary: {
-    color: "#FFFFFF",
+    color: GameColors.card,
     fontWeight: "800",
   },
 });

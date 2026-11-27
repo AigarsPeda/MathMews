@@ -74,8 +74,8 @@ final class NativeDragTests: XCTestCase {
  }
  func testPatternSwapsReplacementAndReturn() {
   app.buttons["Pattern"].tap(); app.buttons["Reset board"].tap()
-  drag("Number 10", to: app.staticTexts["?"].firstMatch); expect("Position 2, 10")
-  drag("Number 20", to: app.staticTexts["?"].firstMatch); expect("Position 4, 20")
+  drag("Number 10", to: app.buttons["Move to position 2"]); expect("Position 2, 10")
+  drag("Number 20", to: app.buttons["Move to position 4"]); expect("Position 4, 20")
   drag("Position 2, 10", to: app.buttons["Position 4, 20"])
   expect("Position 2, 20"); expect("Position 4, 10")
   shot("pattern-gaps-swapped")
@@ -85,7 +85,7 @@ final class NativeDragTests: XCTestCase {
   expect("Position 2, 12"); expect("Number 10")
   drag("Position 2, 12", to: app.buttons["Number 30"])
   expect("Number 12"); expect("Position 4, 20")
-  drag("Number 10", to: app.staticTexts["?"].firstMatch); expect("Position 2, 10")
+  drag("Number 10", to: app.buttons["Move to position 2"]); expect("Position 2, 10")
   drag("Position 4, 20", to: app.staticTexts["Native drag check"].firstMatch); expect("Position 4, 20")
   app.buttons["Check pattern"].tap()
   XCTAssertTrue(app.staticTexts["Correct"].firstMatch.waitForExistence(timeout: 3))
@@ -96,8 +96,9 @@ final class NativeDragTests: XCTestCase {
   app.swipeDown()
   app.buttons["Order"].tap(); app.buttons["Reset board"].tap()
   app.buttons["Number 1, position 1"].tap(); app.buttons["Number 3, position 4"].tap()
-  expect("Number 3, position 1"); expect("Number 1, position 4")
-  shot("order-tap-swap")
+  // Tap-then-destination inserts like a drag: [1, 6, 8, 3] becomes [6, 8, 3, 1].
+  expect("Number 6, position 1"); expect("Number 1, position 4")
+  shot("order-tap-insert")
   app.swipeUp()
   for count in 1...4 {
    app.buttons["Fill progress"].tap()

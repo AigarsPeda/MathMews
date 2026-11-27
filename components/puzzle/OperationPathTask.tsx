@@ -1,14 +1,18 @@
+import { OperationEquation, OperatorPicker } from './OperationEquation';
+import { ResultMark } from "@/components/puzzle/kit/PuzzleKit";
+import { useRevealBeats } from "@/components/puzzle/kit/useRevealBeats";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { HapticTick } from "@/components/puzzle/tiles/TileMotion";
+import { Ink } from "@/constants/puzzle-theme";
 import type { MathOperator, OperationPathPuzzle } from "@/types/puzzle";
-import { MATH_OPERATORS } from "@/types/puzzle";
 import { applyMathOperator } from "@/utils/puzzle-math";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Fragment, type ComponentType, type ReactNode, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
 type OperationPathTaskProps = {
+  AnswerRow?: ComponentType<{ children: ReactNode }>;
   puzzle: OperationPathPuzzle;
   selectedOperators: (MathOperator | null)[];
   answered: boolean;
@@ -16,37 +20,8 @@ type OperationPathTaskProps = {
   onSelectOperator: (stepIndex: number, operator: MathOperator) => void;
 };
 
-function NumberBubble({
-  value,
-  large = false,
-  placeholder = false,
-}: {
-  value: number | "?";
-  large?: boolean;
-  placeholder?: boolean;
-}) {
-  return (
-    <View
-      style={[
-        styles.numberBubble,
-        large && styles.numberBubbleLarge,
-        placeholder && styles.numberBubblePlaceholder,
-      ]}
-    >
-      <Text
-        style={[
-          styles.numberText,
-          large && styles.numberTextLarge,
-          placeholder && styles.numberTextPlaceholder,
-        ]}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-}
-
 export function OperationPathTask({
+  AnswerRow = Fragment,
   puzzle,
   selectedOperators,
   answered,
@@ -55,276 +30,56 @@ export function OperationPathTask({
 }: OperationPathTaskProps) {
   const { t } = useTranslation();
   const { start, target, steps } = puzzle.payload;
+  const [chosenFocus, setFocus] = useState<number | null>(null);
 
   const runningValues = useMemo(() => {
     const values: (number | null)[] = [start];
     for (let i = 0; i < steps.length; i++) {
       const operator = selectedOperators[i];
       const value = values[i];
-      values.push(
-        operator && value !== null
-          ? applyMathOperator(value, steps[i].operand, operator)
-          : null,
-      );
+      values.push(operator && value !== null ? applyMathOperator(value, steps[i].operand, operator) : null);
     }
     return values;
   }, [selectedOperators, start, steps]);
   const currentValue = runningValues[steps.length];
+  const firstEmpty = selectedOperators.findIndex(operator => operator === null);
+  const focus = answered ? -1 : chosenFocus ?? (firstEmpty >= 0 ? firstEmpty : steps.length - 1);
+  const beats = useRevealBeats(answered ? steps.length : 0);
 
-  return (
-    <View style={styles.wrap}>
-      <View style={styles.goalRow}>
-        <Text style={styles.startLabel}>{t("puzzleTypes.operationPathStart")}</Text>
-        <NumberBubble value={start} />
-        <Text style={styles.goalLabel}>{t("puzzleTypes.goal")}</Text>
-        <NumberBubble value={target} large />
+  const pick = (operator: MathOperator) => {
+    if (focus < 0) return;
+    onSelectOperator(focus, operator);
+    const next = selectedOperators.findIndex((value, i) => i !== focus && value === null);
+    setFocus(next >= 0 ? next : focus);
+  };
+
+  return <View style={styles.wrap}>
+    <HapticTick trigger={selectedOperators.join(",")} />
+    <OperationEquation entry={!answered} numbers={[start, ...steps.map(step => step.operand)]} operators={selectedOperators}
+      target={target} focus={focus} onFocus={answered ? undefined : setFocus} miss={answered && !isCorrect}
+      missedSlot={selectedOperators.findIndex((op, i) => op !== steps[i].operator)} />
+    {answered ? <>
+      <Text style={styles.progressText}>{t("puzzleTypes.operationPathStep", { step: Math.max(1, beats.landed), total: steps.length })}</Text>
+      <View style={styles.progress}>
+        {answered && beats.done && currentValue !== null ? <View style={styles.compare} accessibilityLiveRegion="polite"
+          accessibilityLabel={t("puzzleTypes.yourResult", { value: currentValue })}>
+          {/* The checker only knows the final value, so only the comparison with the goal is marked. */}
+          <Text style={styles.compareText}>{`${currentValue} ${isCorrect ? "=" : "≠"} ${target}`}</Text>
+          <ResultMark kind={isCorrect ? "correct" : "wrong"} size={moderateScale(18)} />
+        </View>
+          : currentValue !== null ? <Text style={styles.progressText} accessibilityLiveRegion="polite">{t("puzzleTypes.yourResult", { value: currentValue })}</Text> : null}
+        {answered && !isCorrect ? <Text style={styles.retryHint}>{t("puzzleTypes.tryDifferentOps")}</Text> : null}
       </View>
-
-      {!answered ? (
-        <Text style={styles.stepHint}>{t("puzzleTypes.operationPathEditHint")}</Text>
-      ) : null}
-
-      <View style={styles.pathCard}>
-
-
-        {steps.map((step, index) => {
-          const selected = selectedOperators[index] ?? null;
-          const leftValue = runningValues[index];
-          const rightValue = runningValues[index + 1];
-
-          return (
-            <View key={`${puzzle.id}-step-${index}`} style={styles.stepBlock}>
-              <Text style={styles.stepLabel}>
-                {t("puzzleTypes.operationPathStep", {
-                  step: index + 1,
-                  total: steps.length,
-                })}
-              </Text>
-
-              <View style={styles.stepRow}>
-                <NumberBubble
-                  value={leftValue ?? "?"}
-                  placeholder={leftValue === null}
-                />
-                <View
-                  style={[
-                    styles.operatorSlot,
-                    !answered && selected === null && styles.operatorSlotActive,
-                    answered &&
-                      isCorrect &&
-                      styles.operatorSlotCorrect,
-                    answered &&
-                      selected !== null &&
-                      !isCorrect &&
-                      styles.operatorSlotWrong,
-                  ]}
-                >
-                  <Text style={styles.operatorSlotText}>{selected ?? "?"}</Text>
-                </View>
-                <NumberBubble value={step.operand} />
-                <Text style={styles.equals}>=</Text>
-                <NumberBubble
-                  value={rightValue ?? "?"}
-                  placeholder={rightValue === null}
-                />
-              </View>
-
-              {!answered ? (
-                <View style={styles.operatorPicker}>
-                  {MATH_OPERATORS.map((operator) => (
-                    <Pressable
-                      key={operator}
-                      style={({ pressed }) => [
-                        styles.operatorBtn,
-                        selected === operator && styles.operatorBtnSelected,
-                        pressed && styles.operatorBtnPressed,
-                      ]}
-                      onPress={() => onSelectOperator(index, operator)}
-                      accessibilityRole="button"
-                      accessibilityLabel={t("puzzleTypes.pickOperatorForStep", {
-                        operator,
-                        step: index + 1,
-                      })}
-                      accessibilityState={{ selected: selected === operator }}
-                    >
-                      <Text style={styles.operatorBtnText}>{operator}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              ) : null}
-            </View>
-          );
-        })}
-      </View>
-
-      {currentValue !== null ? (
-        <Text style={styles.progressText}>
-          {t("puzzleTypes.yourResult", { value: currentValue })}
-        </Text>
-      ) : null}
-
-      {answered && !isCorrect ? (
-        <Text style={styles.retryHint}>{t("puzzleTypes.tryDifferentOps")}</Text>
-      ) : null}
-    </View>
-  );
+    </> : <AnswerRow><OperatorPicker focus={focus} selected={selectedOperators[focus]} pick={pick} /></AnswerRow>}
+  </View>;
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    gap: moderateScale(8),
-  },
-  goalRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: moderateScale(6),
-  },
-  goalLabel: {
-    fontSize: moderateScale(16),
-    fontWeight: "700",
-    color: GameColors.textMuted,
-  },
-  pathCard: {
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(18),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    padding: moderateScale(8),
-    gap: moderateScale(8),
-  },
-  startLabel: {
-    fontSize: moderateScale(14),
-    fontWeight: "700",
-    color: GameColors.textMuted,
-  },
-  stepBlock: {
-    gap: moderateScale(6),
-  },
-  stepLabel: {
-    fontSize: moderateScale(13),
-    fontWeight: "700",
-    color: GameColors.secondary,
-    textAlign: "center",
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  stepRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: moderateScale(8),
-  },
-  numberBubble: {
-    minWidth: moderateScale(44),
-    minHeight: moderateScale(44),
-    borderRadius: moderateScale(12),
-    backgroundColor: GameColors.background,
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: moderateScale(4),
-  },
-  numberBubbleLarge: {
-    minWidth: moderateScale(52),
-    minHeight: moderateScale(52),
-    borderColor: GameColors.coin,
-  },
-  numberBubblePlaceholder: {
-    borderStyle: "dashed",
-    backgroundColor: "transparent",
-  },
-  numberText: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: GameColors.text,
-    fontVariant: ["tabular-nums"],
-  },
-  numberTextLarge: {
-    fontSize: moderateScale(22),
-    color: GameColors.coinText,
-  },
-  numberTextPlaceholder: {
-    color: GameColors.textMuted,
-  },
-  operatorSlot: {
-    width: moderateScale(44),
-    height: moderateScale(44),
-    borderRadius: moderateScale(12),
-    borderWidth: 2,
-    borderColor: GameColors.secondary,
-    backgroundColor: GameColors.selectedSurface,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  operatorSlotActive: {
-    borderColor: GameColors.primary,
-    backgroundColor: "rgba(255, 107, 107, 0.12)",
-  },
-  operatorSlotCorrect: {
-    borderColor: GameColors.success,
-    backgroundColor: "rgba(107, 203, 119, 0.15)",
-  },
-  operatorSlotWrong: {
-    borderColor: "#FF9F43",
-    backgroundColor: "rgba(255, 159, 67, 0.12)",
-  },
-  operatorSlotText: {
-    fontSize: moderateScale(22),
-    fontWeight: "800",
-    color: GameColors.text,
-  },
-  equals: {
-    fontSize: moderateScale(20),
-    fontWeight: "800",
-    color: GameColors.textMuted,
-  },
-  operatorPicker: {
-    flexDirection: "row",
-    gap: moderateScale(8),
-    justifyContent: "center",
-  },
-  operatorBtn: {
-    minWidth: moderateScale(52),
-    minHeight: moderateScale(52),
-    borderRadius: moderateScale(14),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.background,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  operatorBtnPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.97 }],
-  },
-  operatorBtnSelected: {
-    borderColor: GameColors.secondary,
-    backgroundColor: GameColors.selectedSurface,
-  },
-  operatorBtnText: {
-    fontSize: moderateScale(24),
-    fontWeight: "800",
-    color: GameColors.text,
-  },
-  progressText: {
-    fontSize: moderateScale(15),
-    fontWeight: "600",
-    color: GameColors.textMuted,
-    textAlign: "center",
-  },
-  stepHint: {
-    fontSize: moderateScale(14),
-    fontWeight: "600",
-    color: GameColors.textMuted,
-    textAlign: "center",
-  },
-  retryHint: {
-    fontSize: moderateScale(14),
-    fontWeight: "600",
-    color: GameColors.textMuted,
-    textAlign: "center",
-  },
+  wrap: { gap: moderateScale(12) },
+  progress: { minHeight: moderateScale(26), gap: moderateScale(4) },
+  // Caption-strong size (≥16 pt, navy) for the one comparison the checker can make.
+  compareText: { fontSize: Math.max(16, moderateScale(18)), lineHeight: Math.max(22, moderateScale(24)), fontWeight: "800", color: Ink.text, fontVariant: ["tabular-nums"] },
+  compare: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: moderateScale(8) },
+  progressText: { fontSize: moderateScale(15), fontWeight: "700", color: Ink.soft, textAlign: "center" },
+  retryHint: { fontSize: moderateScale(14), fontWeight: "600", color: Ink.soft, textAlign: "center" },
 });

@@ -27,11 +27,8 @@ export function distanceAtStops(distance: number, stops: readonly number[], maxH
   return stops[stops.length - 1];
 }
 
-// Height above a landing surface. Contact first, then one small rebound.
+// Height above a landing surface. Contact is the final frame.
 export function dropHeight(progress: number) {
   'worklet';
-  const t = Math.max(0, Math.min(1, progress));
-  if (t < .72) return 1 - (t / .72) ** 2;
-  const rebound = (t - .72) / .28;
-  return .12 * 4 * rebound * (1 - rebound);
+  return 1 - glide(progress);
 }

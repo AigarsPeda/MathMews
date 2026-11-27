@@ -12,7 +12,9 @@ export function checkFractionModels({ load }) {
   const read = locale => ['easy','medium','hard'].flatMap(d => readPuzzles(locale, d));
   const en = read('en'), lv = read('lv');
   const labels = ['en','lv'].map(l => JSON.parse(fs.readFileSync(`locales/${l}.json`)));
-  assert.deepEqual(Object.keys(labels[0].fractionModels).sort(), Object.keys(labels[1].fractionModels).sort());
+  // Plural forms differ by language (Latvian has a zero form), so compare base keys.
+  const baseKeys = o => [...new Set(Object.keys(o).map(k => k.replace(/_(zero|one|two|few|many|other)$/, '')))].sort();
+  assert.deepEqual(baseKeys(labels[0].fractionModels), baseKeys(labels[1].fractionModels));
   for (const l of labels) assert.ok(Object.values(l.fractionModels).every(v => typeof v === 'string' && v.length > 0));
   const boards = en.filter(p => ['fraction_number_line','fraction_strip'].includes(p.type));
   assert.equal(boards.length,28);

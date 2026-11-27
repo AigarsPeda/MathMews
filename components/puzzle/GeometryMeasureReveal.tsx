@@ -1,99 +1,102 @@
-import { distanceAtStops, glide } from '@/utils/puzzle-motion';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Canvas, Circle, Group, LinearGradient, Path, RoundedRect, Skia } from '@shopify/react-native-skia';
-import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
+import { ProofWindow } from './counting/ProofWindow';
+import { canSnapshotModel } from './counting/useModelPaint';
+import { useInitialModelPaint } from './kit/useInitialModelPaint';
+import { useProofAnnouncement } from './counting/useProofAnnouncement';
+import { UnitRunGlyph } from './kit/UnitRun';
+import { ProofCaption } from './kit/Focus';
+import { useRevealBeats } from './kit/useRevealBeats';
+import { RevealSurface } from './kit/RevealSurface';
+import type { ReactNode } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Canvas, Group } from '@shopify/react-native-skia';
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { DiagramColors as D, PuzzleColors as C } from '@/constants/puzzle-theme';
-import { useAnimationActivity } from '@/hooks/use-animation-activity';
+import { ProofMotion, Shape } from '@/constants/puzzle-theme';
 import type { GeometryMeasurePuzzle } from '@/types/puzzle';
-import { geometryMeasurement, measureStops, perimeterPoint } from '@/utils/geometry-models';
-import { PuzzleText as Text } from './PuzzleText';
+import { geometryMeasurement } from '@/utils/geometry-models';
 
-function Square({ index, columns, unit, progress }: { index: number; columns: number; unit: number; progress: SharedValue<number> }) {
-  const x = index % columns * unit, y = Math.floor(index / columns) * unit;
-  const entry = useDerivedValue(() => glide(progress.value - index));
-  const transform = useDerivedValue(() => [{ scale: .72 + .28 * entry.value }]);
-  const top = Math.floor(index / columns) % 2 ? '#72CCDD' : '#65C6DA';
-  return <Group opacity={entry} origin={{ x: x + unit / 2, y: y + unit / 2 }} transform={transform}>
-    <RoundedRect x={x + 1} y={y + 1} width={unit - 2} height={unit - 2} r={1}>
-      <LinearGradient start={{ x, y }} end={{ x: x + unit * .4, y: y + unit }} colors={[top, D.geometryFill]} />
-    </RoundedRect>
+
+function Row({ index, y, columns, unit, progress, complete }: { y: number; complete: boolean; index: number; columns: number; unit: number; progress: SharedValue<number> }) {
+  const opacity = useDerivedValue(() => {
+    const portion = Math.max(0, progress.value / columns - index);
+    return complete ? 1 : .42 * Math.min(1, portion);
+  });
+  return <Group opacity={opacity}>
+    <UnitRunGlyph x={Shape.space.seam / 2} width={columns * unit - Shape.space.seam} height={unit - Shape.space.seam} y={y + Shape.space.seam / 2} count={columns} />
   </Group>;
 }
 
-function Boundary({ w, h, unit, progress }: { w: number; h: number; unit: number; progress: SharedValue<number> }) {
-  const path = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.moveTo(0, 0); p.lineTo(w * unit, 0); p.lineTo(w * unit, h * unit); p.lineTo(0, h * unit); p.close();
-    return p;
-  }, [w, h, unit]);
-  const trim = useDerivedValue(() => Math.min(1, Math.max(0, progress.value / (2 * (w + h)))));
-  const point = useDerivedValue(() => perimeterPoint(w, h, progress.value));
-  const x = useDerivedValue(() => point.value.x * unit), y = useDerivedValue(() => point.value.y * unit);
-  return <>
-    <Path path={path} end={trim} color={C.primaryDark} style="stroke" strokeWidth={4} strokeCap="round" strokeJoin="round" />
-    <Circle cx={x} cy={y} r={5.5} color={C.primaryDark} />
-    <Circle cx={x} cy={y} r={2.6} color={C.card} />
-  </>;
-}
-
-export function MeasureInk({ width, height, unit, area, progress }: {
-  width: number; height: number; unit: number; area: boolean; progress: SharedValue<number>;
+export function MeasureInk({ width, height, unit, progress, completedRows = 0, missing = false }: {
+  width: number; height: number; unit: number; progress?: SharedValue<number>; completedRows?: number; missing?: boolean;
 }) {
-  // Let the pen sit on the actual boundary, including at the four corners.
-  const pad = 6;
-  return <Canvas pointerEvents="none" style={{ position: 'absolute', left: -pad, top: -pad,
-    width: width * unit + 2 * pad, height: height * unit + 2 * pad }}>
-    <Group transform={[{ translateX: pad }, { translateY: pad }]}>
-      {area ? Array.from({ length: width * height }, (_, i) =>
-        <Square key={i} index={i} columns={width} unit={unit} progress={progress} />)
-        : <Boundary w={width} h={height} unit={unit} progress={progress} />}
-    </Group>
+  return <Canvas accessible={false} pointerEvents="none" style={StyleSheet.absoluteFill}>
+    {progress && Array.from({ length: height }, (_, i) =>
+      <Row key={i} index={i} y={(missing ? height - i - 1 : i) * unit} columns={width} unit={unit} progress={progress} complete={i < completedRows} />)}
   </Canvas>;
 }
 
-export function GeometryMeasureReveal({ puzzle, marked, onSolutionShown, children }: {
-  puzzle: GeometryMeasurePuzzle; marked: number; onSolutionShown: () => void;
-  children: (progress: SharedValue<number>, done: boolean) => ReactNode;
+export function GeometryMeasureReveal({ puzzle, measured, confirmPaint, viewportHeight, stacked, onSolutionShown, children }: {
+  puzzle: GeometryMeasurePuzzle; measured: boolean; confirmPaint: () => Promise<boolean>; viewportHeight?: number; stacked?: boolean; marked: number; onSolutionShown: () => void;
+  children: (progress: SharedValue<number>, done: boolean, second: SharedValue<number>, phase: number) => ReactNode;
 }) {
   const { t } = useTranslation();
-  const { active, reduceMotion } = useAnimationActivity();
-  const { total, otherTotal, equation } = geometryMeasurement(puzzle);
-  const steps = Math.max(total, otherTotal);
-  const stops = useMemo(() => measureStops(puzzle, marked), [puzzle, marked]);
-  const clock = useSharedValue(marked);
-  const progress = useDerivedValue(() => distanceAtStops(clock.get(), stops, .55));
-  const [count, setCount] = useState(marked);
-  useEffect(() => {
-    if (clock.get() >= steps) return;
-    if (!active || reduceMotion) { clock.set(steps); return; }
-    const perUnit = Math.min(310, Math.max(110, 3900 / steps));
-    clock.set(withTiming(steps, { duration: (steps - clock.get()) * perUnit, easing: Easing.linear }));
-    return () => cancelAnimation(clock);
-  }, [active, reduceMotion, clock, steps]);
-  useAnimatedReaction(() => Math.max(marked, Math.floor(progress.value)), (n, previous) => {
-    if (n !== previous) scheduleOnRN(setCount, n);
+  const {fontScale} = useWindowDimensions();
+  const { mode, width: w, height: h, other } = puzzle.payload;
+  const { total, equation } = geometryMeasurement(puzzle);
+  const area = mode === 'area' || mode === 'missing_area';
+  const missing = mode === 'missing_perimeter';
+  const corners = (w: number, h: number) => [w, w + h, 2 * w + h, 2 * (w + h)];
+  const rowBatch = h > 5 ? 2 : 1;
+  const rowsAt = (step: number) => Math.min(h, step * rowBatch);
+  const stops = area ? Array.from({ length: Math.ceil(h / rowBatch) }, (_, i) => rowsAt(i + 1) * w) : missing ? [total, total + 1, total + 2] :
+    [...corners(w, h), ...(other ? corners(other.width, other.height).map(n => total + n) : [])];
+  const beats = useRevealBeats(measured ? stops.length : null, { awaitInitialPaint: canSnapshotModel, onDone: onSolutionShown, reducedSteps: true, minTotal: 0,
+    lead: 50, step: mode === 'compare' ? ProofMotion.beat[300] : missing ? (n: number) => [1200, 600, 360][n] ?? 360 : ProofMotion.beat[360], hold: n => mode === 'compare' && n === stops.length ? ProofMotion.beat[300] : 0 });
+  useInitialModelPaint(beats, measured && canSnapshotModel, confirmPaint);
+  const { position, reduced, landed, settled } = beats;
+  const distance = useDerivedValue(() => {
+    const at = reduced ? landed : position.value, index = Math.floor(at);
+    const from = stops[index - 1] ?? 0, to = stops[index] ?? from;
+    return from + (at - index) * (to - from);
   });
-  const done = count >= steps;
-  useEffect(() => { if (done) onSolutionShown(); }, [done, onSolutionShown]);
-  const { mode } = puzzle.payload;
-  const isMissing = mode === 'missing_area' || mode === 'missing_perimeter';
-  const label = done && isMissing ? 'sideAnswer' : mode === 'area' || mode === 'missing_area' ? 'areaAnswer' : 'perimeterAnswer';
-  return <>
-    {children(progress, done)}
-    <View style={styles.caption}>
-      <Text style={styles.label}>{t(`geometryModels.${label}`)}</Text>
-      <Text testID="geometry-measure-total" accessibilityLiveRegion={done ? 'polite' : 'none'} style={styles.result}>
-        {done ? equation : mode === 'compare' ? `A = ${Math.min(count, total)}     B = ${Math.min(count, otherTotal)}` : count}
-      </Text>
+  const first = useDerivedValue(() => Math.min(total, distance.value));
+  const second = useDerivedValue(() => Math.max(0, distance.value - total));
+  const units = (n: number) => t(n === 1 ? 'geometryModels.oneUnit' : 'geometryModels.manyUnits', { value: n });
+  function caption(n: number, final: boolean) {
+    const distance = stops[n - 1] ?? 0;
+    if (final || n === stops.length && mode !== 'compare') {
+      if (fontScale >= 2) return equation;
+      if (mode === 'area') return `${w} × ${h} = ${t(total === 1 ? 'geometryModels.squareUnit' : 'geometryModels.squareUnits', { value: total })}`;
+      if (mode === 'missing_area') return `${total} ÷ ${w} = ${units(h)}`;
+      if (missing) return `${total} ÷ 2 − ${w} = ${units(h)}`;
+      return equation;
+    }
+    if (area) return n === 0 ? '' : `${w} × ${distance / w} = ${distance}`;
+    if (missing) return ['', `${w} + ? + ${w} + ?`, `${total} ÷ 2 = ${total / 2}`][n];
+    if (!n) return '';
+    // A comparison names only the finished totals, never a bare "A · 1".
+    if (other && n % 4 !== 0) return '';
+    const secondShape = other && n > 4;
+    const sides = secondShape ? [other.width, other.height, other.width, other.height] : [w, h, w, h];
+    const walked = sides.slice(0, secondShape ? n - 4 : n);
+    const sum = walked.reduce((a, b) => a + b, 0);
+    return (walked.length === 1 ? String(sum) : `${walked.join(' + ')} = ${sum}`);
+
+  }
+  useProofAnnouncement(beats, caption(landed, settled), true);
+  const firstShare = other ? h / (h + other.height) : 1;
+  const equationID = settled ? 'play-proof-equation' : undefined;
+  const corner = landed % 4;
+  const traceY = landed > 0 && (corner === 2 || corner === 3) ? 1 : 0;
+  let focus = traceY;
+  if (area) focus = mode === 'missing_area' ? 1 - rowsAt(landed) / h : rowsAt(landed) / h;
+  else if (stacked && other) focus = landed > 4 ? firstShare + traceY * (1 - firstShare) : traceY * firstShare;
+  const model = children(first, settled || (mode === 'missing_area' && landed === stops.length), second, area ? rowsAt(landed) : landed);
+  return <RevealSurface beats={beats}><View nativeID="play-proof-model" testID="play-proof-model" collapsable={false}>{viewportHeight == null ? model : <ProofWindow height={viewportHeight} focus={focus}>{model}</ProofWindow>}</View>
+    <View testID="geometry-measure-total" style={styles.caption}>
+      <View nativeID={equationID} testID={equationID}><ProofCaption text={caption(landed, settled)} reserveTexts={[...stops.map((_, i) => caption(i + 1, false)), caption(0, false), caption(stops.length, true)]} /></View>
     </View>
-  </>;
+  </RevealSurface>;
 }
 
-const styles = StyleSheet.create({
-  caption: { alignItems: 'center', paddingTop: 6 },
-  label: { color: C.textMuted, fontSize: 15, lineHeight: 22, textAlign: 'center', fontWeight: '700' },
-  result: { color: C.primaryDark, fontSize: 23, lineHeight: 32, fontWeight: '900', fontVariant: ['tabular-nums'], textAlign: 'center' },
-});
+const styles = StyleSheet.create({ caption: { paddingTop: 6 } });

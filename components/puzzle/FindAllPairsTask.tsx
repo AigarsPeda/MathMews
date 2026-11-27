@@ -1,46 +1,45 @@
+import { EquationTile, PAIR_TILE } from './OperationEquation';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { Announce } from "@/components/puzzle/tiles/Announce";
+import { FeedbackTile, FlyIn, landTick } from "@/components/puzzle/tiles/TileMotion";
+import { Ink, PuzzleColors as GameColors, Quantity, Radius } from "@/constants/puzzle-theme";
 import type { FindAllPairsPuzzle } from "@/types/puzzle";
 import { getValidPairs } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
-import { useRef, useState } from "react";
+import { Fragment, type ComponentType, type ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, type GestureResponderEvent } from "react-native";
 
-const pairColors = [
-  { background: GameColors.selectedSurface, ink: "#006D68" },
-  { background: "#F3EEFF", ink: "#65409A" },
-  { background: "#FFF0DB", ink: "#875100" },
-  { background: "#EAF2FF", ink: "#285DA1" },
-  { background: "#FCEBF2", ink: "#A03565" },
-  { background: "#EDF5DF", ink: "#48651E" },
-];
-function pairColor(index: number) {
-  // Additional authored pairs get their own hue instead of repeating a color.
-  const hue = (index * 137.508) % 360;
-  return pairColors[index] ?? { background: `hsl(${hue}, 65%, 94%)`, ink: `hsl(${hue}, 65%, 27%)` };
-}
+type Point = { x: number; y: number };
 
-export function FindAllPairsTask({ puzzle, pairs, answered, onChange, canAttempt = true, onIncorrectAttempt }: {
+/** Collected pairs stay editable. A rejected pair can spend a life only once per selection. */
+export function FindAllPairsTask({ AnswerRow = Fragment, puzzle, pairs, answered, onChange, canAttempt = true, missedPair, onIncorrectAttempt }: {
+  AnswerRow?: ComponentType<{ children: ReactNode }>;
   puzzle: FindAllPairsPuzzle; pairs: [number, number][]; answered: boolean;
   onChange: (pairs: [number, number][]) => void;
-  canAttempt?: boolean;
+  canAttempt?: boolean; missedPair?: readonly number[];
   onIncorrectAttempt?: () => boolean;
 }) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<number[]>([]);
-  const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState<"pairFound" | "pairDuplicate" | "pairWrong" | null>(null);
+  const [rejected, setRejected] = useState<number[]>([]);
   const rejectedPair = useRef<string | null>(null);
+  const touches = useRef(new Map<number, Point>());
+  // Flight origins and well centres are state so render never reads mutable refs.
+  const [flights, setFlights] = useState<Record<string, Point>>({});
+  const wells = useRef<(View | null)[]>([]);
+  const [wellCentres, setWellCentres] = useState<(Point | null)[]>([]);
   const { numbers, target } = puzzle.payload;
   const validPairs = getValidPairs(numbers, target);
   const total = validPairs.length;
-  const colorIndex = (a: number, b: number) => validPairs.findIndex(([left, right]) => (left === a && right === b) || (left === b && right === a));
-  const nextPair = validPairs.findIndex(([a, b]) => !pairs.some(([left, right]) => left === a && right === b));
-  const selectionColor = pairColor(Math.max(0, nextPair));
-  function choose(index: number) {
+  function choose(index: number, event?: GestureResponderEvent) {
     if (answered || !canAttempt) return;
     rejectedPair.current = null;
-    setMessage("");
+    setNotice(null);
+    setRejected([]);
+    if (event?.nativeEvent) touches.current.set(index, { x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
+    landTick();
     setSelected(current => current.includes(index) ? current.filter(i => i !== index) : current.length === 2 ? [index] : [...current, index]);
   }
   function addPair() {
@@ -51,49 +50,73 @@ export function FindAllPairsTask({ puzzle, pairs, answered, onChange, canAttempt
       if (rejectedPair.current === key) return;
       rejectedPair.current = key;
       if (onIncorrectAttempt && !onIncorrectAttempt()) return;
-      setMessage(t("learning.pairWrong", { target })); return;
+      setRejected([a, b]);
+      setNotice("pairWrong"); return;
     }
-    if (pairs.some(([left, right]) => left === a && right === b)) { setMessage(t("learning.pairDuplicate")); return; }
+    if (pairs.some(([left, right]) => left === a && right === b)) { setNotice("pairDuplicate"); return; }
+    const from = [a, b].map(i => touches.current.get(i)).filter((p): p is Point => !!p);
+    if (from.length === 2) setFlights(f => ({ ...f, [`${a}:${b}`]: { x: (from[0].x + from[1].x) / 2, y: (from[0].y + from[1].y) / 2 } }));
     onChange([...pairs, [a, b]]);
     setSelected([]);
-    setMessage(t("learning.pairFound"));
+    setNotice("pairFound");
   }
+  const measureWell = (i: number) => wells.current[i]?.measureInWindow?.((x, y, width, height) => { setWellCentres(c => { const next = [...c]; next[i] = { x: x + width / 2, y: y + height / 2 }; return next; }); });
+  const message = notice ? t(`learning.${notice}`, { target }) : "";
+  const ready = canAttempt && selected.length === 2;
   return <View style={styles.wrap}>
-    <Text style={styles.goal}>{t("learning.collectPairs", { target })}</Text>
-    <Text style={styles.progress} accessibilityLiveRegion="polite">{t("learning.pairsProgress", { count: pairs.length, total })}</Text>
-    <View style={styles.tiles}>{numbers.map((number, index) => {
-      const collected = pairs.find(([a, b]) => a === index || b === index);
-      const color = selected.includes(index) ? selectionColor : collected ? pairColor(colorIndex(...collected)) : null;
-      return <Pressable key={index} onPress={() => choose(index)} disabled={answered || !canAttempt}
-      accessibilityRole="button" accessibilityLabel={t("learning.numberTile", { number, position: index + 1 })} accessibilityState={{ selected: selected.includes(index), disabled: answered || !canAttempt }}
-      style={[styles.tile, color && { borderColor: color.ink, backgroundColor: color.background }, selected.includes(index) && styles.selected]}>
-      <Text style={[styles.number, color && { color: color.ink }]}>{number}</Text>
-    </Pressable>;
+    {/* VoiceOver hears each found, rejected or removed pair with the running count. */}
+    <Announce trigger={`${pairs.length}|${message}`} message={[message, t("learning.pairsProgress", { count: pairs.length, total })].filter(Boolean).join(". ")} />
+    <View style={{ alignItems: "center" }}><EquationTile value={target} face="target" /></View>
+    <View style={styles.collection}>{pairs.map((pair, i) => {
+      const key = `${pair[0]}:${pair[1]}`;
+      const remove = () => {
+        setNotice(null);
+        onChange(pairs.filter(([left, right]) => left !== pair[0] || right !== pair[1]));
+      };
+      const button = <Pressable disabled={answered} onPress={remove} accessibilityRole="button"
+        accessibilityLabel={t("learning.removePair", { a: numbers[pair[0]], b: numbers[pair[1]] })} style={styles.pair}>
+        <Text style={styles.pairText}>{numbers[pair[0]]} + {numbers[pair[1]]}</Text>
+      </Pressable>;
+      return <View key={key} ref={view => { wells.current[i] = view; }} onLayout={() => measureWell(i)} collapsable={false} style={styles.well}>
+        {wellCentres[i] && flights[key] ? <FlyIn from={flights[key]} to={wellCentres[i]}>{button}</FlyIn> : button}
+      </View>;
     })}</View>
-    {!answered && <Pressable onPress={addPair} disabled={!canAttempt || selected.length !== 2} accessibilityRole="button" accessibilityState={{ disabled: !canAttempt || selected.length !== 2 }} style={[styles.add, (!canAttempt || selected.length !== 2) && styles.disabled]}>
+    <View nativeID={answered ? undefined : "play-entry-model"} testID={answered ? undefined : "play-entry-model"} style={styles.tiles}>{numbers.map((number, index) => {
+      const collected = pairs.findIndex(([a, b]) => a === index || b === index);
+      const isSelected = selected.includes(index);
+      return <FeedbackTile key={index} selected={isSelected} result={rejected.includes(index) ? "wrong" : null}>
+        <Pressable testID={`pair-choice-${index}`} onPress={event => choose(index, event)} disabled={answered || !canAttempt}
+          accessibilityRole="button" accessibilityLabel={t("learning.numberTile", { number, position: index + 1 })} accessibilityState={{ selected: isSelected, disabled: answered || !canAttempt }}
+          style={({ pressed }) => [styles.tile, !answered && collected >= 0 && styles.collected, isSelected && styles.selected, (missedPair?.includes(index) || rejected.includes(index)) && styles.rejected, pressed && styles.pressed]}>
+          <Text maxFontSizeMultiplier={1} style={[styles.number, isSelected && styles.selectedNumber]}>{number}</Text>
+        </Pressable>
+      </FeedbackTile>;
+    })}</View>
+    {!answered && <AnswerRow><Pressable onPress={addPair} disabled={!ready} accessibilityRole="button" accessibilityState={{ disabled: !ready }}
+      style={({ pressed }) => [styles.add, !ready && styles.disabled, pressed && ready && styles.addPressed]}>
       <Text style={styles.addText}>{t("learning.savePair")}</Text>
-    </Pressable>}
-    <Text style={styles.feedback} accessibilityLiveRegion="polite">{message || t("learning.pairInstructions")}</Text>
-    <View style={styles.collection}>{pairs.map(([a, b]) => {
-      const color = pairColor(colorIndex(a, b));
-      return <Pressable key={`${a}:${b}`} disabled={answered} onPress={() => onChange(pairs.filter(([left,right]) => left !== a || right !== b))}
-      accessibilityRole="button" accessibilityLabel={t("learning.removePair", { a: numbers[a], b: numbers[b] })} style={[styles.pair, { backgroundColor: color.background, borderColor: color.ink }]}>
-      <Text style={[styles.pairText, { color: color.ink }]}>{numbers[a]} + {numbers[b]} = {target}</Text>
-    </Pressable>;
-    })}</View>
-
+    </Pressable></AnswerRow>}
+    {notice === "pairWrong" || notice === "pairDuplicate" ? <Text style={styles.feedback} accessibilityLiveRegion="polite">{message}</Text> : null}
   </View>;
 }
 const styles = StyleSheet.create({
-  wrap: { gap: moderateScale(8) }, goal: { fontSize: moderateScale(22), fontWeight: "800", color: GameColors.text, textAlign: "center" },
-  progress: { fontSize: moderateScale(16), color: "#5D408C", fontWeight: "700", textAlign: "center" },
-  tiles: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(12), justifyContent: "center" },
-  tile: { minHeight: moderateScale(60), minWidth: moderateScale(64), padding: moderateScale(12), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, alignItems: "center", justifyContent: "center" },
-  selected: { borderWidth: 3 },
-  number: { fontSize: moderateScale(24), fontWeight: "800", color: GameColors.text },
-  add: { minHeight: moderateScale(48), backgroundColor: "#F3EEFF", borderRadius: moderateScale(14), padding: moderateScale(12), alignItems: "center", justifyContent: "center" },
-  addText: { color: "#5D408C", fontSize: moderateScale(17), fontWeight: "800" },
-  disabled: { opacity: 0.5 }, feedback: { minHeight: moderateScale(22), color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22), textAlign: "center" },
-  collection: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(8) }, pair: { flexGrow: 1, minHeight: moderateScale(48), borderRadius: moderateScale(12), borderWidth: 2, padding: moderateScale(8) },
-  pairText: { fontSize: moderateScale(18), fontWeight: "700", color: GameColors.secondaryDark, textAlign: "center" },
+  wrap: { alignSelf: 'stretch', gap: moderateScale(10) },
+  collection: { minHeight: 48, flexDirection: "row", flexWrap: "wrap", gap: moderateScale(10), justifyContent: "center" },
+  well: { minWidth: moderateScale(96), minHeight: moderateScale(48), alignItems: "center", justifyContent: "center" },
+  tiles: { flexDirection: "row", flexWrap: "wrap", columnGap: moderateScale(12), rowGap: 8, justifyContent: "space-evenly", paddingVertical: moderateScale(4) },
+  tile: { height: PAIR_TILE, width: PAIR_TILE, paddingHorizontal: 12, borderRadius: Radius.tray, borderBottomWidth: 3, borderBottomColor: Quantity.teal.edge, backgroundColor: Quantity.teal.fill, alignItems: "center", justifyContent: "center" },
+  pressed: { borderBottomWidth: 3 },
+  collected: { borderBottomColor: Quantity.violet.edge, backgroundColor: Quantity.violet.fill, borderBottomWidth: 3 },
+  selected: { borderBottomColor: Quantity.violet.edge, backgroundColor: Quantity.violet.fill, transform: [{ translateY: -2 }] },
+  rejected: { borderBottomColor: Quantity.amber.edge, backgroundColor: Quantity.amber.fill },
+  number: { fontSize: 26, fontWeight: "800", color: Ink.text, textAlign: "center", includeFontPadding: false, fontVariant: ["tabular-nums"] },
+  selectedNumber: { color: Ink.text },
+  add: { minHeight: moderateScale(50), borderRadius: Radius.control, borderBottomWidth: 3, borderBottomColor: Quantity.violet.edge, backgroundColor: Quantity.violet.soft, padding: moderateScale(10), alignItems: "center", justifyContent: "center" },
+  addPressed: { borderBottomWidth: 3 },
+  addText: { color: GameColors.primaryDark, fontSize: moderateScale(17), fontWeight: "800" },
+  disabled: { opacity: 0.4 },
+  feedback: { minHeight: moderateScale(22), color: Ink.text, fontSize: moderateScale(15), lineHeight: moderateScale(22), textAlign: "center" },
+  pair: { minHeight: 44, minWidth: moderateScale(96), borderRadius: Radius.tray, borderBottomWidth: 3, borderBottomColor: Quantity.teal.edge, backgroundColor: Quantity.teal.soft,
+    paddingHorizontal: moderateScale(12), alignItems: "center", justifyContent: "center" },
+  pairText: { fontSize: 20, fontWeight: "800", color: Ink.text, fontVariant: ["tabular-nums"] },
 });

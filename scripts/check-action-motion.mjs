@@ -79,41 +79,58 @@ const { getPuzzleCompanionMessage } = load('@/utils/puzzle-companion');
 for (const kind of ['practice', 'challenge']) assert.equal(getPuzzleCompanionMessage({ correct: true, kind, retries: 1, finalStage: true, practiceFinished: true, replay: false, completedCount: 50, puzzleId: 'correction' }).reaction, 'puzzleProud', 'Correcting a mistake keeps its quiet nod even at an endpoint');
 console.log('Verified single-object sharing, visible partial rounds and remainders, ten conserved units per exchange, and correction priority.');
 
-// Exercise the actual token renderer with native animation calls captured.
-const animationCalls = [], shared = []; let cursor = 0, reduceMotion = false, active = true, cleanups = [];
+// Exercise the real renderer at controlled positions on its single reveal clock.
 const jsx = (type, props) => ({ type, props });
-const reanimated = { __esModule: true, default: { View: 'Animated.View', Text: 'Animated.Text' },
-  FadeIn: { duration: () => ({ reduceMotion: () => ({}) }) }, ReduceMotion: { System: 'system' },
-  useSharedValue: value => { const i = cursor++; return shared[i] ?? (shared[i] = { value }); },
-  useAnimatedStyle: fn => fn(), cancelAnimation: value => animationCalls.push(['cancel', value.value]),
-  withTiming: (value, options) => { animationCalls.push(['timing', value, options.duration]); return value; },
-  withDelay: (delay, value) => { animationCalls.push(['delay', delay]); return value; }, withSequence: (...values) => values.at(-1),
-};
+const nodes = node => Array.isArray(node) ? node.flatMap(nodes) : node?.props ? [node, ...nodes(node.props.children)] : [];
+const motion = load('@/constants/puzzle-theme').Motion;
+const position = { value: 0 };
+let active = true, reduced = false, landed = 0, settled = false, span = 0, skips = 0;
+function skip() { position.value = 1; landed = 1; settled = true; skips++; }
+function replay() { position.value = 0; landed = 0; settled = false; }
 const mocks = {
-  'react': { useState: () => [300, () => {}], useRef: value => ({ current: value }), useEffect: fn => cleanups.push(fn()) },
+  'react': { useState: value => [typeof value === 'number' ? 300 : value, () => {}], useEffect: fn => fn() },
   'react/jsx-runtime': { jsx, jsxs: jsx },
-  'react-native': { View: 'View', StyleSheet: { create: x => x, absoluteFill: {} } },
-  'react-native-reanimated': reanimated,
-  '@/hooks/use-animation-activity': { useAnimationActivity: () => ({ active, reduceMotion }) },
-  '@/utils/scale': { moderateScale: x => x },
+  'react-native': { View: 'View', StyleSheet: { create: value => value, absoluteFill: {} } },
+  'react-native-reanimated': { __esModule: true, default: { View: 'Animated.View' }, useAnimatedStyle: fn => fn(), useDerivedValue: fn => ({get value() { return fn(); }}) },
+  '@/hooks/use-animation-activity': { useAnimationActivity: () => ({ active }) },
+  '@/utils/scale': { moderateScale: value => value },
   './PuzzleObjectImage': { PuzzleObjectImage: 'PuzzleObjectImage' },
+  './kit/Focus': { Focus: 'Focus', Caption: 'Caption' },
+  './kit/RevealSurface': { RevealSurface: 'RevealSurface' },
+  './kit/useRevealBeats': { useRevealBeats: (count, options) => {
+    assert.equal(count, 1); span = options.step;
+    return { position, reduced, landed, settled, skip, replay };
+  } },
 };
 const module = { exports: {} };
-vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/puzzle/VisualPracticeBoard.tsx', 'utf8')+'\nexport { MovingToken };',
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/puzzle/VisualPracticeBoard.tsx', 'utf8')+'\nexport { PracticeFrame, MovingToken };',
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
   { module, exports: module.exports, require: id => mocks[id] ?? (id.startsWith('@/components/') ? new Proxy({}, { get: (_, name) => name }) : load(id)) });
-const nodes = node => Array.isArray(node) ? node.flatMap(nodes) : node?.props ? [node, ...nodes(node.props.children)] : [];
-for (const state of [{ reduceMotion: false, active: true }, { reduceMotion: true, active: true }, { reduceMotion: false, active: false }]) {
-  ({ reduceMotion, active } = state);
-  const token = { id: 'unit-10', label: '', shape: 'part', x: 28, y: 26, tone: 'blue', width: 9, height: 9 };
-  const tree = module.exports.VisualPracticeBoard({ tokens: [token], durationMs: 400, staggerMs: 0 });
-  const moving = nodes(tree).find(n => n.type === module.exports.MovingToken);
-  assert.equal(moving.props.motion, active && !reduceMotion);
-  cursor = 0; animationCalls.length = 0;
-  module.exports.MovingToken(moving.props);
-  assert.ok(animationCalls.filter(c => c[0] === 'timing').every(c => c[2] === (active && !reduceMotion ? 400 : 0)), 'Reduce Motion and covered screens settle at the current mathematical state without travel');
-  assert.ok(animationCalls.some(c => c[0] === 'cancel'), 'New actions cancel unfinished movement');
-  assert.equal(shared[0].value, 28); assert.equal(shared[1].value, 26);
-  cleanups.forEach(fn => fn?.()); cleanups = [];
-}
-console.log('Verified the real token renderer cancels interrupted motion and settles immediately for Reduce Motion and covered/background screens.');
+const from = [0, 1].map(index => ({ id: `unit-${index}`, label: '', shape: 'part', x: 0, y: 18, tone: 'blue' }));
+const tokens = from.map(token => ({ ...token, x: 80, y: 40 }));
+const render = () => module.exports.PracticeFrame({ from, tokens, moving: true, result: '2' });
+const poses = tree => nodes(tree).filter(node => node.type === module.exports.MovingToken).map(node => {
+  const element = module.exports.MovingToken(node.props);
+  return Array.from(element.props.style.at(-1).transform, transform => Object.values(transform)[0]);
+});
+const hasResult = tree => nodes(tree).some(node => node.type === 'Caption' && node.props.children === '2');
+const opening = render();
+assert.equal(opening.type, 'RevealSurface');
+assert.deepEqual(poses(opening), [[0,18,1], [0,18,1]]);
+assert.equal(span, motion.step + motion.stagger);
+position.value = motion.stagger / (2 * span);
+const moving = poses(render());
+assert(moving[0][0] > 0 && moving[0][0] < 80);
+assert.equal(moving[1][0], 0);
+assert.equal(hasResult(render()), false);
+opening.props.beats.skip();
+assert.deepEqual(poses(render()), [[80,40,1], [80,40,1]]);
+assert.equal(hasResult(render()), true);
+opening.props.beats.replay();
+assert.deepEqual(poses(render()), [[0,18,1], [0,18,1]]);
+reduced = true;
+assert.deepEqual(poses(render()), [[80,40,1], [80,40,1]]);
+reduced = false; active = false; skips = 0;
+assert.deepEqual(poses(render()), [[80,40,1], [80,40,1]]);
+assert.equal(skips, 1);
+console.log('Verified shared-clock poses, stagger, deferred result, skip, replay, Reduce Motion and inactive practice boards.');

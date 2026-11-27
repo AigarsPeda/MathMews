@@ -1,140 +1,394 @@
-import { glide } from '@/utils/puzzle-motion';
-import { Canvas, Group, Line, Path, Rect } from '@shopify/react-native-skia';
-import { useEffect, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ProofEquationSlot } from './everyday/ProofEquationSlot';
+import { useProofAnnouncement } from './counting/useProofAnnouncement';
+import { useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
-import { DiagramColors as D, PuzzleColors as C } from '@/constants/puzzle-theme';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
+import { useProofViewport } from '@/components/puzzle/PlayProofCaption';
+import { PuzzleText } from './PuzzleText';
+import { Ink, proofTempo, Quantity } from '@/constants/puzzle-theme';
 import { useLocale } from '@/contexts/LocaleProvider';
-import { useAnimationActivity } from '@/hooks/use-animation-activity';
-import { jugMeasure, type CapacityModel } from '@/utils/puzzle-capacity';
-import { PuzzleText as Text } from './PuzzleText';
+import { capacityChoiceLevel, jugMeasure, jugScale, type CapacityAttempt, type CapacityInput, type CapacityModel } from '@/utils/puzzle-capacity';
+import { PaintedModel } from './everyday/PaintedModel';
+import { ProofWindow } from './everyday/ProofWindow';
+import { fitScaleLabels } from './everyday/scaleLabels';
+import { AdjustableTrace, DiagramSurface } from './everyday/DiagramSurface';
+import { DenseLabel, useMeasuredLabels, valueToken } from './kit/DenseLayout';
+import { ProofCaption } from './kit/Focus';
+import { useRevealBeats, type RevealBeats } from './kit/useRevealBeats';
 
-const W = 320, H = 224, bottom = 213, scaleHeight = 116;
-const receiver = 'M94 87 L101 94 H189 V202 Q189 215 177 215 H113 Q101 215 101 202 V103 Z';
-const pitcher = 'M0 0 L13 5 H58 V43 Q58 53 48 53 H23 Q14 53 14 44 L10 12 Z';
-const spout = { x: 156, y: 82 };
-const portionShapes = {
-  cup: 'M3 6 H16 L15 19 Q15 22 12 22 H7 Q4 22 4 18 Z',
-  bottle: 'M8 1 H13 V5 Q13 7 16 9 V20 Q16 22 14 22 H7 Q5 22 5 20 V10 Q5 8 8 5 Z',
-  bowl: 'M1 11 H20 Q18 21 12 21 H9 Q3 20 1 11 Z',
+import { PortionStrip } from './everyday/PortionStrip';
+import { JugScaleInput } from './everyday/JugScaleInput';
+
+const water = Quantity.teal;
+function FillBand({
+  base,
+  volume,
+  scale,
+  progress,
+  tint,
+}: {
+  base: number;
+  volume: number;
+  scale: number;
+  progress: SharedValue<number>;
+  tint: string;
+}) {
+  const fill = useAnimatedStyle(() => ({ height: scale * Math.min(volume, Math.max(0, progress.value - base)) }));
+  return <Animated.View style={[styles.band, { bottom: base * scale, backgroundColor: tint }, fill]} />;
+}
+
+type VesselProps = {
+  model: CapacityModel;
+  capacity: number;
+  amount: number;
+  stops: number[];
+  progress?: SharedValue<number>;
+  beats?: RevealBeats;
+  available: number;
+  height: number;
+  guide?: SharedValue<number>;
+  retainedAmount?: number;
+  guideAt?: number;
+  input?: CapacityInput;
+  attempt?: CapacityAttempt;
 };
+function Vessel({
+  model,
+  capacity,
+  amount,
+  stops,
+  progress,
+  beats,
+  available,
+  height: preferredHeight,
+  guide,
+  guideAt,
+  retainedAmount, input, attempt,
+}: VesselProps) {
+  const { t } = useTranslation();
+  const { fontScale } = useWindowDimensions();
+  const viewport = useProofViewport();
+  const solving = !!beats;
+  const plan = jugScale(model, capacity);
+  // Retain every graduation; space the printed numerals to fit the measured native text.
+  const axisUnit = t('jugSolution.axisMl');
+  const scaleValues = solving && model.task === 'total' ? [...plan.majors, ...stops] : plan.majors;
+  const samples = scaleValues.map(String);
+  samples.push(axisUnit);
+  const litreReference = t('jugSolution.litres', { value: 1 });
+  if (model.task === 'litres' && !solving) samples.push(litreReference);
+  const axis = useMeasuredLabels(samples, 'axis');
+  const axisH = axis.ready ? axis.height : 18 * fontScale;
+  const axisW = axis.ready ? axis.width : (solving ? 60 : 36) * fontScale;
+  const stride = Math.max(1, Math.ceil((plan.majors.length - 1) / 5));
+  const interval = (plan.majors[1] ?? capacity) * stride;
+  const regularLabels = plan.majors.filter(
+    (v, i) => v === capacity || (i % stride === 0 && capacity - v >= interval * 0.65),
+  );
+  // For a sum, label the actual liquid boundaries on the receiver when they fit the scale.
+  const pourLabels =
+    solving && model.task === 'total' ? [...new Set([0, ...stops, capacity])].sort((a, b) => a - b) : [];
+  const spacedPours = pourLabels.length > 1 && pourLabels.every((v, i) => !i || v - pourLabels[i - 1] >= capacity / 5);
+  const candidates = spacedPours ? pourLabels : regularLabels;
+  const smallestLabelGap = Math.min(...candidates.slice(1).map((v, i) => v - candidates[i]));
+  const smallestMarkGap = Math.min(...plan.marks.slice(1).map((v, i) => v - plan.marks[i]));
+  // Give the centred jug room for the complete widest number on its left, including at XL.
+  const room = Math.max(44, available - 2 * (axisW + 16) - 20);
+  const chamber = Math.min(152, room);
+  const frameWidth = available;
+  const left = (available - chamber - 20) / 2;
+  const head = axisH / 2 + 8;
+  // Above the physical rim, reserve space for authored estimates and cap unbounded free-entry attempts.
+  const attemptedLevel = capacityChoiceLevel(model, attempt?.choice);
+  const maximumChoice = Math.max(capacity, ...(input?.choices ?? []).map(choice => capacityChoiceLevel(model, choice) ?? 0),
+    Math.min(capacity * 2, attemptedLevel ?? 0));
+  const captionSpace = !solving && model.task !== 'read' ? 26 * fontScale : 0;
+  const availableHeight = viewport && viewport.availableModelHeight > 0
+    ? Math.max(0, viewport.availableModelHeight - 14 - head - axisH / 2 - 6 - captionSpace)
+    : Infinity;
+  const ideal = Math.max(preferredHeight, ((axisH + 2) * capacity) / smallestLabelGap);
+  // Keep the calibrated ticks separated even when there is room for fewer printed numbers.
+  const height = Math.max(104, axisH + 2, (4 * capacity) / smallestMarkGap, Math.min(ideal, availableHeight * capacity / maximumChoice));
+  const scale = height / capacity;
+  const top = head + (maximumChoice - capacity) * scale;
+  // A pour that falls between graduations already has a visible water boundary.
+  // Give it a ruler mark only if there is room alongside the calibrated ticks.
+  const extraMarks = spacedPours ? pourLabels.filter(value =>
+    plan.marks.every(mark => Math.abs(value - mark) * scale >= 4),
+  ) : [];
+  const marks = [...plan.marks, ...extraMarks].sort((a, b) => a - b);
+  const eligible = candidates.filter(value => marks.includes(value));
+  const priorities = solving && !attempt && model.task === 'read' && guideAt !== undefined ? [guideAt] : [...stops].reverse();
+  const printed = height >= ideal ? eligible : fitScaleLabels(eligible, priorities, capacity / height, axisH + 2);
+  const isRead = model.task === 'read' && (!solving || !!attempt);
+  const guideStyle = useAnimatedStyle(() => ({ top: top + height - Math.min(maximumChoice, guide?.value ?? 0) * scale - 2 }));
+  const givenVolume = (value: number) => valueToken(t('jugSolution.ml', { value }));
+  const volume = model.task === 'total' && !solving ? model.amounts.map(givenVolume).join(' + ') : givenVolume(amount);
+  const description = isRead
+    ? t('everyday.jugAxis', {
+        capacity: t('jugSolution.ml', { value: capacity }),
+        step: t('jugSolution.ml', { value: plan.minor }),
+      })
+    : model.task === 'total' && !solving ? volume : model.label;
+  return (
+    <View style={{ alignItems: 'center', maxWidth: available }}>
+      {axis.probe}
+      <PaintedModel
+        beats={beats}
+        ready={axis.ready}
+        nativeID={solving ? 'play-proof-model' : 'play-entry-model'}
+        testID={solving ? 'play-proof-model' : 'play-entry-model'}
+        accessible={solving || (!isRead && !input)}
+        accessibilityRole="image"
+        accessibilityLabel={solving || (!isRead && !input) ? description : undefined}
+        style={{ width: frameWidth, height: top + height + axisH / 2 + 4 }}
+      >
+        <View style={[styles.handle, { left: left + chamber - 10, top: top + height * 0.17, height: height * 0.42 }]} />
+        <View style={[styles.chamber, { top, left, width: chamber, height }]}>
+          {!!retainedAmount && <View style={[styles.band, { bottom: 0, height: retainedAmount * scale, backgroundColor: water.fill }]} />}
+          {progress && stops.slice(1).map((v, i) => (
+            <FillBand
+              key={i}
+              base={stops[i]}
+              volume={v - stops[i]}
+              scale={scale}
+              progress={progress}
+              tint={i % 2 ? water.light : water.fill}
+            />
+          ))}
+        </View>
+        <View style={[styles.lip, { left: left - 5, top: top - 2, width: chamber + 10 }]} />
+        {marks.map((mark) => {
+          const y = top + height - mark * scale;
+          const litreMark = model.task === 'litres' && !solving && mark === 1000;
+          const referenceOnRight = litreMark && !printed.includes(mark);
+          const major = printed.includes(mark) || litreMark;
+          return (
+            <View pointerEvents="none" key={mark} style={StyleSheet.absoluteFill}>
+              <View
+                testID={'jug-tick-' + mark}
+                style={[styles.tick, { left: referenceOnRight ? left + chamber : left - (major ? 11 : 5), top: y - (major ? 2.5 : 1.5), width: major ? 11 : 5, height: major ? 5 : 3 }]}
+              />
+              {major && (
+                <View
+                  style={{ position: 'absolute', left: referenceOnRight ? left + chamber + 14 : left - axisW - 15, width: axisW, flexDirection: 'row', justifyContent: referenceOnRight ? 'flex-start' : 'flex-end', top: y - axisH / 2 }}
+                >
+                  <DenseLabel role="axis">{litreMark ? litreReference : mark}</DenseLabel>
+                </View>
+              )}
+            </View>
+          );
+        })}
+        {guide && <Animated.View style={[styles.guide, { left: left - 6, width: chamber * .78 }, guideStyle]} />}
+        {isRead && !solving && (
+          <AdjustableTrace
+            selectedValue={input?.selectedIndex == null ? undefined : capacityChoiceLevel(model, input.choices[input.selectedIndex])}
+            onMark={n => {
+              const index = input?.choices.findIndex(choice => capacityChoiceLevel(model, choice) === n) ?? -1;
+              if (index >= 0 && index !== input?.selectedIndex) input?.onSelect(index);
+            }}
+            marks={plan.marks}
+            majors={printed}
+            target={amount}
+            height={height}
+            width={chamber}
+            label={(n) => n + ' ' + axisUnit}
+            name={t('everyday.traceJug')}
+            hint={description}
+            jugGrip
+            contact={t('everyday.waterline')}
+            style={{ position: 'absolute', left, top: top - 8 }}
+          />
+        )}
+        {input && !isRead && <JugScaleInput model={model} input={input} width={chamber} height={top + height + 8}
+          left={left} rim={top + height} initial={model.task === 'space' || model.task === 'total' ? model.amounts[0] : 0}
+          scale={scale} description={model.label} />}
+      </PaintedModel>
+      {!solving && !isRead && <DenseLabel role="value">{volume}</DenseLabel>}
+    </View>
+  );
+}
 
-export function JugPour({ model, onSolutionShown }: {
-  model: CapacityModel; onSolutionShown: () => void;
+function StaticVessel({ amount, ...props }: Omit<VesselProps, 'progress' | 'stops'>) {
+  return <Vessel {...props} amount={amount} retainedAmount={amount} stops={[0, amount]} />;
+}
+export function JugPour({ model, onSolutionShown, capacityInput, capacityAttempt }: {
+  model: CapacityModel; onSolutionShown?: () => void; capacityInput?: CapacityInput; capacityAttempt?: CapacityAttempt;
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const { width } = useWindowDimensions();
-  const size = Math.min(W, width - 48);
-  const { active, reduceMotion } = useAnimationActivity();
+  const window = useWindowDimensions();
+  const viewport = useProofViewport();
+  const [width, setWidth] = useState(0);
+  const available = Math.min(width || window.width - 48, onSolutionShown ? viewport?.innerWidth ?? Infinity : Infinity);
+  const solving = !!onSolutionShown,
+    read = model.task === 'read',
+    litres = model.task === 'litres',
+    total = model.task === 'total',
+    space = model.task === 'space';
+  const proposedLevel = capacityChoiceLevel(model, capacityAttempt?.choice);
+  const wrong = solving && !!capacityAttempt;
+  const portionTask = model.task === 'servings' || model.task === 'containers';
   const { start, end, capacity, portions, remainder } = jugMeasure(model);
-  const phase = useSharedValue(0);
-  const [reading, setReading] = useState(start);
-  const targetY = bottom - scaleHeight * end / capacity;
-  const ml = (value: number) => t('jugSolution.ml', { value });
-  const kind = model.portionContainer ?? (model.task === 'containers' ? 'bottle' : 'cup');
-  useEffect(() => {
-    if (!active || reduceMotion) { phase.value = 1; onSolutionShown(); return; }
-    phase.value = withTiming(1, { duration: 3000, easing: Easing.linear }, done => {
-      if (done) scheduleOnRN(onSolutionShown);
+  const lower =
+    jugScale(model, capacity)
+      .majors.filter((v) => v < end)
+      .at(-1) ?? 0;
+  const ml = (n: number) => valueToken(t('jugSolution.ml', { value: n }));
+  const litre = (n: number) =>
+    valueToken(t('jugSolution.litres', { value: String(n / 1000).replace('.', locale === 'en' ? '.' : ',') }));
+  const divisions = portionTask ? Math.ceil(end / model.portion) : 0;
+
+  const bands = total
+    ? [0, ...model.amounts.map((_, i) => model.amounts.slice(0, i + 1).reduce((a, b) => a + b, 0))]
+    : litres
+      ? [0, ...Array.from({ length: Math.ceil(end / 1000) }, (_, i) => Math.min(end, (i + 1) * 1000))]
+      : read ? [0, lower, end] : space
+        ? [0, start, end]
+        : [0, end];
+  // A free-entry attempt can be far beyond what the screen can physically measure.
+  const count = (proposedLevel ?? 0) / model.portion;
+  const drawable = portionTask ? Number.isInteger(count) && count <= divisions + 2 : (proposedLevel ?? 0) <= capacity * 2;
+  const attemptedLevel = drawable ? proposedLevel : undefined;
+  const attemptedCount = attemptedLevel === undefined ? 0 : count;
+  const stops = wrong
+    ? portionTask ? [0, attemptedCount] : [model.amounts[0], attemptedLevel ?? model.amounts[0]]
+    : portionTask ? Array.from({ length: divisions + 1 }, (_, i) => i)
+    : read ? [lower, end] : total ? bands.slice(1)
+    : space ? [start, end] : bands;
+  const tempo = proofTempo({ rounds: stops.length - 1, kind: 'pour' });
+  const stationary = wrong && (attemptedLevel === undefined || stops[0] === stops[stops.length - 1]);
+  const beatCount = stationary ? 0 : tempo.count;
+  const beats = useRevealBeats(solving && width === 0 ? null : solving ? beatCount : 0, {
+    ...tempo,
+    awaitInitialPaint: solving,
+    onDone: onSolutionShown,
+    easing: 'inOut',
+    step: (i) => (portionTask ? tempo.step(i) : read ? 400 : 520),
+  });
+  const { landed, reduced, position, settled } = beats;
+  const batchSize = tempo.batchSize;
+  const value = useDerivedValue(() => {
+    const at = reduced ? landed : position.value,
+      i = Math.floor(at);
+    const from = Math.min(stops.length - 1, i * batchSize);
+    const to = Math.min(stops.length - 1, (i + 1) * batchSize);
+    return stops[from] + (at - i) * (stops[to] - stops[from]);
+  });
+  const level = useDerivedValue(() => (wrong ? model.amounts[0] : value.value));
+  const height = Math.max(128, Math.min(window.height * (window.fontScale >= 1.5 ? .22 : .26), 224));
+  const entryScale = useSharedValue(1);
+  const entryReady = width > 0 && !solving;
+  useLayoutEffect(() => {
+    if (!entryReady || reduced) return;
+    let frame = requestAnimationFrame(() => {
+      entryScale.value = .90;
+      frame = requestAnimationFrame(() => { entryScale.value = withTiming(1, { duration: 360 }); });
     });
-    return () => cancelAnimation(phase);
-  }, [active, reduceMotion, phase, onSolutionShown]);
-
-  const poured = useDerivedValue(() => glide((phase.value - .22) / .56));
-  const surface = useDerivedValue(() => bottom - scaleHeight * (start + (end - start) * poured.value) / capacity);
-  const streamEnd = useDerivedValue(() => ({ x: spout.x, y: surface.value }));
-  const stream = useDerivedValue(() => Math.max(0, Math.min(1, (phase.value - .22) * 60, (.79 - phase.value) * 65)));
-  const tilt = useDerivedValue(() => {
-    const tip = glide((phase.value - .10) / .12);
-    const release = glide((phase.value - .79) / .12);
-    return (-22 * tip - 54 * poured.value) * (1 - release) * Math.PI / 180;
-  });
-  const turn = useDerivedValue(() => [{ rotate: tilt.value }]);
-  const level = useDerivedValue(() => [{ rotate: -tilt.value }]);
-  const sourceY = useDerivedValue(() => 13 * glide((.22 - phase.value) / .12));
-  const sourceOpacity = useDerivedValue(() => poured.value < 1 ? 1 : 0);
-  const offset = useDerivedValue(() => {
-    const approaching = glide((.22 - phase.value) / .12);
-    const leaving = glide((phase.value - .79) / .21);
-    return { x: 62 * approaching + 210 * leaving, y: -32 * approaching - 38 * leaving };
-  });
-  const position = useDerivedValue(() => [{ translateX: spout.x + offset.value.x }, { translateY: spout.y + offset.value.y }]);
-  // The scale moves continuously. Update the text only at readable increments.
-  useAnimatedReaction(() => poured.value === 1 ? end : start + Math.floor(poured.value * 20) * (end - start) / 20,
-    (value, prior) => { if (value !== prior) scheduleOnRN(setReading, Math.round(value)); });
-
-  let caption = ml(reading);
-  if (model.task === 'space' || model.task === 'total') caption = `${start} + ${reading - start} = ${ml(reading)}`;
-  if (model.task === 'litres' && reading === end) {
-    const litres = String(end / 1000).replace('.', locale === 'en' ? '.' : ',');
-    caption += ' = ' + t('jugSolution.litres', { value: litres });
-  }
-  const filled = model.task === 'containers' ? Math.ceil(reading / model.portion) : Math.floor(reading / model.portion);
-  const portionLabel = portions ? t(`jugSolution.${kind}`, { value: filled }) : '';
-  const left = model.task === 'servings' && remainder && reading === end ? t('jugSolution.left', { volume: ml(remainder) }) : '';
-  return <View style={styles.wrap}>
-    <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width: size, height: H * size / W }}>
-      <View style={[styles.scene, { left: (size - W) / 2, top: (H * size / W - H) / 2, transform: [{ scale: size / W }] }]}>
-        <Canvas style={StyleSheet.absoluteFill}>
-          <Path path="M189 112 H201 Q215 112 212 128 L208 149 Q207 158 189 157" color={D.glassEdge} style="stroke" strokeWidth={7} />
-          <Path path={receiver} color={D.glass} />
-          <Group clip={receiver}>
-            <Rect x={99} y={surface} width={93} height={scaleHeight + 3} color={D.waterTop} />
-            <Rect x={99} y={surface} width={93} height={2.5} color={D.waterLine} />
-            <Line p1={{ x: 177, y: 106 }} p2={{ x: 177, y: 193 }} color={D.highlight} strokeWidth={6} strokeCap="round" />
-          </Group>
-          <Path path={receiver} color={D.glassEdge} style="stroke" strokeJoin="round" strokeWidth={3} />
-          {Array.from({ length: 9 }, (_, i) => {
-            const y = bottom - scaleHeight * i / 8;
-            return <Line key={i} p1={{ x: 102, y }} p2={{ x: i % 2 ? 109 : 115, y }} color={D.geometryEdge} strokeWidth={1.5} />;
-          })}
-          <Line p1={{ x: 84, y: targetY }} p2={{ x: 124, y: targetY }} color={C.primary} strokeWidth={3} strokeCap="round" />
-          <Line p1={spout} p2={streamEnd} color={D.waterTop} strokeWidth={5} opacity={stream} strokeCap="round" />
-          <Group transform={position}>
-            <Group transform={turn}>
-              <Path path="M57 12 H66 Q75 12 73 20 L69 32 Q67 38 57 38" color={D.goldEdge} style="stroke" strokeWidth={6} />
-              <Path path={pitcher} color={D.glass} />
-              <Group clip={pitcher} opacity={sourceOpacity}>
-                <Group transform={level}><Rect x={-70} y={sourceY} width={190} height={120} color={D.waterTop} /></Group>
-              </Group>
-              <Path path={pitcher} color={D.geometryEdge} style="stroke" strokeWidth={2.5} strokeJoin="round" />
-              <Path path="M0 0 L13 5 H58" color={D.gold} style="stroke" strokeWidth={4} strokeCap="round" />
-            </Group>
-          </Group>
-
-        </Canvas>
-        <Text allowFontScaling={false} style={[styles.mark, { top: targetY - 11 }]}>{ml(end)}</Text>
-      </View>
+    return () => { cancelAnimationFrame(frame); entryScale.value = 1; };
+  }, [entryReady, entryScale, reduced]);
+  const arrival = useAnimatedStyle(() => ({ transform: [{ scale: entryScale.value }] }));
+  const current = stops[tempo.roundsAt(landed)] ?? end;
+  let equation = ml(end);
+  if (total) equation = model.amounts.map(ml).join(' + ') + ' = ' + ml(end);
+  else if (read) equation = lower + ' + ' + (end - lower) + ' = ' + ml(end);
+  else if (litres) equation = ml(end) + ' = ' + litre(end);
+  else if (space) equation = end + ' − ' + start + ' = ' + ml(end - start);
+  else if (model.task === 'containers')
+    equation = t('jugSolution.bottleCount', { full: Math.floor(end / model.portion), extra: remainder ? 1 : 0, count: portions });
+  else if (portionTask)
+    equation = remainder
+      ? ml(end) + ' = ' + Math.floor(end / model.portion) + ' × ' + ml(model.portion) + ' + ' + ml(remainder)
+      : ml(end) + ' ÷ ' + ml(model.portion) + ' = ' + portions;
+  const final = settled || landed === tempo.count;
+  const interim = read
+    ? ''
+    : portionTask ? ''
+      : total
+        ? landed > 0
+          ? ml(current)
+          : ml(model.amounts[0])
+        : litres ? '' : ml(start);
+  const selectedPortions = capacityInput?.selectedIndex == null ? 0 : Number(capacityInput.choices[capacityInput.selectedIndex]);
+  const editorPortions = useDerivedValue(() => reduced ? selectedPortions : withTiming(selectedPortions, { duration: 145 }));
+  const portionStrip = portionTask && <PortionStrip amount={end} unit={model.portion} available={available}
+    unitLabel={ml(model.portion)} count={Math.max(divisions, wrong ? attemptedCount : 0)} progress={solving ? value : editorPortions}
+    landed={final && solving && !wrong} vessel={model.portionContainer ?? (model.task === 'containers' ? 'bottle' : 'cup')} input={solving ? undefined : capacityInput} beats={solving ? beats : undefined}
+    ready={width > 0} label={solving && !wrong && final ? equation : ml(end)} />;
+  useProofAnnouncement(beats, wrong ? capacityAttempt?.choice ?? '' : final ? equation : interim, solving);
+  const finalCaption = model.task === 'containers'
+    ? <PuzzleText accessible accessibilityLabel={equation} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={styles.bottleEquation}>{equation}</PuzzleText>
+    : <ProofCaption text={equation} />;
+  const tankSpace = { minHeight: Math.max(0, (viewport?.availableModelHeight ?? 0) - 28), justifyContent: 'center' as const };
+  return (
+    <View style={styles.stage} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <DiagramSurface beats={beats} playing={solving} replayable={!stationary}>
+        <View style={styles.scene}>
+          {!solving ? (
+            <Animated.View style={[styles.editor, portionTask && tankSpace, arrival]}>{portionTask ? <>{portionStrip}<DenseLabel role="value">{ml(end)}</DenseLabel></> : <StaticVessel
+              input={capacityInput}
+              model={model}
+              capacity={total ? capacity : model.capacities[0]}
+              amount={model.amounts[0]}
+              available={available}
+              height={height}
+            />}</Animated.View>
+          ) : (
+            <>
+              <ProofWindow inset={10} focus={portionTask ? current / Math.max(1, divisions) : 1 - current / capacity}>
+                {portionTask ? <View style={tankSpace}>{portionStrip}</View> : (
+                  <Vessel
+                    model={model}
+                    available={available}
+                    height={height}
+                    capacity={capacity}
+                    amount={end}
+                    beats={beats}
+                    attempt={wrong && !drawable ? {} : capacityAttempt}
+                    stops={wrong ? [0, model.amounts[0]] : bands}
+                    progress={level}
+                    retainedAmount={read || litres || total || space ? model.amounts[0] : 0}
+                    guide={wrong && attemptedLevel !== undefined ? value : undefined}
+                    guideAt={lower}
+                  />
+                )}
+              </ProofWindow>
+              {wrong && total && <ProofEquationSlot settled={false}><ProofCaption text={model.amounts.map(ml).join(' + ')} /></ProofEquationSlot>}
+              {!wrong && <ProofEquationSlot settled={settled}>
+                <View testID="jug-solution-caption" style={styles.caption}>
+                  {(window.fontScale >= 2 || portionTask) && !final ? <>
+                    <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.reserve}>
+                      {finalCaption}
+                    </View>
+                    <View style={styles.currentCaption}><ProofCaption text={interim} /></View>
+                  </> : final ? finalCaption : <ProofCaption text={interim} />}
+                </View>
+              </ProofEquationSlot>}
+            </>
+          )}
+        </View>
+      </DiagramSurface>
     </View>
-    {!!portions && <Canvas accessible={false} style={{ width: Math.min(size, portions * 21), height: 25 }}>
-      <Group transform={[{ scaleX: Math.min(1, size / (portions * 21)) }]}>
-        {Array.from({ length: portions }, (_, i) => {
-          const fraction = Math.max(0, Math.min(1, reading / model.portion - i));
-          const top = kind === 'bowl' ? 11 : kind === 'bottle' ? 1 : 6;
-          return <Group key={i} transform={[{ translateX: i * 21 }]}>
-            {kind === 'cup' && <Path path="M16 8 Q24 8 16 15" color={D.glassEdge} style="stroke" strokeWidth={2} />}
-            <Path path={portionShapes[kind]} color={D.glass} />
-            <Group clip={portionShapes[kind]}><Rect x={0} y={22 - fraction * (22 - top)} width={21} height={22} color={D.waterTop} /></Group>
-            <Path path={portionShapes[kind]} color={D.geometryEdge} style="stroke" strokeWidth={1.5} />
-          </Group>;
-        })}
-      </Group>
-    </Canvas>}
-    <View accessible testID="jug-solution-caption" accessibilityLabel={[caption, portionLabel, left].filter(Boolean).join(', ')} style={styles.caption}>
-      <Text style={styles.readout}>{caption}</Text>
-      {!!portions && <Text style={styles.count}>{[portionLabel, left].filter(Boolean).join(' · ')}</Text>}
-    </View>
-  </View>;
+  );
 }
-
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', paddingVertical: 6 },
-  scene: { width: W, height: H, position: 'absolute' },
-  mark: { position: 'absolute', left: 0, width: 78, textAlign: 'right', fontSize: 15, lineHeight: 22, fontWeight: '800', color: C.primaryDark },
-  caption: { alignItems: 'center', paddingHorizontal: 6 },
-  readout: { color: C.text, fontSize: 21, lineHeight: 29, fontWeight: '900', textAlign: 'center', fontVariant: ['tabular-nums'] },
-  count: { color: D.geometryEdge, fontSize: 16, lineHeight: 22, fontWeight: '700', textAlign: 'center' },
+  stage: { alignSelf: 'stretch' },
+  scene: { alignItems: 'center', gap: 8, paddingVertical: 5 },
+  chamber: {
+    position: 'absolute',
+    backgroundColor: water.soft,
+    overflow: 'hidden',
+    borderRadius: 14,
+  },
+  handle: { position: 'absolute', width: 32, borderRadius: 12, backgroundColor: water.edge },
+  lip: { position: 'absolute', height: 6, borderRadius: 3, backgroundColor: water.edge },
+  band: { position: 'absolute', left: 0, right: 0 },
+  tick: { position: 'absolute', height: 3, borderRadius: 2, backgroundColor: water.edge },
+  guide: { position: 'absolute', height: 5, borderRadius: 3, backgroundColor: Quantity.berry.edge },
+  editor: { alignItems: 'center', gap: 4 },
+  reserve: { opacity: 0 },
+  currentCaption: { ...StyleSheet.absoluteFill, justifyContent: 'center' },
+  bottleEquation: { textAlign: 'center', fontSize: 19, fontWeight: '800', color: Ink.text },
+  caption: { alignSelf: 'stretch', alignItems: 'stretch' },
 });

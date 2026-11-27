@@ -24,11 +24,11 @@ const cases: Record<string, { difficulty: PuzzleDifficulty; match: (puzzle: Puzz
   'equation-easy': { difficulty: 'easy', match: p => p.type === 'equation_board' && p.payload.a === 1 && p.payload.b === 1 && p.payload.c === 4 },
   'equation-medium': { difficulty: 'medium', match: p => p.type === 'equation_board' && p.payload.a === 2 && p.payload.b === 0 && p.payload.c === 12 },
   'equation-hard': { difficulty: 'hard', match: p => p.type === 'equation_board' && p.payload.a === 2 && p.payload.b === 3 && p.payload.c === 9 },
-  'equation-dense': { difficulty: 'hard', match: p => p.type === 'equation_board' && p.payload.a === 4 && p.payload.b === 5 && p.payload.c === 13 },
+  'equation-dense': { difficulty: 'hard', match: p => p.type === 'equation_board' && p.payload.a === 4 && p.payload.b === 3 && p.payload.c === 39 },
   'equation-multiple-divide': { difficulty: 'medium', match: p => p.type === 'equation_board' && p.payload.a === 4 && p.payload.b === 0 && p.payload.c === 28 },
   'equation-divide-first': { difficulty: 'hard', match: p => p.type === 'equation_board' && p.payload.a === 3 && p.payload.b === -3 && p.payload.c === 12 },
   'equation-zero': { difficulty: 'easy', match: p => p.type === 'equation_board' && p.payload.a === 1 && p.payload.b === p.payload.c },
-  'equation-negative': { difficulty: 'medium', match: p => p.type === 'equation_board' && p.payload.a === 1 && p.payload.b === -2 && p.payload.c === 0 },
+  'equation-negative': { difficulty: 'medium', match: p => p.type === 'equation_board' && p.payload.a === 1 && p.payload.b === -2 && p.payload.c === -1 },
 };
 
 export default function BridgeTeachingFixture() {
@@ -52,33 +52,33 @@ export default function BridgeTeachingFixture() {
     </View>
     <Pressable testID="bridge-qa-menu" accessibilityRole="button" accessibilityLabel="Review case"
       onPress={() => { setMenuLocale(selection.locale); setMenuNarrow(selection.narrow); setMenuOpen(true); }}
-      style={{ position: 'absolute', left: 12, top: insets.top + 44, minHeight: 22, paddingHorizontal: 6, justifyContent: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#D7DDE8', borderRadius: 5 }}>
+      style={{ position: 'absolute', right: 12, top: insets.top + 44, minHeight: 22, paddingHorizontal: 6, justifyContent: 'center', backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#D7DDE8', borderRadius: 5 }}>
       <Text allowFontScaling={false} style={{ fontSize: 10, color: '#24314B' }}>Review case</Text>
     </Pressable>
     <Modal visible={menuOpen} transparent animationType="none" onRequestClose={() => setMenuOpen(false)}>
       <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#00000066', padding: 20, paddingTop: Math.max(20, insets.top) }}>
         <View style={{ maxHeight: '90%', backgroundColor: '#FFFFFF', padding: 16, borderRadius: 12, gap: 12 }}>
-          <Text style={{ fontSize: 18, fontWeight: '700' }}>Review case</Text>
+          <Text allowFontScaling={false} style={{ fontSize: 18, fontWeight: '700' }}>Review case</Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {(['en', 'lv', 'ru'] as const).map(locale => <Pressable key={locale} testID={`bridge-qa-locale-${locale}`} accessibilityRole="button" accessibilityState={{ selected: menuLocale === locale }} onPress={() => setMenuLocale(locale)}
               style={{ flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', backgroundColor: menuLocale === locale ? '#E5F5FB' : '#FFFFFF', borderWidth: 1, borderColor: '#19758F', borderRadius: 8 }}>
-              <Text>{locale.toUpperCase()}</Text>
+              <Text allowFontScaling={false}>{locale.toUpperCase()}</Text>
             </Pressable>)}
           </View>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {[false, true].map(narrow => <Pressable key={String(narrow)} testID={narrow ? 'qa-width-narrow' : 'qa-width-normal'} accessibilityRole="button" accessibilityState={{ selected: menuNarrow === narrow }} onPress={() => setMenuNarrow(narrow)}
               style={{ flex: 1, minHeight: 44, padding: 8, justifyContent: 'center', backgroundColor: menuNarrow === narrow ? '#E5F5FB' : '#FFFFFF', borderWidth: 1, borderColor: '#19758F', borderRadius: 8 }}>
-              <Text>{narrow ? '320 pt content' : 'Phone width'}</Text>
+              <Text allowFontScaling={false}>{narrow ? '320 pt content' : 'Phone width'}</Text>
             </Pressable>)}
           </View>
-          <ScrollView contentContainerStyle={{ gap: 8 }}>
+          <ScrollView testID="bridge-qa-case-list" style={{ flexShrink: 1 }} contentContainerStyle={{ gap: 8 }}>
             {Object.keys(cases).map(caseName => <Pressable key={caseName} testID={`bridge-qa-case-${caseName}`} accessibilityRole="button" onPress={() => {
               setSelection(previous => ({ caseName, locale: menuLocale, narrow: menuNarrow, run: previous.run + 1 })); setMenuOpen(false);
             }} style={{ minHeight: 44, padding: 10, justifyContent: 'center', borderWidth: 1, borderColor: '#D7DDE8', borderRadius: 8 }}>
-              <Text>{caseName}</Text>
+              <Text allowFontScaling={false}>{caseName}</Text>
             </Pressable>)}
           </ScrollView>
-          <Pressable testID="bridge-qa-close" accessibilityRole="button" onPress={() => setMenuOpen(false)} style={{ minHeight: 44, justifyContent: 'center' }}><Text>Close</Text></Pressable>
+          <Pressable testID="bridge-qa-close" accessibilityRole="button" onPress={() => setMenuOpen(false)} style={{ minHeight: 44, justifyContent: 'center' }}><Text allowFontScaling={false}>Close</Text></Pressable>
         </View>
       </View>
     </Modal>

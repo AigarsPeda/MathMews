@@ -269,6 +269,8 @@ function authoredAnswer(puzzle) {
     case 'pair_sum':return {kind:'pair',indices:p.correctIndices};
     case 'order_numbers':return {kind:'order',numbers:p.correctOrder};
     case 'fraction_match':return {kind:'fraction_match',matchedCount:p.pairs.length};
+    case 'fair_share': return { kind: 'distribution', locations: Array.from({ length: p.items }, (_, i) =>
+      i < p.items - p.items % p.people ? 1 + i % p.people : 0) };
     case 'true_false':return {kind:'choice',index:puzzle.isTrue?0:1};
     default:return {kind:'choice',index:puzzle.correctIndex};
   }

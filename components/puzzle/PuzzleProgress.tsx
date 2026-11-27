@@ -1,49 +1,70 @@
-import { PuzzleColors, TopicPathColors } from "@/constants/puzzle-theme";
+import { PuzzleColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
-export function PuzzleProgress({ steps, label, total = steps.length, size = "regular", variant = "puzzle", animated = true }: {
-  steps: readonly boolean[]; label: string; total?: number; size?: "regular" | "slim"; variant?: "puzzle" | "trail"; animated?: boolean;
+const BADGE = moderateScale(24);
+const RAIL = moderateScale(12);
+const SLIM_RAIL = moderateScale(8);
+const timing = (duration: number) => ({ duration, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System });
+
+/**
+ * Lesson progress as a Berry rail with one notch per step. The regular size carries a paw
+ * badge on the fill's front edge, which lands exactly on a notch after each solved step.
+ */
+export function PuzzleProgress({ steps, label, total = steps.length, size = "regular", animated = true }: {
+  steps: readonly boolean[]; label: string; total?: number; size?: "regular" | "slim"; animated?: boolean;
 }) {
   const completed = Math.min(total, steps.filter(Boolean).length);
   const progress = total > 0 ? completed / total : 0;
+  const slim = size === "slim";
+  const inset = slim ? 0 : BADGE / 2;
   const [width, setWidth] = useState(0);
   const fill = useSharedValue(progress);
+  const pop = useSharedValue(1);
+  const previous = useRef(completed);
   useEffect(() => {
-    if (animated) fill.set(withTiming(progress, { duration: 420, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
-    else fill.set(progress);
-  }, [progress, fill, animated]);
-  // Slide fixed-size materials through the rounded track. Neither layer relayouts
-  // during the animation, and the end cap and highlight keep their original shape.
-  const animatedFill = useAnimatedStyle(() => ({ transform: [{ translateX: (fill.get() - 1) * width }] }));
-  const animatedHighlight = useAnimatedStyle(() => ({ transform: [{ translateX: (fill.get() - 1) * width }] }));
-  return <View style={[styles.track, size === "slim" && styles.slimTrack, variant === "trail" && styles.trailTrack]} accessible accessibilityRole="progressbar" accessibilityLabel={label}
-    onLayout={event => setWidth(event.nativeEvent.layout.width)}
-    accessibilityValue={{ min: 0, max: total, now: completed }}>
-    {animated && width > 0 ? <>
-      <Animated.View pointerEvents="none" style={[styles.fill, styles.fullWidth, size === "slim" && styles.slimFill, variant === "trail" && styles.trailFill, animatedFill]} />
-      {variant === "puzzle" ? <View pointerEvents="none" style={[styles.highlight, size === "slim" && styles.slimHighlight]}>
-        <Animated.View style={[styles.highlightMaterial, animatedHighlight]} />
-      </View> : null}
-    </> : <View style={[styles.fill, size === "slim" && styles.slimFill, variant === "trail" && styles.trailFill, { width: `${progress * 100}%` }]}>
-      {/* Saved progress is correct even before the track's first layout event. */}
-      {variant === "puzzle" ? <View style={[styles.highlight, styles.highlightColor, size === "slim" && styles.slimHighlight]} /> : null}
-    </View>}
+    if (!animated) { fill.set(progress); return; }
+    fill.set(withTiming(progress, timing(420)));
+    if (completed > previous.current) pop.set(withSequence(withTiming(1.18, timing(160)), withTiming(1, timing(220))));
+    previous.current = completed;
+  }, [progress, completed, fill, pop, animated]);
+  // Both layers slide at a fixed size so the rail never relayouts mid-animation.
+  const travel = Math.max(0, width - inset * 2);
+  const fillStyle = useAnimatedStyle(() => ({ transform: [{ translateX: inset + fill.get() * travel - width }] }));
+  const badgeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: fill.get() * travel }, { scale: pop.get() }] }));
+  return <View style={slim ? styles.slimFrame : styles.frame} accessible accessibilityRole="progressbar" accessibilityLabel={label}
+    accessibilityValue={{ min: 0, max: total, now: completed }} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
+    <View pointerEvents="none" style={[styles.rail, slim && styles.slimRail]}>
+      {width > 0 ? <Animated.View style={[styles.fill, { width }, fillStyle]} /> : null}
+      {width > 0 && total > 1 ? Array.from({ length: total - 1 }, (_, index) =>
+        <View key={index} style={[styles.tick, slim && styles.slimTick, { left: inset + travel * (index + 1) / total - 1 }]} />) : null}
+    </View>
+    {!slim && width > 0 ? <Animated.View pointerEvents="none" style={[styles.badge, badgeStyle]}><PawMark size={moderateScale(15)} /></Animated.View> : null}
+  </View>;
+}
+
+/** A flat paw print built from ellipses on a 24-unit grid so it stays crisp at any scale. */
+function PawMark({ size }: { size: number }) {
+  const u = size / 24;
+  const blob = (cx: number, cy: number, rx: number, ry: number) =>
+    ({ left: (cx - rx) * u, top: (cy - ry) * u, width: rx * 2 * u, height: ry * 2 * u, borderRadius: Math.max(rx, ry) * u });
+  return <View style={{ width: size, height: size }}>
+    {[blob(12, 16, 6.2, 5.2), blob(5, 9.5, 2.3, 2.9), blob(9.3, 5.4, 2.3, 3), blob(14.7, 5.4, 2.3, 3), blob(19, 9.5, 2.3, 2.9)]
+      .map((shape, index) => <View key={index} style={[styles.pawPart, shape]} />)}
   </View>;
 }
 
 const styles = StyleSheet.create({
-  track: { height: moderateScale(16), borderRadius: moderateScale(8), backgroundColor: PuzzleColors.progressTrack, overflow: "hidden" },
-  fill: { position: "absolute", top: 0, bottom: 0, left: 0, borderRadius: moderateScale(8), backgroundColor: PuzzleColors.progress, overflow: "hidden" },
-  fullWidth: { right: 0 },
-  highlight: { position: "absolute", top: moderateScale(3), left: moderateScale(5), right: moderateScale(5), height: moderateScale(4), borderRadius: moderateScale(2), overflow: "hidden" },
-  highlightColor: { backgroundColor: PuzzleColors.progressTop },
-  highlightMaterial: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, borderRadius: moderateScale(2), backgroundColor: PuzzleColors.progressTop },
-  slimTrack: { height: moderateScale(8), borderRadius: moderateScale(4) },
-  slimFill: { borderRadius: moderateScale(4) },
-  slimHighlight: { top: moderateScale(1), left: moderateScale(3), right: moderateScale(3), height: moderateScale(2), borderRadius: moderateScale(1) },
-  trailTrack: { height: 6, borderRadius: 3, backgroundColor: TopicPathColors.progressTrack },
-  trailFill: { borderRadius: 3, backgroundColor: TopicPathColors.progress },
+  frame: { height: BADGE, justifyContent: "center" },
+  slimFrame: { height: SLIM_RAIL, justifyContent: "center" },
+  rail: { height: RAIL, borderRadius: RAIL / 2, backgroundColor: PuzzleColors.progressRail, overflow: "hidden" },
+  slimRail: { height: SLIM_RAIL, borderRadius: SLIM_RAIL / 2 },
+  fill: { position: "absolute", top: 0, bottom: 0, left: 0, borderRadius: RAIL / 2, backgroundColor: PuzzleColors.progress },
+  tick: { position: "absolute", top: moderateScale(3), bottom: moderateScale(3), width: 2, borderRadius: 1, backgroundColor: PuzzleColors.progressTick },
+  slimTick: { top: moderateScale(2), bottom: moderateScale(2) },
+  badge: { position: "absolute", left: 0, width: BADGE, height: BADGE, borderRadius: BADGE / 2, borderWidth: moderateScale(2.5),
+    borderColor: PuzzleColors.progress, backgroundColor: PuzzleColors.background, alignItems: "center", justifyContent: "center" },
+  pawPart: { position: "absolute", backgroundColor: PuzzleColors.progress },
 });

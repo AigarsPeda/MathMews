@@ -1,9 +1,8 @@
-import { insetRadius } from '@/utils/border-radius';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleGradient } from "@/components/puzzle/PuzzleGradient";
 import { getPathProgress, isPathAvailable } from "@/constants/puzzle-path";
 import { useLocale } from "@/contexts/LocaleProvider";
-import { TopicPathColors } from "@/constants/puzzle-theme";
+import { Quantity, TopicPathColors } from "@/constants/puzzle-theme";
 import type { LearningLesson } from "@/types/curriculum";
 import type { Progress } from "@/types/game";
 import { getTopicPathConnection, getTopicPathLayout, getTopicPathCallout } from "@/utils/topic-path-layout";
@@ -104,10 +103,9 @@ function MeasuredTopicLevelPath({ lessons, progress, currentLessonId, onPlay, wi
             backgroundColor: palette.edge }, pressed && styles.pressed]}>
           {isCurrent ? <CurrentLevelHalo point={point} scrollOffset={scrollOffset} viewportHeight={viewportHeight}
             active={active} reduceMotion={reduceMotion} /> : null}
-          <View pointerEvents="none" style={[styles.face, { backgroundColor: palette.face, borderColor: palette.border }]}>
+          <View pointerEvents="none" style={[styles.face, { backgroundColor: palette.face }]}>
             {/* Replace the native paint surface when an unlock changes its palette or size. */}
             <PuzzleGradient key={`${palette.top}:${point.diameter}`} colors={[palette.top, palette.face]} />
-            <View style={[styles.inset, { borderColor: palette.inset }]} />
             {state === "locked" ? <View style={styles.lock} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
               <Feather name="lock" size={13} color={palette.text} />
             </View> : null}
@@ -148,21 +146,20 @@ function CurrentLevelHalo({ point, scrollOffset, viewportHeight, active, reduceM
   return <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill}>
     <View style={styles.ring} />
     <Animated.View style={[styles.ring, styles.pulseRing, pulse]} />
+    <View style={styles.haloCenter} />
   </View>;
 }
 const TILE_RADIUS = 25;
-const FACE_BORDER = 1;
-const FACE_INSET = 7;
 
 const styles = StyleSheet.create({
   viewport: { flex: 1 },
   container: { width: "100%", maxWidth: 460, alignSelf: "center" },
   node: { position: "absolute", borderRadius: TILE_RADIUS, paddingBottom: 5,
     shadowColor: "#665C50", shadowOpacity: 0.17, shadowRadius: 9, shadowOffset: { width: 0, height: 8 }, elevation: 4 },
-  face: { flex: 1, borderRadius: TILE_RADIUS, borderWidth: FACE_BORDER, overflow: "hidden", alignItems: "center", justifyContent: "center" },
-  inset: { position: "absolute", top: FACE_INSET, right: FACE_INSET, bottom: FACE_INSET, left: FACE_INSET, borderRadius: insetRadius(TILE_RADIUS, FACE_BORDER + FACE_INSET), borderWidth: 1 },
-  ring: { position: "absolute", top: -8, right: -8, bottom: -8, left: -8, borderRadius: TILE_RADIUS + 8, borderWidth: 6, borderColor: TopicPathColors.halo },
-  pulseRing: { borderWidth: 3, borderColor: TopicPathColors.current.face },
+  face: { flex: 1, borderRadius: TILE_RADIUS, overflow: "hidden", alignItems: "center", justifyContent: "center" },
+  ring: { position: "absolute", top: -10, right: -10, bottom: -10, left: -10, borderRadius: TILE_RADIUS + 10, backgroundColor: Quantity.berry.soft },
+  pulseRing: { backgroundColor: Quantity.berry.light },
+  haloCenter: { ...StyleSheet.absoluteFill, borderRadius: TILE_RADIUS, backgroundColor: TopicPathColors.current.edge },
   startTag: { position: "absolute", minHeight: 28, width: 136, flexDirection: "row", gap: 5,
     justifyContent: "center", alignItems: "center", paddingHorizontal: 8, paddingVertical: 3,
     borderRadius: 14, backgroundColor: TopicPathColors.calloutSurface },
@@ -170,9 +167,7 @@ const styles = StyleSheet.create({
   lessonCallout: { position: "absolute", justifyContent: "center" },
   lessonTitle: { fontSize: 17, lineHeight: 22, fontWeight: "900", color: TopicPathColors.text },
   completedBadge: { position: "absolute", top: -7, right: -5, width: 28, height: 28, borderRadius: 14,
-    alignItems: "center", justifyContent: "center", backgroundColor: TopicPathColors.check,
-    borderWidth: 2, borderColor: TopicPathColors.checkBorder,
-    shadowColor: "#3D6651", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 2, elevation: 2 },
+    alignItems: "center", justifyContent: "center", backgroundColor: TopicPathColors.check },
   finish: { position: "absolute", width: 200, alignItems: "center", gap: 4 },
   finishLabel: { fontSize: 15, lineHeight: 20, fontWeight: "700", color: TopicPathColors.textMuted, textAlign: "center" },
   lock: { position: "absolute", right: 8, top: 8 },

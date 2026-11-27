@@ -55,7 +55,7 @@ export function TimedChallengeActions({ expired, hasLives, otherActive, onStart,
 
 const styles = StyleSheet.create({
   modes: { flexDirection: "row", gap: 10, alignSelf: "stretch" },
-  mode: { flex: 1, minHeight: 56, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: "white", borderWidth: 2, borderColor: GameColors.cardBorder, borderRadius: 16 },
+  mode: { flex: 1, minHeight: 56, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: GameColors.progressTrack, borderBottomWidth: 3, borderColor: GameColors.cardBorder, borderRadius: 16 },
   selectedMode: { borderColor: GameColors.primary, backgroundColor: "#FFF0F6" },
   modeText: { color: GameColors.text, fontSize: moderateScale(17), fontWeight: "800" },
   clock: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), paddingVertical: moderateScale(6) },

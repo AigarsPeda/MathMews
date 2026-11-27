@@ -1,72 +1,84 @@
-import { distanceAtStops } from '@/utils/puzzle-motion';
+import { useProofModelScroll } from '@/components/puzzle/place-value/ExchangeDetail';
+import { PercentageShareBar } from './percentage/PercentageShareBar';
+import { useRevealBeats } from '@/components/puzzle/kit/useRevealBeats';
+import { RevealSurface } from '@/components/puzzle/kit/RevealSurface';
+import { countabilityFloor } from '@/components/puzzle/kit/DenseLayout';
+import { PlayProofCaption, useProofViewport } from '@/components/puzzle/PlayProofCaption';
 import { BaseTenGrid } from '@/components/puzzle/BaseTenGrid';
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
-import { PuzzleColors as Colors } from '@/constants/puzzle-theme';
-import { useAnimationActivity } from '@/hooks/use-animation-activity';
-import { percentageAmount, percentageFraction, type PercentagePart, type PercentagePlan } from '@/utils/percentage-reveal';
-import { useEffect, useMemo, useState } from 'react';
+import { Caption, ProofCaption } from '@/components/puzzle/kit/Focus';
+import { Ink, ProofMotion, Shape, Stroke } from '@/constants/puzzle-theme';
+import { decimalFillAt } from '@/utils/decimal-reveal';
+import { percentageAmount, percentageShareParts, type PercentagePart, type PercentagePlan } from '@/utils/percentage-reveal';
+import { moderateScale } from '@/utils/scale';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
-import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
-function PercentageGrid({ part, progress, count, done, size, compact }: {
-  part: PercentagePart; progress: SharedValue<number>; count: number; done: boolean; size: number; compact: boolean;
+import { useProofCanvasPaint, type TrackProofCanvas } from './ProofCanvas';
+
+function PercentageGrid({ part, progress, count, settled, size, compact, share, submitted, trackCanvas, canvasIndex }: {
+  part: PercentagePart; progress: SharedValue<number>; count: number; settled: boolean; size: number; compact: boolean; share: number | null; submitted?: number;
+  trackCanvas?: TrackProofCanvas; canvasIndex: number;
 }) {
   const { t } = useTranslation();
-  const { percent, whole, label, kind } = part;
+  const { percent, whole, label } = part;
   const fill = useDerivedValue(() => Math.max(0, Math.min(percent, progress.get())));
   const shown = Math.max(0, Math.min(count, percent));
   const amount = percentageAmount(part);
-  let rate = `${shown}/100 = ${shown}%`;
-  if (done) rate = compact ? t('challenges.discount', { percent }) : `${rate} = ${percentageFraction(percent)}`;
+  const wholeLabel = t('percentageSolution.whole', { whole: t('percentageSolution.coins', { count: whole }) });
+  const rate = settled && compact ? t('challenges.discount', { percent }) : `${shown}/100 = ${shown}%`;
   return <View style={[styles.part, compact && { maxWidth: size + 18 }]}>
-    {label && <Text style={styles.item}>{label}</Text>}
-    <Text style={styles.whole}>{t('percentageSolution.whole', { whole: t('percentageSolution.coins', { count: whole }) })}</Text>
-    <BaseTenGrid size={size} amount={fill} />
-    <Text testID={compact ? undefined : "percentage-rate"} style={[styles.rate, compact && styles.smallRate]}>
-      {rate}
-    </Text>
-    {done && (compact || kind === 'sale') && (compact
-      ? <Text style={styles.detail}>{`${whole} − ${amount} = ${whole - amount}`}</Text>
-      : <Text style={styles.detail}>{t('percentageSolution.saved', { percent, amount: t('percentageSolution.coins', { count: amount }) })}</Text>)}
+    {label && <Caption strong>{label}</Caption>}
+    {share ? <PercentageShareBar parts={share} width={size} progress={progress}
+      whole={whole} settled={settled} submitted={submitted} /> : <>
+      <Caption>{wholeLabel}</Caption>
+      <BaseTenGrid trackCanvas={trackCanvas} canvasIndex={canvasIndex} size={size} amount={shown} preview={fill} />
+      {(compact || !settled) && <Text testID={compact ? undefined : "percentage-rate"} style={[styles.rate, compact && styles.smallRate]}>{rate}</Text>}
+    </>}
+    {settled && compact ? <Caption strong>{`${whole} − ${amount} = ${whole - amount}`}</Caption> : null}
   </View>;
 }
 
-export function PercentageReveal({ plan, onSolutionShown }: { plan: PercentagePlan; onSolutionShown: () => void }) {
+export function PercentageReveal({ plan, onSolutionShown, submitted }: { plan: PercentagePlan; submitted?: number; onSolutionShown: () => void }) {
   const { t } = useTranslation();
-  const { active, reduceMotion } = useAnimationActivity();
   const { width, height, fontScale } = useWindowDimensions();
+  const viewport = useProofViewport();
+  const modelScroll = useProofModelScroll(viewport?.availableModelHeight);
   const [measuredWidth, setMeasuredWidth] = useState(0);
-  const [count, setCount] = useState(-1);
-  const clock = useSharedValue(0);
-  const target = Math.max(0, ...plan.parts.map(part => part.percent));
-  const stops = useMemo(() => {
-    const rows = Array.from({ length: Math.floor(target / 10) + 1 }, (_, i) => i * 10);
-    return [...new Set([...rows, ...plan.parts.map(part => part.percent)])].sort((a, b) => a - b);
-  }, [plan, target]);
-  const progress = useDerivedValue(() => distanceAtStops(clock.get(), stops, 2));
-  const done = count === target;
-  useEffect(() => {
-    if (!active || reduceMotion || target === 0) {
-      clock.set(target);
-    } else if (clock.get() < target) {
-      clock.set(withDelay(220, withTiming(target, {
-        duration: Math.max(1700, Math.min(4400, target * 105)), easing: Easing.linear,
-      })));
-    }
-    return () => cancelAnimation(clock);
-  }, [active, reduceMotion, target, clock]);
-  useAnimatedReaction(() => Math.floor(Math.max(0, Math.min(target, progress.get()))), (next, last) => {
-    if (next !== last) scheduleOnRN(setCount, next);
-  });
-  useEffect(() => { if (done) onSolutionShown(); }, [done, onSolutionShown]);
   const { parts, budget } = plan;
   const compact = parts.length > 1;
-  const stacked = compact && fontScale > 1.3;
-  const available = measuredWidth || width - 56;
-  const size = compact ? Math.min(132, stacked ? available : (available - 48) / parts.length) : Math.min(210, height * .28, available);
   const first = parts[0];
+  const share = !compact && first.kind === 'amount' ? percentageShareParts(first.percent) : null;
+  const target = Math.max(0, ...parts.map(part => part.percent));
+  const stops = useMemo(() => {
+    if (share) return [0, 0, 0, target];
+    const chunk = target > 70 ? 20 : 10;
+    const columns = Array.from({ length: Math.floor(target / chunk) + 1 }, (_, i) => i * chunk);
+    return [...new Set([...columns, ...parts.map(part => part.percent)])].sort((a, b) => a - b);
+  }, [parts, share, target]);
+  const canvasIndices = share ? [] : parts.map((_, index) => index);
+  const beats = useRevealBeats(measuredWidth ? stops.length - 1 : null, {
+    awaitInitialPaint: canvasIndices.length > 0,
+    lead: 0, minTotal: 0, reducedSteps: true,
+    step: index => share ? [ProofMotion.beat[120], ProofMotion.group, ProofMotion.travel][index] : ProofMotion.beat[160],
+    hold: index => index === stops.length - 1 ? ProofMotion.settle : 0,
+    onDone: onSolutionShown,
+  });
+  const trackCanvas = useProofCanvasPaint(beats, measuredWidth > 0, canvasIndices);
+  const { landed, position, settled, reduced } = beats;
+  const shareProgress = useDerivedValue(() => reduced ? Math.max(0, landed - 1) : Math.max(0, position.get() - 1));
+  const preview = useDerivedValue(() => decimalFillAt(stops, position.get()));
+  const count = stops[landed];
+  const scale = viewport?.fontScale ?? fontScale;
+  const available = measuredWidth || viewport?.innerWidth || width - 56;
+  const gridFloor = 10 * (countabilityFloor('cell', scale >= 1.5) + Shape.space.seam + Shape.stroke.seam) + Stroke.outline;
+  const stacked = compact && (scale > 1.3 || Boolean(viewport && available < parts.length * gridFloor + 24));
+  const gridBudget = viewport ? viewport.availableModelHeight - 52 * scale - 16 : height * .34;
+  const size = share ? (viewport?.innerWidth ?? width - 52)
+    : viewport ? Math.max(gridFloor, Math.min(268, gridBudget, stacked || !compact ? available : (available - 24) / parts.length))
+      : compact ? Math.min(132, stacked ? available : (available - 24) / parts.length) : Math.min(268, gridBudget, available);
   const saved = percentageAmount(first);
   const prices = parts.map(part => part.whole - percentageAmount(part));
   const coins = (count: number) => t('percentageSolution.coins', { count });
@@ -75,25 +87,31 @@ export function PercentageReveal({ plan, onSolutionShown }: { plan: PercentagePl
     : first.kind === 'sale'
       ? t('percentageSolution.sale', { whole: first.whole, amount: saved, price: coins(first.whole - saved) })
       : t('percentageSolution.amount', { percent: first.percent, whole: first.whole, amount: coins(saved) });
-  return <View style={[styles.wrap, compact && styles.cart]} onLayout={e => setMeasuredWidth(e.nativeEvent.layout.width)}>
-    <View style={[styles.grids, stacked && styles.stacked]}>
-      {parts.map((part, i) => <PercentageGrid key={i} part={part} count={count} done={done} size={size} progress={progress} compact={compact} />)}
+  return <RevealSurface beats={beats} style={styles.surface}>
+    <View style={[styles.wrap, compact && styles.cart]} onLayout={e => setMeasuredWidth(e.nativeEvent.layout.width)}>
+      <View {...modelScroll} nativeID="play-proof-model" testID="play-proof-model" style={[styles.grids, stacked && styles.stacked]}>
+        {parts.map((part, i) => <PercentageGrid key={i} part={part} count={count} settled={settled}
+          size={size} progress={share ? shareProgress : preview} compact={compact} share={share} submitted={submitted} trackCanvas={trackCanvas} canvasIndex={i} />)}
+      </View>
+      {settled ? <PlayProofCaption>
+        <View nativeID="play-proof-equation" testID="play-proof-equation" style={styles.resultSlot}>
+          <View testID="percentage-result">
+            <ProofCaption text={submitted != null && share && submitted !== saved ? `${submitted} ≠ ${first.percent}% × ${first.whole}` : result} />
+          </View>
+        </View>
+      </PlayProofCaption> : null}
     </View>
-    {done &&
-      <Text testID="percentage-result" style={styles.result} accessibilityLiveRegion="polite">{result}</Text>}
-  </View>;
+  </RevealSurface>;
 }
 
 const styles = StyleSheet.create({
+  surface: { alignSelf: 'stretch' },
+  resultSlot: { minHeight: 30 },
   wrap: { alignItems: 'center', alignSelf: 'stretch', gap: 10, paddingVertical: 8 },
   cart: { paddingTop: 18 },
   grids: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: 10 },
   stacked: { flexDirection: 'column', alignItems: 'center' },
   part: { alignItems: 'center', gap: 6, flexShrink: 1 },
-  item: { color: Colors.text, textAlign: 'center', fontSize: 16, fontWeight: '800' },
-  whole: { color: Colors.coinText, textAlign: 'center', fontSize: 16, fontWeight: '700' },
-  rate: { color: Colors.primaryDark, textAlign: 'center', fontSize: 25, fontWeight: '800', fontVariant: ['tabular-nums'] },
-  smallRate: { fontSize: 17 },
-  detail: { color: Colors.text, textAlign: 'center', fontSize: 17, fontWeight: '700' },
-  result: { color: Colors.text, textAlign: 'center', fontSize: 21, fontWeight: '800' },
+  rate: { color: Ink.text, textAlign: 'center', fontSize: moderateScale(25), fontWeight: '800', fontVariant: ['tabular-nums'] },
+  smallRate: { fontSize: moderateScale(17) },
 });

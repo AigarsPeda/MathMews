@@ -1,11 +1,5 @@
-import { NumberLineReveal } from '@/components/puzzle/NumberLineReveal';
-import type { HopRoute } from '@/utils/number-line-reveal';
-import { RatioReveal } from '@/components/puzzle/RatioReveal';
-import { PercentageReveal } from '@/components/puzzle/PercentageReveal';
-import type { PercentagePlan } from '@/utils/percentage-reveal';
-import { DecimalReveal } from '@/components/puzzle/DecimalReveal';
-import { FractionReveal } from '@/components/puzzle/FractionReveal';
-import type { FractionRevealPlan } from '@/utils/fraction-reveal';
+import type { CheckedAttempt } from '@/utils/checked-attempt';
+import type { ComponentType, ReactNode } from 'react';
 import { BridgeTask } from "@/components/puzzle/BridgeTask";
 import { PuzzleResponseTask } from '@/components/puzzle/PuzzleResponseTask';
 import type { ResponseValue } from '@/utils/puzzle-response';
@@ -61,9 +55,17 @@ import {
 } from "@/utils/puzzle-type";
 
 type PuzzleTaskViewProps = {
-  lineRoute?: HopRoute | null;
-  percentagePlan?: PercentagePlan | null;
-  fractionPlan?: FractionRevealPlan | null;
+  storyHostsAnswer?: boolean;
+  AnswerRow?: ComponentType<{ children: ReactNode }>;
+  playbackOwnsControls?: boolean;
+  retainPracticeDrawing?: boolean;
+  checkedModel?: ReactNode;
+  checkedAttempt?: CheckedAttempt;
+  initialChallengeAnswer?: ChallengeAnswer | null;
+  initialDistribution?: readonly number[];
+  decimalCells?: readonly number[];
+  onDecimalSelectionChange?: (cells: readonly number[]) => void;
+  onDistributionChange?: (locations: number[]) => void;
   onSolutionShown?: () => void;
   onUseHelp?: () => void;
   puzzle: Puzzle;
@@ -92,27 +94,30 @@ type PuzzleTaskViewProps = {
   foundPairs: [number, number][];
   onFoundPairsChange: (pairs: [number, number][]) => void;
   numberOrder: number[];
-  fractionMatchMatchedIds: string[];
-  fractionMatchSelectedId: string | null;
-  fractionMatchWrongIds: string[];
+  selectedByPair?: readonly (readonly number[])[];
+  onToggleWedge?: (pairIndex: number, wedge: number) => void;
+  fractionMatchMatchedIds?: string[];
+  fractionMatchSelectedId?: string | null;
+  fractionMatchWrongIds?: string[];
   answered: boolean;
   incorrectAttempt?: boolean;
   isCorrect: boolean;
   hasLives?: boolean;
   onIncorrectAttempt?: () => boolean;
-  onSelectChoice: (index: number) => void;
+  onSelectChoice: (index: number | null) => void;
   onSelectOperator: (stepIndex: number, operator: MathOperator) => void;
   onChangeFractionPieces: (count: number) => void;
   onToggleFractionSlice: (index: number) => void;
   onSelectNumberLineValue: (value: number) => void;
   onTogglePairIndex: (index: number) => void;
+  onPairChange: (indices: number[]) => void;
   onMoveOrder: (from: number, to: number) => void;
   onSwapOrder: (from: number, to: number) => void;
-  onTapFractionMatchCard: (cardId: string) => void;
+  onTapFractionMatchCard?: (cardId: string) => void;
 };
 
 export function PuzzleTaskView({
-  lineRoute, percentagePlan, fractionPlan, onSolutionShown, onUseHelp,
+  AnswerRow, storyHostsAnswer, playbackOwnsControls = false, retainPracticeDrawing, checkedModel, checkedAttempt, initialChallengeAnswer, initialDistribution, decimalCells, onDecimalSelectionChange, onDistributionChange, onSolutionShown, onUseHelp,
   puzzle,
   responseValue = null, onResponseChange,
   bridge, onBridgeChange,
@@ -130,9 +135,10 @@ export function PuzzleTaskView({
   pairIndices,
   foundPairs, onFoundPairsChange,
   numberOrder,
-  fractionMatchMatchedIds,
-  fractionMatchSelectedId,
-  fractionMatchWrongIds,
+  selectedByPair, onToggleWedge,
+  fractionMatchMatchedIds = [],
+  fractionMatchSelectedId = null,
+  fractionMatchWrongIds = [],
   answered,
   incorrectAttempt = false,
   isCorrect,
@@ -144,31 +150,35 @@ export function PuzzleTaskView({
   onToggleFractionSlice,
   onSelectNumberLineValue,
   onTogglePairIndex,
+  onPairChange,
   onMoveOrder,
   onSwapOrder,
-  onTapFractionMatchCard,
+  onTapFractionMatchCard = () => {},
 }: PuzzleTaskViewProps) {
-  if (onSolutionShown && lineRoute) return <NumberLineReveal route={lineRoute} onSolutionShown={onSolutionShown} />;
-  if (onSolutionShown && puzzle.type === 'ratio_table') return <RatioReveal puzzle={puzzle} onSolutionShown={onSolutionShown} />;
-  if (onSolutionShown && percentagePlan) return <PercentageReveal plan={percentagePlan} onSolutionShown={onSolutionShown} />;
-  if (onSolutionShown && (puzzle.type === 'decimal_grid' || puzzle.type === 'decimal_place_value')) return <DecimalReveal puzzle={puzzle} onSolutionShown={onSolutionShown} />;
-  if (fractionPlan && onSolutionShown) return <FractionReveal plan={fractionPlan} onSolutionShown={onSolutionShown} />;
-  if (puzzle.response && onResponseChange) return <PuzzleResponseTask onSolutionShown={onSolutionShown} puzzle={puzzle} value={responseValue} onChange={onResponseChange} answered={answered} incorrectAttempt={incorrectAttempt} isCorrect={isCorrect} />;
-  if (isBridgePuzzle(puzzle) && onBridgeChange) return <BridgeTask puzzle={puzzle} value={bridge ?? null} onChange={onBridgeChange} answered={answered} />;
-  if (puzzle.type === "geometry_measure") return <GeometryMeasureTask onSolutionShown={onSolutionShown} puzzle={puzzle} value={geometry} onChange={onGeometryChange} answered={answered} />;
-  if (puzzle.type === "decimal_grid") return <DecimalGridTask puzzle={puzzle} value={decimalGrid} onChange={onDecimalGridChange} answered={answered} />;
+  const checkedResult = checkedAttempt ? checkedAttempt.correct ? 'correct' as const : 'wrong' as const : undefined;
+  if (puzzle.response && onResponseChange) {
+    const rowAttempt = puzzle.type === 'geometry_measure' && puzzle.payload.mode === 'missing_area' && checkedAttempt?.answer.kind === 'response' ? checkedAttempt : undefined;
+    return <PuzzleResponseTask storyHostsAnswer={storyHostsAnswer} playbackOwnsControls={playbackOwnsControls} AnswerRow={AnswerRow} checkedModel={checkedModel} initialDistribution={initialDistribution} onDistributionChange={onDistributionChange} onSolutionShown={onSolutionShown} puzzle={puzzle}
+      value={rowAttempt?.answer.kind === 'response' ? rowAttempt.answer.value : responseValue} onChange={onResponseChange} answered={answered} incorrectAttempt={incorrectAttempt} isCorrect={rowAttempt?.correct ?? isCorrect} />;
+  }
+  if (playbackOwnsControls && !puzzle.response && isBridgePuzzle(puzzle) && checkedModel) return <>{checkedModel}</>;
+  if (isBridgePuzzle(puzzle) && onBridgeChange) return <BridgeTask {...{ AnswerRow, checkedModel, checkedResult, playbackOwnsControls }} readOnly={playbackOwnsControls && !checkedModel} puzzle={puzzle} value={bridge ?? null} onChange={onBridgeChange} answered={answered} />;
+  if (puzzle.type === "geometry_measure") return <GeometryMeasureTask {...{ AnswerRow, checkedModel, checkedResult, playbackOwnsControls }} readOnly={playbackOwnsControls} onSolutionShown={onSolutionShown} puzzle={puzzle} value={geometry} onChange={onGeometryChange} answered={answered} />;
+  if (puzzle.type === "decimal_grid") return <DecimalGridTask selectedCells={decimalCells} onSelectionChange={onDecimalSelectionChange} puzzle={puzzle} value={decimalGrid} onChange={onDecimalGridChange} answered={answered} />;
   if (puzzle.type === "decimal_place_value") return <DecimalPlaceValueTask puzzle={puzzle} value={decimalPlace} onChange={onDecimalPlaceChange} answered={answered} />;
-  if (puzzle.type === "fraction_number_line") return <FractionNumberLineTask puzzle={puzzle} value={numberLineValue} onChange={onSelectNumberLineValue} answered={answered} />;
-  if (puzzle.type === "fraction_strip") return <FractionStripTask puzzle={puzzle} value={fractionStrip} onChange={onFractionStripChange} answered={answered} />;
-  if (puzzle.type === "place_value") return <PlaceValueTask puzzle={puzzle} value={placeValue} onChange={onPlaceValueChange} answered={answered} />;
-  if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask puzzle={puzzle} answered={answered} onAnswerChange={onChallengeAnswerChange} onDragStateChange={onDragStateChange} />;
-  if (puzzle.type === "find_all_pairs") return <FindAllPairsTask puzzle={puzzle} pairs={foundPairs} answered={answered} canAttempt={hasLives} onIncorrectAttempt={onIncorrectAttempt} onChange={onFoundPairsChange} />;
+  if (puzzle.type === "fraction_number_line") return <FractionNumberLineTask AnswerRow={AnswerRow} puzzle={puzzle} value={numberLineValue} onChange={onSelectNumberLineValue} answered={answered} />;
+  if (puzzle.type === "fraction_strip") return <FractionStripTask AnswerRow={AnswerRow} puzzle={puzzle} value={fractionStrip} onChange={onFractionStripChange} answered={answered} />;
+  if (puzzle.type === "place_value") return <PlaceValueTask AnswerRow={AnswerRow} puzzle={puzzle}
+    value={checkedAttempt?.answer.kind === 'place_value' ? checkedAttempt.answer.state : placeValue} onChange={onPlaceValueChange} answered={answered} retryOnly={checkedAttempt?.correct === false} />;
+  if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask {...{ initialAnswer: initialChallengeAnswer, initialIndices: initialChallengeAnswer?.kind === "budget" ? initialChallengeAnswer.indices : undefined }} puzzle={puzzle} answered={answered} onAnswerChange={onChallengeAnswerChange} onDragStateChange={onDragStateChange} />;
+  if (puzzle.type === "find_all_pairs") return <FindAllPairsTask AnswerRow={AnswerRow} puzzle={puzzle} pairs={foundPairs} answered={answered} canAttempt={hasLives} onIncorrectAttempt={onIncorrectAttempt} onChange={onFoundPairsChange} />;
   const fractionMatchPuzzle = asFractionMatchPuzzle(puzzle);
   if (fractionMatchPuzzle) {
     return (
       <FractionMatchTask
         canAttempt={hasLives}
         puzzle={fractionMatchPuzzle}
+        selectedByPair={selectedByPair} onToggleWedge={onToggleWedge}
         matchedIds={fractionMatchMatchedIds}
         selectedId={fractionMatchSelectedId}
         wrongIds={fractionMatchWrongIds}
@@ -197,8 +207,9 @@ export function PuzzleTaskView({
   const patternNextPuzzle = asPatternNextPuzzle(puzzle);
   if (patternNextPuzzle) {
     return (
-      <PatternNextTask
+      <PatternNextTask AnswerRow={AnswerRow}
         puzzle={patternNextPuzzle}
+        onDragStateChange={onDragStateChange}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
@@ -211,7 +222,7 @@ export function PuzzleTaskView({
   const functionMachinePuzzle = asFunctionMachinePuzzle(puzzle);
   if (functionMachinePuzzle) {
     return (
-      <FunctionMachineTask
+      <FunctionMachineTask AnswerRow={AnswerRow}
         puzzle={functionMachinePuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -253,20 +264,24 @@ export function PuzzleTaskView({
   const pairSumPuzzle = asPairSumPuzzle(puzzle);
   if (pairSumPuzzle) {
     return (
-      <PairSumTask
+      <PairSumTask AnswerRow={AnswerRow}
         puzzle={pairSumPuzzle}
         selectedIndices={pairIndices}
         answered={answered}
         isCorrect={isCorrect}
         onToggleIndex={onTogglePairIndex}
+        onPairChange={onPairChange}
+        onDragStateChange={onDragStateChange}
       />
     );
   }
 
   const trueFalsePuzzle = asTrueFalsePuzzle(puzzle);
   if (trueFalsePuzzle) {
-    return (
-      <TrueFalseTask
+    const hostedProof = playbackOwnsControls ? checkedModel : undefined;
+    return <>
+      {hostedProof}
+      <TrueFalseTask arithmeticModel playbackOwnsControls={playbackOwnsControls} AnswerRow={AnswerRow} hasHostedProof={hostedProof != null}
         puzzle={trueFalsePuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -274,13 +289,13 @@ export function PuzzleTaskView({
         answered={answered}
         onSelect={onSelectChoice}
       />
-    );
+    </>;
   }
 
   const balancePuzzle = asBalancePuzzle(puzzle);
   if (balancePuzzle) {
     return (
-      <BalanceTask
+      <BalanceTask AnswerRow={AnswerRow}
         onSolutionShown={onSolutionShown}
         puzzle={balancePuzzle}
         selectedIndex={selectedIndex}
@@ -295,7 +310,7 @@ export function PuzzleTaskView({
   const fixMistakePuzzle = asFixMistakePuzzle(puzzle);
   if (fixMistakePuzzle) {
     return (
-      <FixMistakeTask
+      <FixMistakeTask {...{ AnswerRow, checkedModel, checkedResult }}
         puzzle={fixMistakePuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -309,7 +324,7 @@ export function PuzzleTaskView({
   const estimatePuzzle = asEstimatePuzzle(puzzle);
   if (estimatePuzzle) {
     return (
-      <EstimateTask
+      <EstimateTask {...{ AnswerRow, checkedModel, checkedResult }}
         puzzle={estimatePuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -323,7 +338,7 @@ export function PuzzleTaskView({
   const fairSharePuzzle = asFairSharePuzzle(puzzle);
   if (fairSharePuzzle) {
     return (
-      <FairShareTask
+      <FairShareTask {...{ AnswerRow, checkedModel, checkedResult, playbackOwnsControls }} initialDistribution={initialDistribution} onDistributionChange={onDistributionChange}
         puzzle={fairSharePuzzle}
         onUseHelp={onUseHelp}
         selectedIndex={selectedIndex}
@@ -338,7 +353,7 @@ export function PuzzleTaskView({
   const fractionEquivalentPuzzle = asFractionEquivalentPuzzle(puzzle);
   if (fractionEquivalentPuzzle) {
     return (
-      <FractionEquivalentTask
+      <FractionEquivalentTask {...{ AnswerRow, checkedModel, checkedResult, playbackOwnsControls }}
         puzzle={fractionEquivalentPuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -352,7 +367,7 @@ export function PuzzleTaskView({
   const comparePuzzle = asComparePuzzle(puzzle);
   if (comparePuzzle) {
     return (
-      <CompareTask
+      <CompareTask {...{ playbackOwnsControls, checkedModel }}
         puzzle={comparePuzzle}
         selectedIndex={selectedIndex}
         incorrectAttempt={incorrectAttempt}
@@ -366,7 +381,7 @@ export function PuzzleTaskView({
   const operationPathPuzzle = asOperationPathPuzzle(puzzle);
   if (operationPathPuzzle) {
     return (
-      <OperationPathTask
+      <OperationPathTask AnswerRow={AnswerRow}
         puzzle={operationPathPuzzle}
         selectedOperators={selectedOperators}
         answered={answered}
@@ -379,7 +394,7 @@ export function PuzzleTaskView({
   const targetBuildPuzzle = asTargetBuildPuzzle(puzzle);
   if (targetBuildPuzzle) {
     return (
-      <TargetBuildTask
+      <TargetBuildTask AnswerRow={AnswerRow}
         puzzle={targetBuildPuzzle}
         selectedOperators={selectedOperators}
         answered={answered}
@@ -394,13 +409,14 @@ export function PuzzleTaskView({
     return null;
   }
 
+  const shapeAttempt = multipleChoicePuzzle.everyday?.model.kind === 'shapes' && checkedAttempt?.answer.kind === 'choice' ? checkedAttempt : undefined;
   return (
-    <MultipleChoiceTask
+    <MultipleChoiceTask onClear={() => onSelectChoice(null)} retainPracticeDrawing={retainPracticeDrawing} playbackOwnsControls={playbackOwnsControls} AnswerRow={AnswerRow} checkedModel={checkedModel} initialDistribution={initialDistribution} onDistributionChange={onDistributionChange}
       onSolutionShown={onSolutionShown}
       puzzle={multipleChoicePuzzle}
-      selectedIndex={selectedIndex}
+      selectedIndex={shapeAttempt?.answer.kind === 'choice' ? shapeAttempt.answer.index : selectedIndex}
       incorrectAttempt={incorrectAttempt}
-      isCorrect={isCorrect}
+      isCorrect={shapeAttempt?.correct ?? isCorrect}
       answered={answered}
       onSelect={onSelectChoice}
     />

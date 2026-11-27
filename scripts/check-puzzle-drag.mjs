@@ -11,12 +11,13 @@ const jsx=(type,props)=>({type,props});
 const mocks={
  react:{createContext:()=>({}),useContext:()=>context,useCallback:fn=>fn,useEffect:()=>{},useMemo:fn=>fn(),useRef:value=>({current:value}),useState:value=>[value,()=>{}]},
  'react/jsx-runtime':{jsx,jsxs:jsx},
- 'react-native':{View:'View',Text:'Text',StyleSheet:{create:styles=>styles,absoluteFill:{}}},
+ 'react-native':{View:'View',Text:'Text',Pressable:'Pressable',StyleSheet:{create:styles=>styles,absoluteFill:{}}},
  'expo-haptics':{selectionAsync:async()=>{}},
- '@/constants/game':{GameColors:{}},'@/constants/puzzle-theme':{PuzzleColors:{}},'@/components/puzzle/PuzzleText':{PuzzleText:'Text'},'@/utils/scale':{moderateScale:n=>n},
+ '@/constants/game':{GameColors:{}},'@/constants/puzzle-theme':{PuzzleColors:{},Ink:{},Quantity:new Proxy({},{get:()=>({fill:'#000',edge:'#000',soft:'#000',light:'#000'})}),Radius:{tray:12},Stroke:{outline:2,major:1.5},Motion:{tap:120,step:450,hold:250,settle:280,lead:300,sweep:900,fade:120},LandSpring:{damping:14,stiffness:220,mass:0.8}},'@/components/puzzle/PuzzleText':{PuzzleText:'Text'},'@/utils/scale':{moderateScale:n=>n},
  'react-native-worklets':{scheduleOnRN:(fn,...args)=>queue.push(()=>fn(...args))},
  'react-native-reanimated':{__esModule:true,default:{View:'AnimatedView'},useSharedValue:shared,useAnimatedRef:()=>({rect:{pageX:110,pageY:220,width:64,height:60}}),measure:ref=>ref.rect,useAnimatedStyle:fn=>fn(),useReducedMotion:()=>reducedMotion,
-   ReduceMotion:{System:'system'},Easing:{cubic:n=>n*n*n,out:fn=>fn},cancelAnimation:()=>{},
+   ReduceMotion:{System:'system'},Easing:{cubic:n=>n*n*n,quad:n=>n*n,out:fn=>fn},cancelAnimation:()=>{},FadeIn:{duration:()=>'fade'},
+   withSpring:value=>value,withSequence:(...steps)=>steps.at(-1),
    withTiming:(value,options,done)=>{timings.push({value,options});done?.(true);return value;}},
  'react-native-gesture-handler':{GestureDetector:'GestureDetector',Gesture:{
    Pan:makeGesture, Tap:makeGesture, Race:(pan,tap)=>({pan,tap}),
@@ -55,7 +56,7 @@ board.refresh();board.register('gap-1',null);measurementCallbacks.splice(0).forE
 assert.deepEqual(Array.from(zoneWrites.at(-1),zone=>zone.id),['bank'],'Late measurements cannot resurrect an unmounted target');
 function setup(disabled=false,onPress,motionId){
  const locks=[],drops=[];
- context={board:{rect:{pageX:100,pageY:200,width:300,height:500}},zones:shared([{id:'basket',x:130,y:100,width:100,height:140}]),source:shared(''),hovered:shared(null),position:shared({x:0,y:0,width:0,height:0}),released:shared(null),lift:shared(1),landing:shared(''),begin:()=>locks.push(true),finish:(id,target)=>{locks.push(false);if(target!==null)drops.push([id,target]);}};
+ context={ready:{current:false},board:{rect:{pageX:100,pageY:200,width:300,height:500}},zones:shared([{id:'basket',x:130,y:100,width:100,height:140}]),source:shared(''),hovered:shared(null),position:shared({x:0,y:0,width:0,height:0}),released:shared(null),lift:shared(1),landing:shared(''),begin:()=>locks.push(true),finish:(id,target)=>{locks.push(false);if(target!==null)drops.push([id,target]);}};
  const element=PuzzleDragTile({id:'tile',motionId,label:'12',disabled,accessibilityLabel:'12',accessibilityHint:'Drag',actions:[{id:'basket',label:'Move to basket'}],onPress});
  return {...element.props.gesture,element,locks,drops};
 }

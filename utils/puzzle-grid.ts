@@ -38,3 +38,16 @@ export function gridStops(model: GridModel) {
   }
   return stops;
 }
+
+/** The letter identifies an authored choice, even when its value is a cell number. */
+export function gridChoiceLetter(choices: readonly string[], cell: number) {
+  const index = choices.indexOf(String(cell));
+  return index < 0 ? undefined : String.fromCharCode(65 + index);
+}
+
+/** Join the true landing to the submitted cell to show the displacement. */
+export function gridAttemptGuide(model: GridModel, cell: number) {
+  if (!Number.isInteger(cell) || cell < 1 || cell > model.size ** 2) return null;
+  const landing = gridPose(model, gridSteps(model));
+  return [landing, { x: (cell - 1) % model.size + .5, y: Math.floor((cell - 1) / model.size) + .5 }];
+}

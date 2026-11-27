@@ -233,8 +233,6 @@ const styles = StyleSheet.create({
   },
   sparkleCoinRow: {
     backgroundColor: "#F3EEFF",
-    borderWidth: 2,
-    borderColor: "#C9B6FF",
   },
   coinText: {
     fontSize: moderateScale(16),
@@ -250,8 +248,6 @@ const styles = StyleSheet.create({
     gap: moderateScale(10),
     paddingHorizontal: moderateScale(20),
     paddingTop: moderateScale(12),
-    borderTopWidth: 1,
-    borderTopColor: GameColors.cardBorder,
     backgroundColor: GameColors.background,
   },
   secondaryButton: {
@@ -272,7 +268,7 @@ const styles = StyleSheet.create({
     width: "100%",
     minHeight: moderateScale(48),
     borderRadius: moderateScale(16),
-    borderWidth: 2,
+    borderBottomWidth: 3,
     borderColor: GameColors.primary,
     backgroundColor: GameColors.selectedSurface,
     alignItems: "center",

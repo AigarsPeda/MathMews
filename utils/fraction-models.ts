@@ -1,6 +1,6 @@
 import type { FractionNumberLinePuzzle, FractionStripPuzzle } from '@/types/puzzle';
 
-export type FractionStripState = { parts: number; shaded: number | null };
+export type FractionStripState = { parts: number; shaded: number | null; selected?: readonly number[] };
 
 export function validFractionPoint(puzzle: FractionNumberLinePuzzle, tick: number): boolean {
   const { numerator, denominator, divisions } = puzzle.payload;
@@ -11,6 +11,9 @@ export function validFractionStrip(puzzle: FractionStripPuzzle, state: FractionS
   const { numerator, denominator, partitions } = puzzle.payload;
   return partitions.includes(state.parts) && state.shaded !== null && Number.isInteger(state.shaded)
     && state.shaded >= 0 && state.shaded <= state.parts
+    && (!state.selected || state.selected.length === state.shaded
+      && new Set(state.selected).size === state.selected.length
+      && state.selected.every(index => Number.isInteger(index) && index >= 0 && index < state.parts))
     && state.shaded * denominator === numerator * state.parts;
 }
 
@@ -23,4 +26,11 @@ export function fractionTickAt(x: number, width: number, divisions: number): num
 /** A new partition clears the old count: it must never silently change the shaded amount. */
 export function partitionFractionStrip(puzzle: FractionStripPuzzle, parts: number): FractionStripState | null {
   return puzzle.payload.partitions.includes(parts) ? { parts, shaded: null } : null;
+}
+
+/** A rectangular whole must contain exactly its denominator in cells. */
+export function fractionGridDimensions(denominator: number) {
+  let rows = Math.floor(Math.sqrt(denominator));
+  while (denominator % rows !== 0) rows--;
+  return { cols: denominator / rows, rows };
 }

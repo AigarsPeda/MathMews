@@ -47,7 +47,7 @@ function expected(p) {
   if (p.type === 'signed_line') return String(v.start + (v.mode === 'move' ? v.delta : v.start === v.max ? -1 : 1));
   if (p.type === 'coordinate_map') {
     const target = v.mode === 'plot' ? { x: v.end.x + (v.end.x === v.max ? -1 : 1), y: v.end.y } : load('@/utils/bridge-models').bridgeTarget(p);
-    return typeof target === 'number' ? String(target) : `(${target.x}; ${target.y})`;
+    return typeof target === 'number' ? String(target) : normalize(`(${target.x}, ${target.y})`);
   }
   if (['ratio_table', 'equation_board'].includes(p.type)) return String(load('@/utils/bridge-models').bridgeTarget(p));
   if (p.type === 'geometry_measure') { const n = load('@/utils/geometry-models').geometryTarget(p); return v.mode === 'compare' ? ['A', 'B', 'A = B'][n] : String(n); }

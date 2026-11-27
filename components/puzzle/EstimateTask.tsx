@@ -1,13 +1,17 @@
-import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
-import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { Fragment, type ComponentType, type ReactNode } from "react";
+import { LandmarkLine, estimateScale } from "./number-line/LandmarkLine";
+import { useChoiceLayout } from "./useChoiceLayout";
+import { ValueChip } from "@/components/puzzle/kit/PuzzleKit";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { EstimatePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
 
 type EstimateTaskProps = {
   puzzle: EstimatePuzzle;
+  AnswerRow?: ComponentType<{ children: ReactNode }>;
+  checkedModel?: ReactNode;
+  checkedResult?: "correct" | "wrong";
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
@@ -16,7 +20,10 @@ type EstimateTaskProps = {
 };
 
 export function EstimateTask({
+  AnswerRow = Fragment,
   puzzle,
+  checkedModel,
+  checkedResult,
   selectedIndex,
   isCorrect,
   answered,
@@ -25,38 +32,43 @@ export function EstimateTask({
 }: EstimateTaskProps) {
   const { expression, choices } = puzzle.payload;
 
-  const choiceLayout = useChoiceLayout(choices);
+  const layout = useChoiceLayout(choices);
+  const options = choices.map((label, index) => ({ label, index, value: Number(label.match(/\d+$/)?.[0]) }))
+    .sort((left, right) => left.value - right.value);
+  const operands = expression.match(/^(\d+)\s*\+\s*(\d+)$/);
+  const total = operands ? Number(operands[1]) + Number(operands[2]) : null;
+  const start = operands ? Number(operands[1]) : 0;
+  const goal = total === null ? 0 : Math.round(total / 10) * 10;
+  const selected = options.find(o => o.index === selectedIndex)?.value;
+  const locked = answered || checkedModel != null || checkedResult !== undefined;
+  const result = checkedResult ?? (locked || incorrectAttempt ? (isCorrect ? "correct" : "wrong") : null);
+  const markedIndex = checkedResult === undefined && isCorrect ? puzzle.correctIndex : selectedIndex;
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.exprCard}>
-        <Text style={styles.expression}>{expression}</Text>
-      </View>
+      {checkedModel ?? (
+        <>
+          <ValueChip label={expression} size="lg" style={styles.expression} />
+          {total !== null && <LandmarkLine scale={estimateScale(start, total, result === 'wrong' ? selected : undefined)}
+            start={start} goal={goal} value={selected ?? start} submitted={result === 'wrong' ? selected : undefined} />}
+        </>
+      )}
 
-      <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
-        {choices.map((choice, index) => {
-          let result: "correct" | "wrong" | null = null;
-          if (answered || incorrectAttempt) {
-            if (isCorrect && index === puzzle.correctIndex) {
-              result = "correct";
-            } else if (!isCorrect && index === selectedIndex) {
-              result = "wrong";
-            }
-          }
-
-          return (
+      <AnswerRow>
+        <View onLayout={layout.onLayout} style={layout.container}>
+          {options.map(({ label: choice, index }) => (
             <ChoiceButton
               key={`${puzzle.id}-${choice}`}
               label={choice}
-              style={choiceLayout.item}
+              style={layout.item}
               selected={selectedIndex === index}
-              disabled={answered}
-              result={result}
+              disabled={locked}
+              result={index === markedIndex ? result : null}
               onPress={() => onSelect(index)}
             />
-          );
-        })}
-      </View>
+          ))}
+        </View>
+      </AnswerRow>
     </View>
   );
 }
@@ -65,18 +77,5 @@ const styles = StyleSheet.create({
   wrap: {
     gap: moderateScale(8),
   },
-  exprCard: {
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(18),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    padding: moderateScale(20),
-    alignItems: "center",
-  },
-  expression: {
-    fontSize: moderateScale(28),
-    fontWeight: "800",
-    color: GameColors.text,
-    fontVariant: ["tabular-nums"],
-  },
+  expression: { alignSelf: "center" },
 });

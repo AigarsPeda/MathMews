@@ -1,10 +1,10 @@
-import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { LineStepButton } from "@/components/puzzle/number-line/LineStepButton";
+import { ValueChip } from "@/components/puzzle/kit/PuzzleKit";
 import { NumberLineTrack } from "@/components/puzzle/NumberLineTrack";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { NumberLinePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type NumberLineTaskProps = {
   puzzle: NumberLinePuzzle;
@@ -20,20 +20,15 @@ export function NumberLineTask({
   const { t } = useTranslation();
   const { start, jump, min, max, correctValue } = puzzle.payload;
   const current = selectedValue ?? start;
-  const jumpLabel = t(jump >= 0 ? "puzzleTypes.jumpForward" : "puzzleTypes.jumpBack", {
-    count: Math.abs(jump),
-  });
-
   return (
     <View style={styles.wrap}>
-      <Text style={styles.prompt}>
-        {t("puzzleTypes.numberLinePrompt", { start, jump: jumpLabel })}
-      </Text>
+      <ValueChip label={`${start} ${jump < 0 ? "−" : "+"} ${Math.abs(jump)}`} size="md" style={styles.given} />
       <View style={styles.lineCard}>
         <NumberLineTrack
           min={min}
           max={max}
           start={start}
+          focusEnd={start + jump}
           value={current}
           onSelect={onSelectValue}
           disabled={answered}
@@ -46,45 +41,24 @@ export function NumberLineTask({
               const next = current + direction;
               const disabled = next < min || next > max;
               return (
-                <Pressable
-                  key={direction}
-                  onPress={() => onSelectValue(next)}
-                  disabled={disabled}
-                  style={[styles.stepButton, disabled && styles.disabled]}
-                  accessibilityRole="button"
+                <LineStepButton key={direction} direction={direction} disabled={disabled}
                   accessibilityLabel={t(direction < 0 ? "puzzleTypes.numberLineMoveLeft" : "puzzleTypes.numberLineMoveRight")}
-                >
-                  <Text style={styles.stepButtonText}>
-                    {t(direction < 0 ? "puzzleTypes.numberLineLeftButton" : "puzzleTypes.numberLineRightButton")}
-                  </Text>
-                </Pressable>
+                  label={t(direction < 0 ? "puzzleTypes.numberLineLeftButton" : "puzzleTypes.numberLineRightButton")}
+                  onPress={() => onSelectValue(next)} />
               );
             })}
           </View>
         ) : null}
       </View>
-      {!answered ? <Text style={styles.hint}>{t("puzzleTypes.numberLineHint")}</Text> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: { gap: moderateScale(12) },
-  prompt: {
-    fontSize: moderateScale(18), fontWeight: "700", color: GameColors.text,
-    textAlign: "center", lineHeight: moderateScale(26),
-  },
+  given: { alignSelf: "center" },
   lineCard: {
-    gap: moderateScale(12),
+    gap: moderateScale(4),
   },
   controls: { flexDirection: "row", gap: moderateScale(12) },
-  stepButton: {
-    flex: 1, minHeight: moderateScale(52), padding: moderateScale(10),
-    borderRadius: moderateScale(12), backgroundColor: GameColors.selectedSurface,
-    borderWidth: 2, borderBottomWidth: 4, borderColor: GameColors.primary,
-    alignItems: "center", justifyContent: "center",
-  },
-  stepButtonText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.primaryDark },
-  disabled: { opacity: 0.35 },
-  hint: { fontSize: moderateScale(14), lineHeight: moderateScale(20), color: GameColors.textMuted, textAlign: "center" },
 });

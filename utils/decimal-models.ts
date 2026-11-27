@@ -9,14 +9,15 @@ export function checkDecimalGrid(puzzle: DecimalGridPuzzle, shaded: number): boo
   return Number.isInteger(shaded) && shaded >= 0 && shaded <= puzzle.payload.scale
     && shaded * (100 / puzzle.payload.scale) === puzzle.payload.hundredths;
 }
-export function decimalGridCell(x: number, y: number, width: number, scale: 10 | 100): number | null {
+export function decimalGridCell(x: number, y: number, width: number, scale: 10 | 100, order: 'rows' | 'columns' = 'rows'): number | null {
   if (![x, y, width].every(Number.isFinite) || width <= 0) return null;
   const column = Math.max(0, Math.min(9, Math.floor(x / width * 10)));
   const row = scale === 10 ? 0 : Math.max(0, Math.min(9, Math.floor(y / width * 10)));
+  if (scale === 100 && order === 'columns') return column * 10 + row + 1;
   return row * 10 + column + 1;
 }
-export type DecimalPlaceState = { ones: number; tenths: number; hundredths: number };
-export type DecimalUnit = keyof DecimalPlaceState;
+export type DecimalUnit = 'ones' | 'tenths' | 'hundredths';
+export type DecimalPlaceState = Record<DecimalUnit, number> & { selectedTenths?: readonly number[] };
 export type DecimalAction = { kind: 'add' | 'remove'; unit: DecimalUnit } | { kind: 'bundle' | 'split'; unit: 'tenths' | 'hundredths' };
 export const decimalTotal = (state: DecimalPlaceState) => state.ones * 100 + state.tenths * 10 + state.hundredths;
 export function initialDecimalPlace(puzzle: DecimalPlaceValuePuzzle): DecimalPlaceState {
@@ -40,7 +41,7 @@ export function changeDecimalPlace(puzzle: DecimalPlaceValuePuzzle, state: Decim
   return state;
 }
 export function checkDecimalPlace(puzzle: DecimalPlaceValuePuzzle, state: DecimalPlaceState): boolean {
-  if (!Object.values(state).every(n => Number.isInteger(n) && n >= 0) || state.ones > 2 || state.tenths > 19 || state.hundredths > 19) return false;
+  if (![state.ones, state.tenths, state.hundredths].every(n => Number.isInteger(n) && n >= 0) || state.ones > 2 || state.tenths > 19 || state.hundredths > 19) return false;
   if (decimalTotal(state) !== puzzle.payload.hundredths) return false;
   if (puzzle.payload.mode === 'split') {
     const expected = changeDecimalPlace(puzzle, initialDecimalPlace(puzzle), { kind: 'split', unit: puzzle.payload.exchangeUnit });

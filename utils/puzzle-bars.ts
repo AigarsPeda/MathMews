@@ -30,7 +30,13 @@ export function barAnswer(model: BarModel): BarAnswer {
   }
   const most = task === 'most', least = task === 'least';
   const i = most ? values.indexOf(Math.max(...values)) : least ? values.indexOf(Math.min(...values)) : index;
-  const letter = groupLetter(i), value = values[i];
-  const calculation = task === 'missing' ? [model.total ?? total, ...values.filter((_, n) => n !== i)].join(' − ') + ' = ' : '';
-  return { answer: most || least ? letter : String(value), caption: `${letter} = ${calculation}${value}`, columns: [i], marks: [value] };
+  const letter = groupLetter(i);
+  const known = values.filter((_, n) => n !== i);
+  const value = task === 'missing' ? (model.total ?? total) - known.reduce((a,b) => a+b, 0) : values[i];
+  if (most || least) {
+    const winners = columns.filter(i => values[i] === value);
+    return { answer: letter, caption: winners.map(groupLetter).join(' = ') + ' = ' + value, columns: winners, marks: [value] };
+  }
+  const calculation = task === 'missing' ? [model.total ?? total, ...known].join(' − ') + ' = ' : '';
+  return { answer: String(value), caption: `${letter} = ${calculation}${value}`, columns: [i], marks: [value] };
 }

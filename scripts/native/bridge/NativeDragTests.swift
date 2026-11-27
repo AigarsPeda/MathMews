@@ -33,10 +33,25 @@ final class NativeDragTests: XCTestCase {
    XCTAssertTrue(button.isEnabled, id); XCTAssertTrue(button.isHittable, id); button.tap()
   }
  }
+ func applyOperation(_ id: String, times: Int = 1) {
+  for _ in 0..<times {
+   tap(id)
+   let pan = app.buttons["balance-left-pan"], scroll = app.scrollViews.firstMatch
+   // XCT can report a clipped pan as hittable. Bring its center into the board's viewport.
+   if !scroll.frame.insetBy(dx: 0, dy: 16).contains(CGPoint(x: pan.frame.midX, y: pan.frame.midY)) { scroll.swipeDown() }
+   XCTAssertTrue(pan.isEnabled)
+   pan.coordinate(withNormalizedOffset: CGVector(dx: 0.75, dy: 0.25)).tap()
+   let placed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+    let operation = self.app.buttons[id]
+    return !operation.exists || !operation.isSelected
+   }, object: nil)
+   XCTAssertEqual(XCTWaiter.wait(for: [placed], timeout: 3), .completed, "Place \(id) on the pan")
+  }
+ }
  func enter(_ value: Int) { for digit in String(value) { tap("bridge-digit-\(digit)") } }
  func shot(_ name: String) { app.scrollViews.firstMatch.swipeDown(); let a=XCTAttachment(screenshot:app.screenshot());a.name=name;a.lifetime = .keepAlways;add(a) }
  func next() { tap("pilot-next");app.scrollViews.firstMatch.swipeDown();XCTAssertFalse(app.buttons["pilot-check"].isEnabled) }
- func solve() { tap("pilot-check");expect("Correct");XCTAssertFalse(app.buttons["bridge-reset"].isEnabled) }
+ func solve() { tap("pilot-check");expect("Correct");let reset = app.buttons["bridge-reset"];XCTAssertFalse(reset.exists && reset.isEnabled) }
  func testBridge() {
   continueAfterFailure=false;app.activate()
   let springboard=XCUIApplication(bundleIdentifier:"com.apple.springboard")
@@ -45,25 +60,25 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(app.buttons["pilot-next"].waitForExistence(timeout:30));XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   shot("en-easy-ratio-start");enter(9);tap("pilot-check");expect("Try again");tap("bridge-reset");enter(4);shot("en-easy-ratio");solve();next()
   tap("bridge-step-1",2);shot("en-easy-line");solve();next()
-  shot("en-easy-equation-start");tap("bridge-add--1")
-  XCTAssertTrue(app.staticTexts["bridge-equation-ready"].exists)
+  shot("en-easy-equation-start");applyOperation("bridge-add--1")
+  XCTAssertTrue(app.staticTexts["bridge-equation-ready"].waitForExistence(timeout: 5), "The ready note follows the tiles once they settle")
   XCTAssertFalse(app.buttons["bridge-add-1"].exists)
   tap("bridge-reset")
   XCTAssertFalse(app.staticTexts["bridge-equation-ready"].exists)
   XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
-  tap("bridge-add--1");shot("en-easy-equation");solve();next()
+  applyOperation("bridge-add--1");shot("en-easy-equation");solve();next()
   let grid=app.descendants(matching:.any)["bridge-plot"].firstMatch
   XCTAssertTrue(grid.waitForExistence(timeout:8));XCTAssertEqual(grid.frame.width,grid.frame.height,accuracy:0.5)
   grid.coordinate(withNormalizedOffset:CGVector(dx:0.25,dy:0.5)).tap()
-  expect("(1, 2)");tap("bridge-reset");tap("bridge-x-1");tap("bridge-y-1",2);shot("en-easy-coordinates");solve();next()
+  XCTAssertEqual(app.descendants(matching: .any)["bridge-point"].firstMatch.label, "(1, 2)");tap("bridge-reset");tap("bridge-x-1");tap("bridge-y-1",2);shot("en-easy-coordinates");solve();next()
   enter(6);shot("lv-medium-ratio");solve();next()
   tap("bridge-step--1");shot("lv-medium-negatives");solve();next()
-  shot("lv-medium-equation-start");tap("bridge-divide-2");shot("lv-medium-equation");solve();next()
-  tap("bridge-x-1",4);tap("bridge-y-1");shot("lv-medium-coordinates");solve();next()
+  shot("lv-medium-equation-start");applyOperation("bridge-divide-2");shot("lv-medium-equation");solve();next()
+  tap("bridge-x-1");tap("bridge-y-1",2);shot("lv-medium-coordinates");solve();next()
   enter(4);shot("ru-hard-ratio");solve();next()
   tap("bridge-step-1",5);shot("ru-hard-negatives");solve();next()
-  shot("ru-hard-equation-start");tap("bridge-add--1",3);tap("bridge-divide-2");shot("ru-hard-equation");solve();next()
-  tap("bridge-x--1");shot("ru-hard-coordinates");solve();next()
+  shot("ru-hard-equation-start");applyOperation("bridge-add--1", times: 3);applyOperation("bridge-divide-2");shot("ru-hard-equation");solve();next()
+  tap("bridge-x--1",2);tap("bridge-y-1",3);shot("ru-hard-coordinates");solve();next()
   tap("bridge-zero");shot("lv-zero-answer");solve();next()
   enter(4);shot("ru-grid-distance");solve()
  }

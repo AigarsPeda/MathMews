@@ -47,9 +47,9 @@ const component={exports:{}};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/puzzle/PuzzleObjectImage.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText,{
  module:component,exports:component.exports,require:id=>{
   if(id==='react/jsx-runtime')return{jsx,jsxs:jsx};
+  if(id==='react')return{useState:initial=>[initial,()=>{}]};
   if(id==='react-native')return{View:'View',StyleSheet:{create:s=>s,absoluteFill:{}}};
-  if(id==='expo-image')return{Image:'Image'};
-  if(id==='@/constants/puzzle-object-assets')return{getPuzzleObjectAsset:()=>1};
+  if(id==='./kit/DiagramIcon')return{DiagramIcon:'DiagramIcon'};
   throw new Error(id);
  }
 });
@@ -61,15 +61,11 @@ for(const [a,b] of [[3,8],[7,19],[12,18]]){
  assert.ok(trays.every(tray=>!nodes(tray).some(n=>n.type==='Image')),'No extra frame image around the counted objects');
  for(const [i,count]of [a,b].entries())assert.equal(nodes(trays[i]).filter(n=>n.type===PuzzleObjectImage).length,count);
 }
-const catalog=JSON.parse(fs.readFileSync('assets/3d/puzzle-objects/catalog.json'));
-assert.ok(fs.statSync(catalog.source).size>1000,'Editable Blender scenes are saved');
-for(const name of catalog.objects){
- const file=`assets/3d/puzzle-objects/${name}.png`,meta=await sharp(file).metadata();
- assert.ok(meta.hasAlpha&&meta.width>=256&&meta.height>=256,`${name}: bundled transparent render`);
- const {data,info}=await sharp(file).extractChannel('alpha').raw().toBuffer({resolveWithObject:true});
- let minX=info.width,minY=info.height,maxX=-1,maxY=-1;
- for(let y=0;y<info.height;y++)for(let x=0;x<info.width;x++)if(data[y*info.width+x]>128){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);}
- assert.ok(maxX-minX>info.width*.5||maxY-minY>info.height*.5,`${name}: object must be readable at counting size`);
- assert.ok(minX>0&&minY>0&&maxX<info.width-1&&maxY<info.height-1,`${name}: no clipped edges`);
-}
-console.log(`Verified ${illustrated} illustrated puzzles in both languages, exact object counts, stable animated identities, non-overlapping layouts, equal object sizes, no extra frames, and ${catalog.objects.length} Blender renders.`);
+// Every authored object has a flat vector glyph; models never fall back to bitmaps.
+const objectType=fs.readFileSync('types/puzzle-object.ts','utf8');
+const objects=[...objectType.matchAll(/"([a-z_]+)"/g)].map(m=>m[1]);
+const library=fs.readFileSync('components/puzzle/glyphs/library.ts','utf8');
+const glyphNames=new Set([...library.slice(library.indexOf('export const glyphs')).matchAll(/^\s{2}([a-z_]+):\s*\{/gm)].map(m=>m[1]));
+for(const name of objects)assert.ok(glyphNames.has(name),`${name}: vector glyph exists`);
+assert.ok(!/require\(|Image/.test(fs.readFileSync('components/puzzle/kit/DiagramIcon.tsx','utf8')),'DiagramIcon draws vectors, not bitmaps');
+console.log(`Verified ${illustrated} illustrated puzzles in both languages, exact object counts, stable animated identities, non-overlapping layouts, equal object sizes, no extra frames, and ${objects.length} vector object glyphs.`);

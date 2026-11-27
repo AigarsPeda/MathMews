@@ -112,7 +112,6 @@ function dataTask(tier, focus, n) {
 
 function spatialTask(tier, focus, n) {
   const polygon = tier === 0 && focus < 3 || tier === 1 && focus === 0 || tier === 2 && focus === 3;
-  const hint = T('Trace each straight side or corner once. For a grid move, keep the same distance from the mirror or the centre of the turn.', 'Katru taisno malu vai stūri skaiti vienreiz. Režģī saglabā attālumu līdz spogulim vai pagrieziena centram.', 'Посчитай каждую прямую сторону или вершину один раз. На сетке сохраняй расстояние до зеркала или центра поворота.');
   if (polygon) {
     const minimum = tier === 2 ? 5 : 3, maximum = tier === 2 ? 10 : 8;
     const collections = [];
@@ -131,6 +130,11 @@ function spatialTask(tier, focus, n) {
     const question = task === 'symmetry' ? sides.length === 1 ? T('How many lines of symmetry does this shape have?', 'Cik simetrijas asu ir šai figūrai?', 'Сколько осей симметрии у этой фигуры?') : T('How many lines of symmetry do these shapes have altogether?', 'Cik simetrijas asu ir šīm figūrām kopā?', 'Сколько всего осей симметрии у этих фигур?')
       : task === 'corners' ? T('How many corners do these shapes have altogether?', 'Cik stūru ir šīm figūrām kopā?', 'Сколько всего вершин у этих фигур?')
         : T('How many straight sides do these shapes have altogether?', 'Cik taisnu malu ir šīm figūrām kopā?', 'Сколько всего прямых сторон у этих фигур?');
+    const hint = task === 'symmetry'
+      ? T('Imagine folding the shape. Count the folds that make both halves match.', 'Iztēlojies, ka pārloki figūru. Saskaiti locījuma līnijas, gar kurām abas puses sakrīt.', 'Представь, что складываешь фигуру. Сосчитай линии сгиба, по которым обе половины совпадают.')
+      : task === 'corners'
+        ? T('Start at one corner and count once around each shape.', 'Sāc no viena stūra un saskaiti visus stūrus, ejot apkārt katrai figūrai.', 'Начни с одной вершины и посчитай все вершины каждой фигуры по порядку.')
+        : T('Trace each straight side once around each shape.', 'Apvelc katru figūru, vienreiz saskaitot katru taisno malu.', 'Обведи каждую фигуру, считая каждую прямую сторону один раз.');
     const explanation = task === 'symmetry' ? sides.length === 1 ? T(`There are ${answer} mirror lines that split the shape into matching halves.`, `Ir ${answer} simetrijas asis, kas sadala figūru vienādās spoguļpusēs.`, `Есть ${answer} осей симметрии, делящих фигуру на зеркально равные половины.`)
       : T(`Count each shape's symmetry lines, then add: ${sides.join(' + ')} = ${answer}.`, `Saskaiti katras figūras simetrijas asis un tad saskaiti kopā: ${sides.join(' + ')} = ${answer}.`, `Посчитай оси симметрии каждой фигуры, затем сложи: ${sides.join(' + ')} = ${answer}.`)
       : T(`Count once around each shape: ${sides.join(' + ')} = ${answer}.`, `Skaiti vienreiz apkārt katrai figūrai: ${sides.join(' + ')} = ${answer}.`, `Обойди каждую фигуру один раз: ${sides.join(' + ')} = ${answer}.`);
@@ -153,6 +157,11 @@ function spatialTask(tier, focus, n) {
     : task === 'rotate' ? T(`Turn the marked square ${turns} quarter-turn${turns === 1 ? '' : 's'} clockwise around the grid centre. Which square does it reach?`, `Pagriez atzīmēto lauciņu par ${turns} ceturtdaļpagriezieniem pulksteņa rādītāja virzienā ap režģa centru. Kur tas nonāk?`, `Поверни отмеченную клетку на ${turns} четверти оборота по часовой стрелке вокруг центра сетки. Куда она попадёт?`)
       : vertical ? T(`Move 1 square ${dy > 0 ? 'down' : 'up'}. Which square does the mark reach?`, `Pārvieto par 1 lauciņu ${dy > 0 ? 'uz leju' : 'uz augšu'}. Kurā lauciņā nonāk atzīme?`, `Передвинь на 1 клетку ${dy > 0 ? 'вниз' : 'вверх'}. В какой клетке будет метка?`)
         : T(`Move ${Math.abs(dx)} square${Math.abs(dx) === 1 ? '' : 's'} ${dx > 0 ? 'right' : 'left'}${dy ? ` and 1 ${dy > 0 ? 'down' : 'up'}` : ''}. Which square does the mark reach?`, `Pārvieto par ${Math.abs(dx)} lauciņiem pa ${dx > 0 ? 'labi' : 'kreisi'}${dy ? ` un par 1 ${dy > 0 ? 'uz leju' : 'uz augšu'}` : ''}. Kurā lauciņā nonāk atzīme?`, `Передвинь на ${Math.abs(dx)} клеток ${dx > 0 ? 'вправо' : 'влево'}${dy ? ` и на 1 ${dy > 0 ? 'вниз' : 'вверх'}` : ''}. В какой клетке будет метка?`);
+  const hint = task === 'reflect'
+    ? T('Count the spaces to the mirror line. Move the same distance on the other side.', 'Saskaiti rūtiņas līdz simetrijas asij. Atrodi vietu tikpat tālu otrā pusē.', 'Сосчитай клетки до оси симметрии. Найди клетку на таком же расстоянии с другой стороны.')
+    : task === 'rotate'
+      ? T('Keep the mark the same distance from the centre as you turn the grid.', 'Pagriežot režģi, saglabā attālumu no atzīmes līdz centram.', 'Поворачивая сетку, сохраняй расстояние от метки до центра.')
+      : T('Start on the marked square and count one square for each step.', 'Sāc atzīmētajā rūtiņā un katrā solī pārvietojies par vienu rūtiņu.', 'Начни с отмеченной клетки и отсчитывай по одной клетке на каждый шаг.');
   const explanation = T(`The mark moves from square ${start} to square ${answer}, in row ${y + 1}, column ${x + 1}.`, `Atzīme pārvietojas no ${start}. uz ${answer}. lauciņu, ${y + 1}. rindā un ${x + 1}. kolonnā.`, `Метка перемещается из клетки ${start} в клетку ${answer}, строка ${y + 1}, столбец ${x + 1}.`);
   const options = [answer, ...Array.from({ length: size * size }, (_, i) => (answer + n + i) % (size * size) + 1).filter(v => v !== answer).slice(0, 2)];
   return result(model, question, answer, hint, explanation, options);
@@ -227,10 +236,10 @@ function capacityTask(tier, focus, n) {
   const model = { kind: 'capacity', task, amounts, capacities, portion, unit: task === 'litres' ? 'l' : 'ml', label: T(`Liquid amounts: ${amounts.join(', ')} ml. Container capacities: ${capacities.join(', ')} ml.`, `Šķidruma daudzumi: ${amounts.join(', ')} ml. Trauku ietilpības: ${capacities.join(', ')} ml.`, `Объёмы жидкости: ${amounts.join(', ')} мл. Вместимость ёмкостей: ${capacities.join(', ')} мл.`) };
   if (task === 'servings' || task === 'containers') model.portionContainer = task === 'servings' ? 'cup' : 'bottle';
   const question = task === 'read' ? T('How many millilitres are in the jug?', 'Cik mililitru ir mērtraukā?', 'Сколько миллилитров в кувшине?')
-    : task === 'total' ? T('How many millilitres are there altogether?', 'Cik mililitru ir kopā?', 'Сколько всего миллилитров?')
+    : task === 'total' ? T('How many millilitres in all?', 'Cik mililitru ir kopā?', 'Сколько миллилитров всего?')
       : task === 'space' ? T('How many more millilitres will fill the container?', 'Cik mililitru vēl vajag, lai piepildītu trauku?', 'Сколько ещё миллилитров нужно до полного заполнения?')
-        : task === 'servings' ? T(`How many full ${portion} ml cups can you pour?`, `Cik pilnas ${portion} ml krūzes vari pieliet?`, `Сколько полных чашек по ${portion} мл можно налить?`)
-          : task === 'containers' ? T(`Each bottle holds ${portion} ml. How many bottles are needed for all the liquid? The last may be partly full.`, `Katrā pudelē ietilpst ${portion} ml. Cik pudeļu vajag visam šķidrumam? Pēdējā var būt daļēji pilna.`, `Каждая бутылка вмещает ${portion} мл. Сколько бутылок нужно для всей жидкости? Последняя может быть неполной.`)
+        : task === 'servings' ? T(`How many full ${portion} ml cups?`, `Cik pilnu ${portion} ml krūžu sanāks?`, `Сколько полных чашек по ${portion} мл получится?`)
+          : task === 'containers' ? T(`How many ${portion} ml bottles do you need?`, `Cik ${portion} ml pudeļu vajag?`, `Сколько нужно бутылок по ${portion} мл?`)
             : T('How many litres does the shown amount equal?', 'Cik litru ir parādītajā daudzumā?', 'Скольким литрам равен показанный объём?');
   const detail = task === 'total' ? `${amounts.join(' + ')} = ${answer} ml.` : task === 'space' ? `${capacities[0]} − ${amounts[0]} = ${answer} ml.`
     : task === 'servings' || task === 'containers' ? `${amounts[0]} ml ÷ ${portion} ml; ${task === 'servings' ? 'full cups' : 'bottles needed'}: ${answer}.` : task === 'litres' ? `${amounts[0]} ml = ${answer} l.` : `${answer} ml.`;
@@ -241,7 +250,10 @@ const localize = (value, locale) => Array.isArray(value) ? value.map(v => locali
 function choicesFor(spec, n, locale) {
   let options = spec.options;
   if (!options) {
-    const answer = spec.answer, delta = Number.isInteger(answer) ? 1 : 0.25;
+    const { answer, model } = spec;
+    const delta = model.kind === 'bars' ? model.step
+      : model.kind === 'capacity' && ['read', 'space', 'total'].includes(model.task) ? 100
+      : model.kind === 'capacity' && model.task === 'litres' ? 0.25 : Number.isInteger(answer) ? 1 : 0.25;
     const rank = Math.min(n % 3, Math.floor(answer / delta));
     options = Array.from({ length: 3 }, (_, i) => Math.round((answer + (i - rank) * delta) * 100) / 100);
   }

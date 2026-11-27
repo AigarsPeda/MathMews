@@ -11,8 +11,20 @@ const strings = JSON.parse(fs.readFileSync('locales/en.json', 'utf8'));
 const translate = (key, params = {}) => key.split('.').reduce((value, part) => value[part], strings)
   .replace(/{{(\w+)}}/g, (_, name) => params[name]);
 const jsx = (type, props) => ({ type, props });
+// Component state persists across renders by call order, like React's hook slots.
+let hookSlots = [], hookCursor = 0;
+const useState = initial => {
+  const index = hookCursor++;
+  if (!(index in hookSlots)) hookSlots[index] = { value: initial };
+  const slot = hookSlots[index];
+  return [slot.value, next => { slot.value = typeof next === 'function' ? next(slot.value) : next; }];
+};
 function load(id, base = root) {
-  if (id === 'react') return { Children, useMemo: fn => fn() };
+  if (id === 'react') return { Children, Fragment: 'Fragment', useMemo: fn => fn(), useState };
+  // Motion wrappers render their children; the reveal clock reports a finished walk.
+  if (id === '@/components/puzzle/tiles/TileMotion') return new Proxy({}, { get: (_, name) => String(name) });
+  if (id === '@/components/puzzle/kit/PracticeAffordances') return { DropTargetOutline: 'DropTargetOutline' };
+  if (id === '@/components/puzzle/kit/useRevealBeats') return { useRevealBeats: count => ({ landed: count, done: true, settled: true, reduced: false, progress: { value: 1 } }) };
   if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx, Fragment: 'Fragment' };
   if (id === 'react-i18next') return { useTranslation: () => ({ t: translate }) };
   if (id === 'expo-font') return { isLoaded: () => true };
@@ -21,6 +33,8 @@ function load(id, base = root) {
     StyleSheet: { create: styles => styles, flatten: styles => Object.assign({}, ...[styles].flat(Infinity).filter(Boolean)) },
   };
   if (id === '@/utils/scale') return { moderateScale: value => value };
+  // The pressable face's lip animation is presentational: a named stub keeps the tree readable.
+  if (id === './PressFace' || id === '@/components/puzzle/kit/PressFace') return { PressFace: 'PressFace' };
   const file = id.startsWith('@/') ? path.join(root, id.slice(2)) : path.resolve(base, id);
   if (/\.(png|webp|mp4)$/.test(file)) return file;
   const resolved = ['.ts', '.tsx'].map(ext => file + ext).find(fs.existsSync);
@@ -45,49 +59,48 @@ const puzzle = { id: 'editable-path', payload: {
   start: 10, target: 14, steps: [{ operand: 2, operator: '-' }, { operand: 6, operator: '+' }],
 } };
 let selectedOperators = [null, null], answered = false;
-const render = () => flatten(OperationPathTask({
+const render = () => (hookCursor = 0, flatten(OperationPathTask({
   puzzle, selectedOperators, answered, isCorrect: false,
   onSelectOperator: (index, operator) => { selectedOperators[index] = operator; },
-}));
+})));
 const button = label => render().find(node => node?.type === 'Pressable' && node.props.accessibilityLabel === label);
-const stepValues = index => {
-  const tree = render();
-  const labelIndex = tree.indexOf(`Step ${index + 1} of ${puzzle.payload.steps.length}`);
-  return tree.slice(labelIndex + 1).filter(node => typeof node === 'string' || typeof node === 'number').slice(0, 5);
+// One shared operator bank fills the focused step: tap the step's slot, then an operator.
+const pick = (operator, step) => {
+  button(`Step ${step} operation: ${selectedOperators[step - 1] === null ? '?' : selectedOperators[step - 1].replace('-', '−')}`).props.onPress();
+  return button(`Pick ${operator} for step ${step}`);
 };
-
-assert.ok(render().includes('Step 1 of 2'));
-assert.ok(render().includes('Step 2 of 2'), 'Later equations must be visible before choosing anything');
-assert.deepEqual(stepValues(1), ['?', '?', 6, '=', '?']);
-assert.equal(button('Check answer'), undefined, 'Incomplete paths cannot be submitted');
-button('Pick + for step 2').props.onPress();
-assert.deepEqual(selectedOperators, [null, '+'], 'Steps can be filled in any order');
-assert.deepEqual(stepValues(1), ['?', '+', 6, '=', '?'], 'An unknown earlier result must stay unknown');
-button('Pick - for step 1').props.onPress();
-assert.deepEqual(stepValues(0), [10, '-', 2, '=', 8]);
-assert.deepEqual(stepValues(1), [8, '+', 6, '=', 14]);
-assert.ok(render().includes('Your result: 14'));
-assert.equal(button('Pick - for step 1').props.accessibilityState.selected, true);
-button('Pick × for step 1').props.onPress();
-assert.deepEqual(stepValues(1), [20, '+', 6, '=', 26], 'Changing an earlier operator recalculates later equations');
-button('Pick - for step 2').props.onPress();
-assert.deepEqual(stepValues(1), [20, '-', 6, '=', 14], 'All filled steps remain editable');
-assert.equal(answered, false, 'Choosing operators never submits the answer');
-button('Pick ÷ for step 2').props.onPress();
-assert.deepEqual(stepValues(1), [20, '÷', 6, '=', '?'], 'Invalid division must not show a stale result');
-assert.equal(render().some(node => typeof node === 'string' && node.startsWith('Your result:')), false);
-button('Pick - for step 2').props.onPress();
-assert.equal(button('Check answer'), undefined, 'The parent play screen owns the shared Check action');
-answered = true; // The parent commits a checked answer.
-assert.equal(render().filter(node => node?.type === 'Pressable').length, 0, 'Submitted paths cannot be edited');
-assert.ok(render().includes('Step 2 of 2'), 'Submitted equations remain visible');
+const model = () => {
+  const root = render().find(node => node?.props?.testID === 'play-entry-model');
+  return flatten(root).filter(node => typeof node === 'string' || typeof node === 'number');
+};
+const displayed = () => model().map(String).join(' ');
+const activeTargets = () => render().filter(node => node?.type === 'Pressable' && node.props.accessibilityState?.selected && node.props.accessibilityLabel?.startsWith('Step '));
+assert.equal(activeTargets().length, 1, 'Only the focused empty step accepts the next operator');
+assert.equal(displayed(), '10 2 6 = 14');
+assert.equal(button('Check answer'), undefined, 'The parent owns Check');
+pick('+', 2).props.onPress();
+assert.deepEqual(selectedOperators, [null, '+']);
+assert.equal(displayed(), '10 2 + 6 = 14');
+pick('-', 1).props.onPress();
+assert.equal(displayed(), '10 − 2 + 6 = 14', 'Intermediate values stay hidden');
+assert.equal(pick('-', 1).props.accessibilityState.selected, true);
+pick('×', 1).props.onPress();
+assert.equal(displayed(), '10 × 2 + 6 = 14', 'Earlier choices stay editable');
+pick('÷', 2).props.onPress();
+assert.equal(displayed(), '10 × 2 ÷ 6 = 14', 'An invalid division cannot leave a stale result');
+assert.equal(answered, false);
+answered = true;
+assert.equal(activeTargets().length, 0, 'The checked path has no active operator destination');
+assert.equal(render().filter(node => node?.type === 'Pressable').length, 0);
+assert.ok(render().includes('Step 2 of 2'));
 answered = false;
 puzzle.payload.steps.push({ operand: 2, operator: '×' });
-selectedOperators = [null, null, null];
-assert.ok(render().includes('Step 3 of 3'), 'Every equation is visible for longer paths too');
-button('Pick × for step 3').props.onPress();
-button('Pick + for step 2').props.onPress();
-assert.deepEqual(stepValues(2), ['?', '×', 2, '=', '?']);
-button('Pick - for step 1').props.onPress();
-assert.deepEqual(stepValues(2), [14, '×', 2, '=', 28]);
-console.log('Operation path checks passed: visible steps, editable choices, dependent results, and explicit submission.');
+selectedOperators = [null, null, null]; hookSlots = [];
+pick('×', 3).props.onPress();
+pick('+', 2).props.onPress();
+pick('-', 1).props.onPress();
+assert.equal(displayed(), '10 − 2 + 6 × 2 = 14');
+assert.equal(render().filter(node => node?.type === 'Pressable' && String(node.props.accessibilityLabel).startsWith('Pick ')).length, 4);
+answered = true;
+assert.ok(render().includes('28 ≠ 14'), 'The checked path compares the final computed result to its goal');
+console.log('Operation path checks passed for two and three steps, alternate choices, invalid division, hidden intermediate values and the checked result.');

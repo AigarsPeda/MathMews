@@ -49,12 +49,14 @@ export default function PuzzleLayoutFixture() {
   }, [index, params.example]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sent = useRef(false);
+  const lastSize = useRef<PuzzleLayoutMeasurement | null>(null);
   const [readyCase,setReadyCase] = useState(-1);
   const ready = readyCase === index;
   const locale: AppLocale = item?.locale ?? 'en';
   const [language] = useState(() => i18n.cloneInstance({ lng: 'en' }));
   useEffect(() => {
     sent.current=false;
+    lastSize.current = null;
     void language.changeLanguage(locale).then(()=>setReadyCase(index));
     return () => { if(timer.current) clearTimeout(timer.current); };
   }, [index, locale, language]);
@@ -64,6 +66,9 @@ export default function PuzzleLayoutFixture() {
   const lesson = {...base, levels:[level]};
   const measured = useCallback((metrics:PuzzleLayoutMeasurement)=>{
     if(sent.current || !item || metrics.puzzleId!==item.id) return;
+    const previous = lastSize.current;
+    if (previous?.contentHeight === metrics.contentHeight && previous.viewportHeight === metrics.viewportHeight) return;
+    lastSize.current = metrics;
     if(timer.current) clearTimeout(timer.current);
     timer.current=setTimeout(()=>{
       sent.current=true;

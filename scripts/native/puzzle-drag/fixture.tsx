@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, Stack, useRouter } from "expo-router";
 import { I18nextProvider } from "react-i18next";
 import i18n from "@/i18n";
 import { OrderNumbersTask } from "@/components/puzzle/OrderNumbersTask";
@@ -32,13 +32,20 @@ export default function NativeDragFixture() {
   const [completed, setCompleted] = useState(0);
   const [moveCount, setMoveCount] = useState(0);
   const [lastMove, setLastMove] = useState("");
-  const puzzle = getPuzzlesByDifficulty("en", "easy").find(p => p.type === mode);
+  const sample = getPuzzlesByDifficulty("en", "easy").find(p => p.type === mode);
+  // The touch tests identify individual tiles by their spoken values.
+  const puzzle = sample?.type === 'sort_buckets'
+    ? { ...sample, payload: { rule: 'range' as const, numbers: [3, 8, 6, 12, 10, 19], boundary: 10 } }
+    : sample?.type === 'repair_pattern'
+      ? { ...sample, payload: { sequence: [5, null, 15, null, 25], tiles: [10, 20, 12, 30], solution: [10, 20] } }
+      : sample;
   const orderPuzzle = puzzle && asOrderNumbersPuzzle(puzzle);
   if (!__DEV__ || !puzzle || (!isOptionalChallengePuzzle(puzzle) && !orderPuzzle)) return <Redirect href="/" />;
   function reset(next = mode) {
     setOrder([1, 6, 8, 3]); setMode(next); setAnswered(false); setResult(""); setMoveCount(0); setLastMove(""); setRevision(n => n + 1);
   }
   return <I18nextProvider i18n={language}><SafeAreaView style={{ flex: 1, backgroundColor: "#FFF5EB" }}>
+    <Stack.Screen options={{ fullScreenGestureEnabled: false }} />
     <ScrollView scrollEnabled={!dragging} contentContainerStyle={{ padding: 16, gap: 16 }}>
       <View style={{ flexDirection: "row", gap: 12 }}>
         <Button label="Back to game" onPress={() => router.replace("/")} />

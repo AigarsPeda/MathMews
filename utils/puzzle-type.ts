@@ -58,6 +58,19 @@ export function getPuzzleType(puzzle: Puzzle): PuzzleType {
   return puzzle.type ?? "multiple_choice";
 }
 
+export function hasClockStoryPrompt(puzzle: Puzzle) {
+  const model = 'everyday' in puzzle ? puzzle.everyday?.model : undefined;
+  return model?.kind === 'clock' && (model.task === 'start' || model.task === 'finish');
+}
+
+/** The two fraction stories that use the static model and a separate answer row. */
+export function fractionChoiceMechanic(puzzle: Puzzle) {
+  if ((puzzle.type && puzzle.type !== 'multiple_choice') || puzzle.taskVisual || puzzle.everyday || puzzle.response) return;
+  const example = puzzle.fractionExample;
+  if (example?.whole) return 'groups-choice' as const;
+  if (example?.numerator === 2 && example.denominator === 2) return 'whole-choice' as const;
+}
+
 export type PuzzleAnswer =
   | { kind: "response"; value: Exclude<ResponseValue, null> }
   | { kind: "bridge"; state: BridgeState }
@@ -68,6 +81,7 @@ export type PuzzleAnswer =
   | { kind: "fraction_strip"; state: FractionStripState }
   | { kind: "place_value"; state: PlaceValueState }
   | ChallengeAnswer
+  | { kind: "distribution"; locations: readonly number[] }
   | { kind: "choice"; index: number }
   | { kind: "operators"; operators: MathOperator[] }
   | { kind: "fraction"; shaded: number }
@@ -75,6 +89,7 @@ export type PuzzleAnswer =
   | { kind: "pair"; indices: [number, number] }
   | { kind: "order"; numbers: number[] }
   | { kind: "fraction_match"; matchedCount: number }
+  | { kind: "fraction_match"; selectedByPair: readonly (readonly number[])[] }
   | { kind: "pairs"; pairs: [number, number][] };
 
 export function getValidPairs(numbers: readonly number[], target: number): [number, number][] {
@@ -153,7 +168,26 @@ export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean
 
   if (puzzle.type === "fraction_match") {
     if (answer.kind !== "fraction_match") return false;
+    if ('selectedByPair' in answer) {
+      const pairs = puzzle.payload.pairs;
+      return answer.selectedByPair.length === pairs.length && pairs.every(({ numerator, denominator }, i) => {
+        const mask = answer.selectedByPair[i];
+        return mask.length === numerator && new Set(mask).size === mask.length &&
+          mask.every(wedge => Number.isInteger(wedge) && wedge >= 0 && wedge < denominator);
+      });
+    }
     return answer.matchedCount === puzzle.payload.pairs.length;
+  }
+
+  if (puzzle.type === "fair_share") {
+    const { items, people } = puzzle.payload;
+    if (answer.kind !== "distribution" || answer.locations.length !== items) return false;
+    const counts = Array<number>(people + 1).fill(0);
+    for (const place of answer.locations) {
+      if (!Number.isInteger(place) || place < 0 || place > people) return false;
+      counts[place]++;
+    }
+    return counts[0] === items % people && counts.slice(1).every(count => count === Math.floor(items / people));
   }
 
   if (puzzle.type === "true_false") {
@@ -172,7 +206,6 @@ export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean
     puzzle.type === "balance" ||
     puzzle.type === "fix_mistake" ||
     puzzle.type === "estimate" ||
-    puzzle.type === "fair_share" ||
     puzzle.type === "fraction_equivalent" ||
     puzzle.type === "pattern_next" ||
     puzzle.type === "function_machine"

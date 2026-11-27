@@ -1,17 +1,18 @@
+import { createPlayProofAudit, PlayProofAuditLog } from '@/components/dev/PlayProofAudit';
+import { puzzleQADraft } from '@/utils/puzzle-qa-draft';
 import { PuzzlePreviewGame } from '@/components/dev/PuzzlePreviewGame';
+import { CountingAnnouncementLog } from '@/components/dev/CountingAnnouncementLog';
 /** Production screens with disposable local progress. No player save is written. */
 import { type PuzzleLayoutMeasurement, PlaySession } from '@/app/play';
-import { LocaleContext } from '@/contexts/LocaleProvider';
+import { PuzzleFixtureLocale, fixtureLocale } from '@/components/dev/PuzzleFixtureLocale';
 import type { Puzzle } from '@/types/puzzle';
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from '@/constants/puzzles';
 import { getPuzzleType } from '@/utils/puzzle-type';
 import { getTimedChallengeLevel } from '@/constants/curriculum';
 import { getPathLesson } from '@/constants/puzzle-path';
 import type { AppLocale } from '@/types/locale';
-import i18n from '@/i18n';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { I18nextProvider } from 'react-i18next';
 import { Text, View } from 'react-native';
 type ReviewCase = { id: string; locale: AppLocale; difficulty: 'easy' | 'medium' | 'hard'; variant: string };
 // Longest prompt and densest payload for every layout variant, in each language.
@@ -38,29 +39,30 @@ const cases: ReviewCase[] = (['en', 'lv', 'ru'] as const).flatMap(locale => {
 });
 
 export default function PuzzleLayoutFixture() {
-  const params = useLocalSearchParams<{ single?: string; example?: string }>();
+  const params = useLocalSearchParams<{ single?: string; example?: string; countingLog?: string; locale?: string; autoAnswer?: string; auditFrames?: string }>();
   const [step,setStep] = useState(0);
   const index = params.single === undefined ? step : Number(params.single);
   const [rows,setRows] = useState<(ReviewCase & PuzzleLayoutMeasurement)[]>([]);
   const item = useMemo(() => {
     const example = params.example;
     const difficulty = example && PUZZLE_DIFFICULTIES.find(level => getPuzzlesByDifficulty('en', level).some(p => p.id === example));
-    return example && difficulty ? { id: example, locale: 'en' as const, difficulty, variant: 'solution' } : cases[index];
-  }, [index, params.example]);
+    if (example && !difficulty && !example.startsWith('challenge:')) return undefined;
+    const exampleLocale = fixtureLocale(params.locale);
+    return example && difficulty ? { id: example, locale: exampleLocale, difficulty, variant: 'solution' } : cases[index];
+  }, [index, params.example, params.locale]);
+  const outcome = params.autoAnswer === 'wrong' || params.autoAnswer === 'correct' ? params.autoAnswer : undefined;
+  const proofAudit = useMemo(() => item && outcome ? createPlayProofAudit(item.id, params.auditFrames === '1') : undefined, [item, outcome, params.auditFrames]);
+  const qaDraft = useMemo(() => outcome ? (puzzle: Puzzle) => puzzleQADraft(puzzle, outcome) : undefined, [outcome]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sent = useRef(false);
-  const [readyCase,setReadyCase] = useState(-1);
-  const ready = readyCase === index;
   const locale: AppLocale = item?.locale ?? 'en';
-  const [language] = useState(() => i18n.cloneInstance({ lng: 'en' }));
   useEffect(() => {
     sent.current=false;
-    void language.changeLanguage(locale).then(()=>setReadyCase(index));
     return () => { if(timer.current) clearTimeout(timer.current); };
-  }, [index, locale, language]);
+  }, [index, item, locale]);
   const base = getPathLesson(item?.difficulty ?? 'easy', `${item?.difficulty ?? 'easy'}-cat-plans-picnic`)!;
-  const challenge = params.example ? getTimedChallengeLevel(params.example) : undefined;
-  const level = challenge ?? { ...base.levels[0], puzzleIds: item ? [item.id] : base.levels[0].puzzleIds };
+  const challenge = params.example && params.example.startsWith("challenge:") ? getTimedChallengeLevel(params.example.slice(10)) : undefined;
+  const level = challenge ?? { ...base.levels[0], kind: "practice" as const, timeLimitSeconds: undefined, puzzleIds: item ? [item.id] : base.levels[0].puzzleIds };
   const lesson = {...base, levels:[level]};
   const measured = useCallback((metrics:PuzzleLayoutMeasurement)=>{
     if(sent.current || !item || metrics.puzzleId!==item.id) return;
@@ -72,10 +74,13 @@ export default function PuzzleLayoutFixture() {
     },180);
   },[index,item,params.single,params.example]);
   if (!__DEV__) return <Redirect href="/" />;
-  return <I18nextProvider i18n={language}><LocaleContext.Provider value={{ locale, isReady: true, setLocale: async () => {} }}><PuzzlePreviewGame>
-    <View style={{ flex: 1 }}>{item ? ready && <PlaySession key={params.example ?? index} session={{ lesson, level, phase: 0 }} onLayoutMeasured={measured} /> : <View><Text testID="layout-done">Audit complete</Text>
+  if (params.example && !item) return <Text>Unknown puzzle fixture.</Text>;
+  return <PuzzleFixtureLocale key={locale} locale={locale}><PuzzlePreviewGame initialChallenge={item && params.example === item.id ? getTimedChallengeLevel(item.id) : undefined} key={`${item?.id}-${locale}-${outcome}`}>
+    <View style={{ flex: 1 }}>{item ? <PlaySession key={`${params.example ?? index}-${params.locale ?? ""}`} session={{ lesson, level, phase: 0 }} onLayoutMeasured={measured} qaDraft={qaDraft} proofAudit={proofAudit} /> : <View><Text testID="layout-done">Audit complete</Text>
       <Text testID="layout-summary">{rows.filter(row => row.contentHeight > row.viewportHeight + 1).length} overflowing screens</Text>
       <Text testID="layout-count">{rows.length}</Text>
       <Text testID="layout-report" style={{position:'absolute',width:1,height:1,color:'transparent'}}>{JSON.stringify(rows)}</Text></View>}</View>
-  </PuzzlePreviewGame></LocaleContext.Provider></I18nextProvider>;
+    {proofAudit && <PlayProofAuditLog audit={proofAudit} />}
+    {params.countingLog === '1' && <CountingAnnouncementLog />}
+  </PuzzlePreviewGame></PuzzleFixtureLocale>;
 }

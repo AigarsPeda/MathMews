@@ -29,7 +29,7 @@ export default function PracticeVarietyFixture() {
   const props = { selectedIndex: selected, onSelect: setSelected, answered, isCorrect: correct };
   function reset(next = step) { setStep(next); setSelected(null); setAnswered(false); }
   return <I18nextProvider i18n={language}><SafeAreaView style={{ flex: 1, backgroundColor: "#FFF5EB" }}>
-    <ScrollView contentContainerStyle={{ padding: 18, gap: 16 }}>
+    <ScrollView contentContainerStyle={{ padding: 18, paddingTop: 64, gap: 16 }}>
       <Text style={{ fontSize: 22, fontWeight: "800" }}>Practice variety review</Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
         {Object.entries(lessons).map(([label, id]) => <Button key={id} label={label} onPress={() => { setLesson(id); reset(1); }} />)}

@@ -63,7 +63,7 @@ final class NativeDragTests: XCTestCase {
   next(); expect("Nav mērogā"); enter(5); shot("lv-missing-area"); tap("pilot-check"); expect("Correct")
   next(); enter(3); shot("lv-missing-perimeter"); tap("pilot-check"); expect("Correct")
   next(); tap("pilot-language"); expect("Какова площадь этого прямоугольника?"); XCTAssertFalse(app.buttons["geometry-mark"].exists)
-  enter(16); tap("geometry-reset"); expect("Answer none"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
+  enter(16); XCTAssertFalse(app.buttons["geometry-reset"].exists); tap("geometry-erase",2); expect("Answer none"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   enter(16); shot("ru-independent-area"); tap("pilot-check"); expect("Correct")
   next(); expect("Каков периметр этого прямоугольника?"); tap("geometry-mark",3); enter(12)
   shot("ru-perimeter"); tap("pilot-check"); expect("Correct")

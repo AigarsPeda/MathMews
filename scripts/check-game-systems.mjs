@@ -167,13 +167,20 @@ for (const tier of ['easy', 'medium', 'hard']) {
       case 'pair_sum': answer = { kind: 'pair', indices: p.payload.correctIndices }; break;
       case 'order_numbers': answer = { kind: 'order', numbers: p.payload.correctOrder }; assert.deepEqual([...p.payload.numbers].sort((a,b)=>a-b), [...p.payload.correctOrder].sort((a,b)=>a-b)); break;
       case 'fraction_match': answer = { kind: 'fraction_match', matchedCount: p.payload.pairs.length }; break;
+      case 'fair_share': {
+        const { items, people } = p.payload;
+        const each = Math.floor(items / people);
+        answer = { kind: 'distribution', locations: Array.from({ length: items }, (_, i) => i < each * people ? 1 + Math.floor(i / each) : 0) };
+        break;
+      }
       case 'true_false': answer = { kind: 'choice', index: p.isTrue ? 0 : 1 }; break;
       default: answer = { kind: 'choice', index: p.correctIndex }; if(p.type !== 'compare') { const choices = p.choices ?? p.payload.choices; assert.ok(answer.index >= 0 && answer.index < choices.length, `${p.id}: valid choice index`); }
     }
     assert.equal(checkPuzzleAnswer(p, answer), true, `${locale}/${p.id}: authored answer must be accepted`);
     for (let seed = 0; seed < 6; seed++) {
       const variant = shufflePuzzleChoices(p, `${p.id}-${seed}`);
-      if ('correctIndex' in variant) assert.equal(checkPuzzleAnswer(variant, { kind: 'choice', index: variant.correctIndex }), true);
+      if (variant.type === 'fair_share') assert.ok(checkPuzzleAnswer(variant, answer));
+      else if ('correctIndex' in variant) assert.equal(checkPuzzleAnswer(variant, { kind: 'choice', index: variant.correctIndex }), true);
     }
     const help = getVisualExplanation(p);
     assert.equal(help.puzzleId, p.id);

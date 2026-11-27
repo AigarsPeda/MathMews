@@ -26,3 +26,8 @@ export function percentageFraction(percent: number) {
   while (b) [a, b] = [b, a % b];
   return `${percent / a}/${100 / a}`;
 }
+
+/** A simple share of a whole can be counted in equal parts instead of 100 cells. */
+export function percentageShareParts(percent: number) {
+  return percent === 50 || percent === 25 || percent === 10 ? 100 / percent : null;
+}

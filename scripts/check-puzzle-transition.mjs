@@ -39,6 +39,10 @@ assert.equal(layouts,2,'Layout measurements remain available to the native revie
 assert.equal(requests.length,1,'Resizing or editing does not restart the transition');
 value.set(.5);assert.ok(Math.abs(style().opacity-.925)<1e-9);assert.equal(style().transform[0].translateX,14);
 assert.deepEqual(Object.keys(style()),['opacity','transform'],'The transition never animates layout properties');
+fresh();tree=PuzzleContentTransition({children:'Strip',slide:false});
+assert.equal(style().transform[0].translateX,0,'Full-width XL models fit from their first painted frame');
+assert.equal(style().opacity,.85);
+value.set(.5);assert.equal(style().transform[0].translateX,0);
 fresh();reduced=true;tree=PuzzleContentTransition({children:'Question'});
 assert.equal(style().opacity,1,'Reduced motion starts fully visible');
 assert.equal(style().transform[0].translateX,0,'Reduced motion has no first-frame displacement');

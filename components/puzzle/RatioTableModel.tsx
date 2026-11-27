@@ -1,54 +1,62 @@
-import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
-import { DiagramColors as D, PuzzleColors as C } from '@/constants/puzzle-theme';
+import { BottleRow } from './bridge/Bottle';
+import { PuzzleText } from './PuzzleText';
+import { EntryBuild } from './kit/PracticeAffordances';
+import { UnknownWell } from './kit/PuzzleKit';
+import { Ink, Quantity } from '@/constants/puzzle-theme';
 import type { RatioTablePuzzle } from '@/types/puzzle';
+import { ratioGroups } from '@/utils/bridge-models';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-/** Identical bottles give the ratio a unit; only the requested total is unknown. */
-export function RatioTableModel({ puzzle, answer }: { puzzle: RatioTablePuzzle; answer: number | null }) {
+/** Keep the same bottle groups in their places while the known amount grows or shrinks. */
+export function RatioBottles({ puzzle, filled, answer, settled = false, submitted }: {
+  puzzle: RatioTablePuzzle; filled: number; answer: ReactNode; settled?: boolean; submitted?: number;
+}) {
   const { t } = useTranslation();
-  const { a, b, targetA } = puzzle.payload;
-  const bottles = (count: number) => <View style={styles.bottles} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-    {Array.from({ length: count }, (_, i) => <View key={i} style={styles.bottle}>
-      <View style={styles.neck} /><View style={styles.body} /><View style={styles.cap} />
-    </View>)}
-  </View>;
-  return <View testID="bridge-ratio-model" style={styles.table}>
-    <Text style={styles.instruction}>{t('bridge.sameBottles')}</Text>
-    <View style={styles.headings}>
-      <Text style={[styles.heading, styles.bottleColumn]}>{t('bridge.bottles')}</Text>
-      <Text style={[styles.heading, styles.waterColumn]}>{t('bridge.totalLitres')}</Text>
+  const { start, end, bottles, litres } = ratioGroups(puzzle.payload);
+  return <View style={styles.model}>
+    <View style={styles.groups} accessibilityLabel={t('bridge.bottleCount', { count: puzzle.payload.targetA })}>
+      {Array.from({ length: Math.max(start, end) }, (_, i) =>
+        <View key={i} style={[styles.group, i < filled ? styles.full : styles.waiting, end < start && i < end && styles.kept]}>
+          <BottleRow count={bottles} submittedFraction={i < end && submitted !== undefined ? Math.max(0, submitted) / (end * litres) : undefined} />
+          {/* Every group reserves the tag lane, so all groups are the same height and the bottles share one baseline. */}
+          {start === 1 && <View accessibilityElementsHidden={i !== 0} importantForAccessibility={i === 0 ? 'auto' : 'no-hide-descendants'}
+            style={[styles.given, styles.firstBottleTag, i !== 0 && styles.hidden]}><PuzzleText style={styles.amount}>{t('jugSolution.litres', { value: puzzle.payload.b })}</PuzzleText></View>}
+        </View>)}
     </View>
-    {[{ count: a, total: b, target: false }, { count: targetA, total: answer, target: true }].map(row => <View key={String(row.target)} style={[styles.row, row.target && styles.targetRow]}>
-      <View style={styles.bottleColumn}>
-        {row.count <= 6 ? bottles(row.count) : null}
-        <Text style={[styles.count, row.count > 6 && styles.largeCount]} accessibilityLabel={t('bridge.bottleCount', { count: row.count })}>{row.count}</Text>
-      </View>
-      <View style={styles.waterColumn}>
-        <Text testID={row.target ? 'bridge-value' : undefined}
-          accessibilityLabel={row.target ? t('bridge.litresAnswer', { amount: row.total ?? '?' }) : t('bridge.litresGiven', { amount: row.total })}
-          style={[styles.amount, row.target && styles.answer]}>{row.total ?? '?'}</Text>
-      </View>
-    </View>)}
+    {settled && submitted === undefined ? <View style={{ minHeight: 48 }} /> : <View style={styles.values}>
+      {start > 1 && <View style={styles.given}><PuzzleText style={styles.amount}>{t('jugSolution.litres', { value: puzzle.payload.b })}</PuzzleText></View>}
+      <View style={styles.result}>{answer}</View>
+    </View>}
+  </View>;
+}
+
+export function RatioTableModel({ puzzle, answer, answered = false, checkedModel, answerWell, playbackOwnsControls = false }: {
+  puzzle: RatioTablePuzzle; answer: number | null; answered?: boolean; worked?: boolean; checkedModel?: ReactNode; answerWell?: ReactNode; playbackOwnsControls?: boolean;
+}) {
+  const { t } = useTranslation();
+  if (checkedModel != null) return <>{checkedModel}</>;
+  const { start } = ratioGroups(puzzle.payload);
+  const well = playbackOwnsControls ? <PuzzleText style={styles.amount}>?</PuzzleText> : answerWell ?? <View testID="bridge-value" accessible accessibilityLabel={t('bridge.litresAnswer', { amount: answer ?? '?' })}>
+    <UnknownWell label={String(answer ?? '?')} filled={answer != null} active={!answered && !playbackOwnsControls} />
+  </View>;
+  return <View testID="bridge-ratio-model" nativeID="bridge-ratio-model">
+    <EntryBuild><RatioBottles puzzle={puzzle} filled={start} answer={well} /></EntryBuild>
   </View>;
 }
 
 const styles = StyleSheet.create({
-  table: { gap: 8 },
-  instruction: { fontSize: 16, lineHeight: 22, color: C.textMuted, textAlign: 'center' },
-  headings: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12 },
-  heading: { fontSize: 16, lineHeight: 22, fontWeight: '700', color: C.text, textAlign: 'center' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
-  targetRow: { backgroundColor: D.geometrySurface, borderRadius: 12 },
-  bottleColumn: { flex: 1, alignItems: 'center', gap: 6 },
-  waterColumn: { width: '38%', alignItems: 'center' },
-  bottles: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center', maxWidth: '100%' },
-  bottle: { width: 20, height: 38 },
-  neck: { position: 'absolute', top: 3, left: 6, width: 8, height: 10, borderWidth: 2, borderColor: D.geometryEdge, backgroundColor: D.geometrySurface },
-  body: { position: 'absolute', top: 11, width: 20, height: 27, borderWidth: 2, borderColor: D.geometryEdge, backgroundColor: D.geometrySurface, borderTopLeftRadius: 6, borderTopRightRadius: 6, borderBottomLeftRadius: 4, borderBottomRightRadius: 4 },
-  cap: { position: 'absolute', top: 0, left: 5, width: 10, height: 5, backgroundColor: D.geometryEdge, borderRadius: 2 },
-  count: { fontSize: 20, lineHeight: 28, fontWeight: '700', color: C.text },
-  largeCount: { fontSize: 28, lineHeight: 36 },
-  amount: { fontSize: 28, lineHeight: 36, fontWeight: '900', color: C.text, textAlign: 'center' },
-  answer: { minWidth: 64, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 2, borderRadius: 8, borderColor: C.primary, backgroundColor: C.card, color: C.primaryDark },
+  model: { alignItems: 'center', justifyContent: 'center', gap: 10 },
+  groups: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start', gap: 4 },
+  group: { padding: 4, borderRadius: 10 },
+  full: { backgroundColor: Quantity.teal.soft },
+  waiting: { backgroundColor: '#F2F4F8', opacity: .5 },
+  kept: { backgroundColor: Quantity.violet.soft },
+  hidden: { opacity: 0 },
+  values: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, flexWrap: 'wrap' },
+  given: { backgroundColor: Quantity.amber.fill, borderRadius: 9, alignSelf: 'center', minWidth: 44, minHeight: 32, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center' },
+  firstBottleTag: { alignSelf: 'flex-start', width: 48 },
+  amount: { textAlign: 'center', color: Ink.text, fontSize: 20, fontWeight: '800' },
+  result: { backgroundColor: Quantity.amber.soft, borderRadius: 9, minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
 });

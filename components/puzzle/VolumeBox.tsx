@@ -1,147 +1,148 @@
-import { dropHeight } from '@/utils/puzzle-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Canvas, DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
-import { cancelAnimation, Easing, useAnimatedReaction, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
-import { DiagramColors as D, PuzzleColors as C } from '@/constants/puzzle-theme';
-import { useAnimationActivity } from '@/hooks/use-animation-activity';
-import { landedVolumeRows, volumeLayers, type BoxModel } from '@/utils/puzzle-volume';
-import { PuzzleText as Text } from './PuzzleText';
+import { Canvas, CornerPathEffect, Group, Path, Skia, useCanvasRef } from '@shopify/react-native-skia';
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import { Ink, ProofMotion, Quantity, Shape } from '@/constants/puzzle-theme';
+import type { BoxModel } from '@/utils/puzzle-volume';
+import { canSnapshotCanvas, modelInk, useModelPaint } from './counting/useModelPaint';
+import { useProofAnnouncement } from './counting/useProofAnnouncement';
+import { DiagramSurface } from './everyday/DiagramSurface';
+import { valueToken } from './kit/DenseLayout';
+import { ProofCaption } from './kit/Focus';
+import { EntryBuild } from './kit/PracticeAffordances';
+import { useRevealBeats } from './kit/useRevealBeats';
+import { useProofViewport } from './PlayProofCaption';
+import { PuzzleText } from './PuzzleText';
 
 type Point = { x: number; y: number };
-// Orthographic projection. One unit is the same centimetre along each 3D axis.
-function project(x: number, y: number, z: number): Point {
-  return { x: .88 * x + .475 * z, y: .23 * x - .87 * y - .43 * z };
-}
+type Projection = (x: number, y: number, z: number) => Point;
 
-function pathThrough(points: Point[], close = false) {
+function face(points: Point[]) {
   const path = Skia.Path.Make();
   path.moveTo(points[0].x, points[0].y);
   for (const p of points.slice(1)) path.lineTo(p.x, p.y);
-  if (close) path.close();
+  path.close();
   return path;
 }
 
-function cubeRow(width: number) {
-  const front = pathThrough([project(0, 0, 0), project(width, 0, 0), project(width, 1, 0), project(0, 1, 0)], true);
-  const top = pathThrough([project(0, 1, 0), project(width, 1, 0), project(width, 1, 1), project(0, 1, 1)], true);
-  const side = pathThrough([project(width, 0, 0), project(width, 0, 1), project(width, 1, 1), project(width, 1, 0)], true);
-  const seams = Skia.Path.Make();
-  seams.addPath(front); seams.addPath(top); seams.addPath(side);
-  for (let x = 1; x < width; x++) {
-    seams.addPath(pathThrough([project(x, 0, 0), project(x, 1, 0), project(x, 1, 1)]));
-  }
-  return { front, top, side, seams };
-}
-
-type Row = ReturnType<typeof volumeLayers>['rows'][number];
-function CubeRow({ row, mesh, progress, unit }: {
-  row: Row; mesh: ReturnType<typeof cubeRow>; progress: SharedValue<number>; unit: number;
+function Layer({ w, d, layer, top, project, gap, progress, submitted }: {
+  w: number; d: number; layer: number; top: boolean; project: Projection; gap: number;
+  progress: SharedValue<number>; submitted?: number;
 }) {
-  const place = project(0, row.layer, row.depthIndex);
-  const fraction = useDerivedValue(() => Math.max(0, Math.min(1, (progress.value - row.begins) / (row.lands - row.begins))));
-  const transform = useDerivedValue(() => [
-    { translateX: place.x }, { translateY: place.y - .60 * dropHeight(fraction.value) },
-  ]);
-  const opacity = useDerivedValue(() => Math.min(1, fraction.value * 2));
-  const alternate = row.layer % 2 === 1;
-  return <Group transform={transform} opacity={opacity}>
-    <Path path={mesh.front} color={alternate ? '#BAA1DE' : D.solidFront} />
-    <Path path={mesh.side} color={alternate ? '#997AAF' : D.solidSide} />
-    <Path path={mesh.top} color={alternate ? '#E1D2F5' : D.solidTop} />
-    <Path path={mesh.seams} style="stroke" color="#71588B" strokeWidth={1 / unit} strokeJoin="round" />
+  const paths = useMemo(() => {
+    const base = layer + gap;
+    const lid = layer + 1;
+    const a = project(0, lid, 0), b = project(w, lid, 0), c = project(w, lid, d);
+    const front = face([a, b, project(w, base, 0), project(0, base, 0)]);
+    const side = face([b, c, project(w, base, d), project(w, base, 0)]);
+    const roof = face([a, b, c, project(0, lid, d)]);
+    const filled = submitted === undefined ? w * d : Math.max(0, Math.min(w * d, submitted - layer * w * d));
+    let shortage = Skia.Path.Make();
+    if (top && filled < w * d) {
+      // One face for the missing footprint avoids seams between adjacent rows.
+      const row = Math.floor(filled / w), col = filled % w;
+      const points = [project(col, lid, row), project(w, lid, row), project(w, lid, d)];
+      if (col > 0 && row + 1 === d) points.push(project(col, lid, d));
+      else {
+        points.push(project(0, lid, d), project(0, lid, col > 0 ? row + 1 : row));
+        if (col > 0) points.push(project(col, lid, row + 1));
+      }
+      shortage = face(points);
+    }
+    return { front, side, roof, shortage, empty: filled === 0 };
+  }, [project, w, d, layer, gap, submitted, top]);
+  const lit = useDerivedValue(() => Math.max(0, Math.min(1, progress.value - layer)));
+  return <Group>
+    <Path path={paths.front} color={Quantity.teal.light}><CornerPathEffect r={3} /></Path>
+    <Path path={paths.side} color={Quantity.violet.light}><CornerPathEffect r={3} /></Path>
+    {top && <Path path={paths.roof} color={Quantity.teal.soft}><CornerPathEffect r={4} /></Path>}
+    <Group opacity={lit}>
+      <Path path={paths.front} color={paths.empty ? Quantity.amber.fill : Quantity.teal.fill}><CornerPathEffect r={3} /></Path>
+      <Path path={paths.side} color={paths.empty ? Quantity.amber.light : Quantity.violet.fill}><CornerPathEffect r={3} /></Path>
+      {top && <><Path path={paths.roof} color={Quantity.teal.light}><CornerPathEffect r={4} /></Path>
+        <Path path={paths.shortage} color={Quantity.amber.fill} /></>}
+    </Group>
   </Group>;
 }
 
-function boxFrame(w: number, h: number, d: number) {
-  const a = project(0, 0, 0), b = project(w, 0, 0), c = project(w, 0, d), e = project(0, 0, d);
-  const A = project(0, h, 0), B = project(w, h, 0), C = project(w, h, d), E = project(0, h, d);
-  const floor = pathThrough([a, b, c, e], true);
-  const floorGrid = Skia.Path.Make();
-  for (let x = 1; x < w; x++) floorGrid.addPath(pathThrough([project(x, 0, 0), project(x, 0, d)]));
-  for (let z = 1; z < d; z++) floorGrid.addPath(pathThrough([project(0, 0, z), project(w, 0, z)]));
-  const hidden = pathThrough([a, e, c]); hidden.addPath(pathThrough([e, E]));
-  const front = pathThrough([A, a, b, c, C, B, A]); front.addPath(pathThrough([B, b]));
-  return { floor, floorGrid, hidden, front, inner: pathThrough([A, E, C]), walls: pathThrough([a, A, E, C, c, e], true) };
-}
-
-export function VolumeBox({ model, onSolutionShown }: { model: BoxModel; onSolutionShown?: () => void }) {
+export function VolumeBox({ model, submitted, onSolutionShown }: { model: BoxModel; submitted?: string; onSolutionShown?: () => void }) {
   const { t } = useTranslation();
-  const { width: viewport, fontScale } = useWindowDimensions();
-  const [available, setAvailable] = useState(viewport - 48);
+  const { width: screenWidth, height: screenHeight, fontScale } = useWindowDimensions();
+  const viewport = useProofViewport();
+  const [width, setWidth] = useState(0);
+  const canvasWidth = Math.max(1, Math.min(width || viewport?.innerWidth || screenWidth - 48, 480));
   const { width: w, depth: d, height: h } = model;
-  const plan = useMemo(() => volumeLayers(model), [model]);
-  const mesh = useMemo(() => cubeRow(w), [w]);
-  const frame = useMemo(() => boxFrame(w, h, d), [w, h, d]);
-  const { active, reduceMotion } = useAnimationActivity();
-  const progress = useSharedValue(0);
-  const [landed, setLanded] = useState(0);
-  const solving = !!onSolutionShown;
-  useEffect(() => {
-    if (!solving) return;
-    if (!active || reduceMotion) { progress.value = h; return; }
-    progress.value = withTiming(h, { duration: Math.max(0, h - progress.value) * 1060, easing: Easing.linear });
-    return () => cancelAnimation(progress);
-  }, [solving, active, reduceMotion, h, progress]);
-  useAnimatedReaction(() => landedVolumeRows(progress.value, d, h), (count, prev) => {
-    if (count !== prev) scheduleOnRN(setLanded, count);
-  });
-  const done = landed === plan.rows.length;
-  useEffect(() => { if (done) onSolutionShown?.(); }, [done, onSolutionShown]);
-
-  const largeText = fontScale > 1.4;
-  const canvasWidth = Math.min(available, 350);
-  const span = project(w, 0, d).x;
-  const top = project(0, h, d).y, bottom = project(w, 0, 0).y;
-  const unit = Math.max(1, Math.min(55, (canvasWidth - (largeText ? 20 : 84 * fontScale)) / span, 184 / (bottom - top)));
-  const left = (canvasWidth - unit * span) / 2;
-  const baseline = 17 - unit * top;
-  const height = baseline + unit * bottom + (largeText ? 8 : 26 * fontScale);
-  const dimension = (n: number) => t('everyday.boxLength', { n });
+  const perLayer = w * d, total = h * perLayer;
+  const target = Number(submitted);
+  const attempted = Number.isFinite(target) ? target : undefined;
+  const compact = fontScale > 1.4;
+  const labelWidth = (compact ? 21 : 52) * fontScale;
+  // Labels live inside the canvas with 16 pt of margin: the height label to the left of the box, the others below and right of it.
+  const leftRoom = 16 + labelWidth + 6, rightRoom = 16 + labelWidth * .5;
+  const span = .88 * w + .475 * d;
+  const rise = .23 * w + .87 * h + .43 * d;
+  const unit = Math.max(1, Math.min((canvasWidth - leftRoom - rightRoom) / span, Math.min(compact ? 156 : 216, screenHeight * .26) / rise));
+  const height = Math.ceil(unit * rise + (compact ? 20 : 26) * fontScale + 8);
+  const project = useMemo<Projection>(() => (x, y, z) => ({
+    x: leftRoom + (canvasWidth - leftRoom - rightRoom - span * unit) / 2 + (.88 * x + .475 * z) * unit,
+    y: 4 + (.23 * x + .87 * (h - y) + .43 * (d - z)) * unit,
+  }), [canvasWidth, span, unit, h, d, leftRoom, rightRoom]);
+  const gap = Math.min(.22, Shape.space.seam / (.87 * unit));
   const labels = [
-    { at: project(0, h / 2, 0), dx: -25, dy: 0, value: h },
-    { at: project(w / 2, 0, 0), dx: -3, dy: 14, value: w },
-    { at: project(w, 0, d / 2), dx: 17, dy: 11, value: d },
+    { at: project(0, h / 2, 0), left: project(0, h / 2, 0).x - 6 - labelWidth, align: 'right' as const, dy: -13 * fontScale, value: h },
+    { at: project(w / 2, 0, 0), left: project(w / 2, 0, 0).x - labelWidth / 2, align: 'center' as const, dy: 4, value: w },
+    { at: project(w, 0, d / 2), left: project(w, 0, d / 2).x + 6, align: 'left' as const, dy: -8 * fontScale, value: d },
   ];
-  const layersFilled = Math.floor(landed / d);
-  const count = done ? plan.total : landed * w;
-  const amount = model.answerUnit === 'cubes' ? t('everyday.boxCubes', { count }) : t('everyday.boxVolume', { n: count });
-  const caption = done ? h + ' × ' + plan.perLayer + ' = ' + amount : amount;
-  return <View style={styles.wrap} onLayout={e => setAvailable(e.nativeEvent.layout.width)}>
-    <View accessible accessibilityRole="image" accessibilityLabel={model.label} style={{ width: canvasWidth, height }}>
-      <Canvas style={StyleSheet.absoluteFill}>
-        <Group transform={[{ translateX: left }, { translateY: baseline }, { scale: unit }]}>
-          <Path path={frame.walls} color="#F6F2FA" />
-          <Path path={frame.floor} color="#EDE4F5" />
-          <Path path={frame.floorGrid} color="#CBBBD8" style="stroke" strokeWidth={1 / unit} />
-          <Path path={frame.hidden} color="#BDA8CE" style="stroke" strokeWidth={1 / unit}>
-            <DashPathEffect intervals={[4 / unit, 3 / unit]} />
-          </Path>
-          <Path path={frame.inner} color="#90779F" style="stroke" strokeJoin="round" strokeWidth={1.5 / unit} />
-          {solving && plan.rows.map((row, i) => <CubeRow key={i} row={row} mesh={mesh} progress={progress} unit={unit} />)}
-          <Path path={frame.front} color="#785F8C" style="stroke" strokeJoin="round" strokeWidth={1.6 / unit} />
-        </Group>
-      </Canvas>
-      {!largeText && labels.map(({ at, dx, dy, value }, i) => <View key={i} style={[styles.label, {
-        width: 52 * fontScale, left: left + at.x * unit + (dx - 26) * fontScale,
-        top: baseline + at.y * unit + (dy - 10) * fontScale,
-      }]}><Text style={styles.measure}>{dimension(value)}</Text></View>)}
-    </View>
-    {largeText && <Text style={styles.measure}>{[w, h, d].map(dimension).join(' × ')}</Text>}
-    {solving && <View style={styles.count}>
-      <Text style={styles.layer}>{done ? t('everyday.boxBase', { w, d, area: plan.perLayer }) : t('everyday.boxLayer', { layer: layersFilled, height: h })}</Text>
-      <Text testID="volume-count" accessibilityLiveRegion={done ? 'polite' : 'none'} style={styles.amount}>{caption}</Text>
+  const solving = !!onSolutionShown;
+  const beats = useRevealBeats(solving && !width ? null : solving ? h : 0, {
+    awaitInitialPaint: solving && canSnapshotCanvas, lead: 40, step: ProofMotion.group,
+    minTotal: 0, hold: 0, reducedSteps: true, onDone: onSolutionShown,
+  });
+  const { position, reduced, landed, settled } = beats;
+  const progress = useDerivedValue(() => reduced ? landed : position.value);
+  const canvas = useCanvasRef();
+  const drawing = useModelPaint(solving && width > 0, beats, canvas, image => {
+    const ink = modelInk(image, canvasWidth, height);
+    return Array.from({ length: h }, (_, layer) => {
+      const p = project(w / 2, layer + .5, 0);
+      return ink(p.x, p.y, parseInt(Quantity.teal.light.slice(1), 16));
+    }).every(Boolean);
+  });
+  const amount = model.answerUnit === 'cubes' ? t('everyday.boxCubes', { count: total }) : valueToken(t('everyday.boxVolume', { n: total }));
+  const result = attempted !== undefined && attempted !== total
+    ? `${attempted} ${attempted < total ? '<' : '>'} ${total}` : `${w} × ${d} × ${h} = ${amount}`;
+  const caption = settled ? result : landed ? (landed === 1 ? `${w} × ${d} = ${perLayer}` : `${landed} × ${perLayer} = ${landed * perLayer}`) : '';
+  useProofAnnouncement(beats, caption, solving);
+  const modelID = solving ? 'play-proof-model' : 'play-entry-model';
+  const center = project(w / 2, h, d / 2);
+  const surplus = attempted === undefined ? 0 : attempted - total;
+  const box = <View style={{ width: canvasWidth, height }}>
+    <Canvas ref={canvas} style={StyleSheet.absoluteFill}>
+      {Array.from({ length: h }, (_, layer) => <Layer key={layer} {...{ w, d, layer, project, gap, progress }}
+        top={layer === h - 1} submitted={attempted} />)}
+    </Canvas>
+    {labels.map(({ at, left, align, dy, value }, i) => <PuzzleText key={i} style={[styles.dimension, {
+      width: labelWidth, textAlign: align, left: Math.max(16, Math.min(canvasWidth - 16 - labelWidth, left)),
+      top: Math.max(0, at.y + dy),
+    }]}>{compact ? value : valueToken(t('everyday.boxLength', { n: value }))}</PuzzleText>)}
+    {settled && surplus > 0 && <View style={[styles.surplus, { left: center.x - labelWidth / 2, width: labelWidth, top: center.y - 12 }]}>
+      <PuzzleText numberOfLines={1} adjustsFontSizeToFit style={styles.surplusText}>+{surplus}</PuzzleText>
     </View>}
   </View>;
+  return <DiagramSurface beats={beats} playing={solving}><View style={styles.wrap} onLayout={e => setWidth(e.nativeEvent.layout.width)}>
+    <View ref={drawing} collapsable={false} nativeID={modelID} testID={modelID} accessible accessibilityRole="image" accessibilityLabel={model.label}>
+      {solving ? box : <EntryBuild>{box}</EntryBuild>}
+    </View>
+    {solving && landed > 0 && <View nativeID={settled ? 'play-proof-equation' : undefined} testID={settled ? 'play-proof-equation' : undefined}>
+      <ProofCaption text={caption} />
+    </View>}
+  </View></DiagramSurface>;
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignSelf: 'stretch', alignItems: 'center', paddingVertical: 6 },
-  label: { position: 'absolute', alignItems: 'center' },
-  measure: { color: C.textMuted, fontSize: 14, lineHeight: 20, fontWeight: '700', textAlign: 'center' },
-  count: { alignItems: 'center', paddingTop: 4 },
-  layer: { color: C.textMuted, fontSize: 15, lineHeight: 21, fontWeight: '700' },
-  amount: { color: C.primaryDark, fontSize: 22, lineHeight: 30, fontWeight: '900', fontVariant: ['tabular-nums'] },
+  dimension: { position: 'absolute', color: Ink.text, textAlign: 'center', fontWeight: '800', fontSize: 18, lineHeight: 24 },
+  surplus: { position: 'absolute', borderRadius: 10, backgroundColor: Quantity.amber.fill },
+  surplusText: { color: Ink.text, textAlign: 'center', fontSize: 18, fontWeight: '800' },
+  wrap: { alignSelf: 'stretch', alignItems: 'center', gap: 6, paddingVertical: 6 },
 });

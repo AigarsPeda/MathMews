@@ -10,8 +10,18 @@ final class NativeDragTests: XCTestCase {
   let item = XCTAttachment(screenshot: app.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
  }
  func solve(_ answer: String) {
-  let button = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Answer \(answer)", "Atbilde \(answer)")).firstMatch
-  XCTAssertTrue(button.waitForExistence(timeout: 3)); button.tap()
+  let socket = app.buttons["machine-rule-socket"], gap = app.buttons["pattern-next-gap"]
+  if socket.exists {
+   app.buttons["machine-rule-" + answer].tap()
+   socket.tap()
+  } else if gap.exists {
+   app.buttons[answer].tap()
+   gap.tap()
+  } else {
+   let choice = app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "Answer \(answer)", "Atbilde \(answer)")).firstMatch
+   XCTAssertTrue(choice.waitForExistence(timeout: 3), app.debugDescription)
+   choice.tap()
+  }
   app.buttons["Check"].tap()
   XCTAssertTrue(app.staticTexts["Correct answer"].waitForExistence(timeout: 3))
  }
@@ -19,11 +29,11 @@ final class NativeDragTests: XCTestCase {
  func testPatternMissionsChangeRulesAndInteraction() {
   app.buttons["Music boss"].tap()
   solve("15"); next(); solve("+5"); next()
-  XCTAssertTrue(app.staticTexts["Finish the tune. Which beat is missing? 20, 18, ?, 14, 12."].exists)
+  XCTAssertTrue(app.staticTexts["Finish the tune. Which beat is missing?"].exists)
   shot("music-boss-missing-beat"); solve("16")
   app.buttons["Signal boss"].tap()
   solve("48"); next(); solve("+32"); next()
-  XCTAssertTrue(app.staticTexts["Complete the transmission code. Which value is missing? 80, 40, ?, 10, 5."].exists)
+  XCTAssertTrue(app.staticTexts["Complete the transmission code. Which value is missing?"].exists)
   shot("signal-boss-missing-code"); solve("20")
  }
  func testPatternsChangeRulesAndInteractionWithinTheLesson() {
@@ -32,17 +42,17 @@ final class NativeDragTests: XCTestCase {
   XCTAssertFalse(app.staticTexts["Every step uses ×3. What comes next?"].exists)
   solve("162"); next()
   shot("hard-division-machine"); solve("÷4"); next()
-  XCTAssertTrue(app.staticTexts["Which number belongs in the gap? 243, 81, ?, 9, 3."].exists)
+  XCTAssertTrue(app.staticTexts["Which number belongs in the gap?"].exists)
   shot("hard-missing-number"); solve("27"); next()
   shot("hard-final-pattern"); solve("37")
   app.buttons["Easy"].tap()
-  solve("10"); next(); solve("+3"); next()
-  XCTAssertTrue(app.staticTexts["Which number belongs in the gap? 18, 15, ?, 9, 6."].exists)
-  shot("easy-missing-number"); solve("12"); next(); solve("7")
+  solve("5"); next(); solve("+2"); next()
+  XCTAssertTrue(app.staticTexts["Which number belongs in the gap?"].exists)
+  shot("easy-missing-number"); solve("5"); next(); solve("5")
   app.buttons["More Hard"].tap(); app.buttons["Latviski"].tap()
   XCTAssertTrue(app.staticTexts["Kas būs tālāk?"].exists)
   solve("768"); next(); solve("+8"); next()
-  XCTAssertTrue(app.staticTexts["Kurš skaitlis iederas tukšajā vietā? 6, 12, ?, 48, 96."].exists)
+  XCTAssertTrue(app.staticTexts["Kurš skaitlis iederas tukšajā vietā?"].exists)
   shot("latvian-missing-number"); solve("24"); next(); solve("47")
   app.buttons["English"].tap()
  }

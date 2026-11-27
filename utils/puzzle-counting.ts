@@ -4,8 +4,8 @@ import type { PuzzleObject } from '@/types/puzzle-object';
 
 export type CountingModel = Extract<QuantityTaskModel, { left: number }> & { object: PuzzleObject };
 
-export function hasCountingAnimation(model: QuantityTaskModel): model is CountingModel {
-  return (model.kind === 'join' || model.kind === 'take_away') && !!model.object && model.right > 0;
+export function hasCountingAnimation(model: QuantityTaskModel): boolean {
+  return model.kind === 'array' || model.kind === 'share' || model.right > 0;
 }
 
 // Separate the starting groups. Each object keeps its slot on reset.

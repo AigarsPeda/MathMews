@@ -50,7 +50,10 @@ function harness() {
     replace(route) { routes.push(['replace', route]); params = route.params; revision++; render(); },
     dismissTo(route) { routes.push(['path', route]); },
   };
+  const contexts = {};
   const mocks = {
+    '@shopify/react-native-skia': { makeImageFromView: async () => null },
+    'react-native-reanimated': { useReducedMotion: () => false },
     react: React, 'react/jsx-runtime': jsxRuntime,
     '@/contexts/GameProvider': { useGame: () => React.useContext(gameContext) },
     '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
@@ -60,14 +63,19 @@ function harness() {
     'expo-font': { useFonts: () => [true, null] },
     'expo-haptics': { ImpactFeedbackStyle: { Light: 'light', Medium: 'medium' }, impactAsync() {} },
     'expo-router': { useRouter: () => router, useLocalSearchParams: () => params, Redirect: view('Redirect') },
-    'react-native': { View: view('View'), ScrollView: view('ScrollView'), Pressable: view('Pressable'), ActivityIndicator: view('ActivityIndicator'),
+    'react-native': { useWindowDimensions: () => ({ height: 852, width: 393, fontScale: 1 }), View: view('View'), ScrollView: view('ScrollView'), Pressable: view('Pressable'), ActivityIndicator: view('ActivityIndicator'),
       StyleSheet: { create: x => x }, Platform: { OS: 'ios' } },
     'react-native-safe-area-context': { SafeAreaView: view('SafeAreaView') },
     '@react-native-async-storage/async-storage': {},
   };
   function load(id) {
     if (id in mocks) return mocks[id];
-    if (id.startsWith('@/components/')) return new Proxy({}, { get: (_, name) => view(name) });
+    // Components render as named views; *Context exports are real contexts; lower-case helpers are false predicates.
+    if (id.startsWith('@/components/')) return new Proxy({}, { get: (_, name) => {
+      const key = String(name);
+      if (key.endsWith('Context')) return (contexts[key] ??= React.createContext({}));
+      return /^[a-z]/.test(key) ? () => false : view(name);
+    } });
     if (/\.(png|webp|mp4|ttf)$/.test(id)) return id;
     const base = path.resolve(id.replace('@/', ''));
     const file = fs.existsSync(base) ? base : ['.ts', '.tsx', '.json'].map(ext => base + ext).find(fs.existsSync);
@@ -126,6 +134,12 @@ function harness() {
       const button = probes.get('PuzzleButton');
       assert.equal(button.disabled, false, `Check Answer is enabled for ${task.puzzle.id}`);
       await act(() => { button.onPress(); button.onPress(); });
+      const resultButton = probes.get('PuzzleButton');
+      if (resultButton.label === 'play.seeResult') {
+        assert.ok(probes.get('CheckedPuzzleReveal')?.mode === 'worked' || (probes.get('PuzzleTaskView')?.answered && probes.get('PuzzleTaskView')?.checkedAttempt?.correct), 'An accepted answer holds its proof or its locked response');
+        assert.equal(probes.has('ResultOverlay'), false);
+        await act(() => resultButton.onPress());
+      }
     },
     async next() { assert.ok(probes.get('ResultOverlay'), 'A completed task holds its result'); await act(() => probes.get('ResultOverlay').onContinue()); },
     async advance(ms) { now += ms; await act(render); },
@@ -231,7 +245,7 @@ for (const replay of [false, true]) for (const mode of ['timed', 'untimed']) tes
     assert.equal(h.props('PuzzleTaskView').puzzle.id, lesson.levels[index].puzzleIds[0]);
     await h.answer();
     assert.equal(h.props('ResultOverlay').continueLabel, index < 9 ? 'play.nextPuzzle' : 'puzzlePathDesign.nextLevel');
-    assert.equal(h.props('PuzzleTaskView').answered, true, 'Saving an answer never replaces the task beneath its sheet');
+    assert.equal((h.props('CheckedPuzzleReveal')?.snapshot ?? h.props('PuzzleTaskView')?.checkedAttempt)?.puzzle.id, lesson.levels[index].puzzleIds[0]);
     if (replay) assert.deepEqual(clone(h.save.progress.catPlanRewardsClaimed), rewardIds, 'Replay never duplicates a furnishing');
     await h.next();
     assert.equal(h.props('Redirect'), undefined);
@@ -278,6 +292,8 @@ test('wrong answers in a timed replay retain the task and clock', async () => {
   assert.equal(h.props('ResultOverlay'), undefined);
   assert.equal(h.save.progress.lives.current, 2, 'A duplicate wrong tap costs only one life');
   assert.equal(h.save.progress.challengeAttempt.deadlineAt, deadline);
+  assert.equal(h.props('PuzzleButton').label, 'play.tryAgain');
+  await act(() => h.props('PuzzleButton').onPress());
   await h.answer(); await h.next();
   assert.equal(h.props('PuzzleTaskView').puzzle.id, lesson.levels[8].puzzleIds[0]);
   await h.dispose();

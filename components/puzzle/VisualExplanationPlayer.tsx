@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   captionHost: { minHeight: moderateScale(48), justifyContent: "center" },
   caption: { fontSize: moderateScale(17), fontWeight: "700", color: GameColors.text, textAlign: "center", lineHeight: moderateScale(24) },
   controls: { flexDirection: "row", alignItems: "center", gap: moderateScale(8) },
-  button: { flex: 1, minHeight: moderateScale(48), paddingHorizontal: moderateScale(8), borderRadius: moderateScale(12), backgroundColor: GameColors.card, alignItems: "center", justifyContent: "center" },
+  button: { flex: 1, minHeight: moderateScale(48), paddingHorizontal: moderateScale(8), borderBottomWidth: 3, borderColor: GameColors.cardBorder, borderRadius: moderateScale(12), backgroundColor: GameColors.progressTrack, alignItems: "center", justifyContent: "center" },
   buttonText: { fontSize: moderateScale(15), fontWeight: "700", color: GameColors.primary, textAlign: "center" },
   counter: { fontSize: moderateScale(14), fontWeight: "600", color: GameColors.textMuted, textAlign: "center", flexShrink: 1 },
   disabled: { opacity: .35 },

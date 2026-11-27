@@ -58,6 +58,7 @@ function harness(reducedMotion = false) {
     return {
       commands: [],
       moveTo(...args) { this.commands.push(['move', ...args]); },
+      lineTo(...args) { this.commands.push(['line', ...args]); },
       arcToOval(_oval, start, sweep, forceMove) { this.commands.push(['arc', start, sweep, forceMove]); },
       addPath(other) { this.commands.push(...other.commands); },
       addCircle(...args) { this.commands.push(['circle', ...args]); },
@@ -67,12 +68,12 @@ function harness(reducedMotion = false) {
   const jsx = (type, props) => ({ type, props });
   const mocks = {
     react,
-    'react/jsx-runtime': { jsx, jsxs: jsx },
+    'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'Fragment' },
     'react-native': { View: 'View', Pressable: 'Pressable', StyleSheet: { create: styles => styles } },
     '@/utils/fraction-pie': selectionModule.exports,
     '@/utils/scale': { moderateScale: value => value },
-    '@/constants/puzzle-theme': { PuzzleColors: { secondary: '#4ECDC4', success: '#247A3C', incorrect: '#C82E39', card: '#FFFFFF' }, DiagramColors: { fractionSurface: '#F2ECFA', fractionFill: '#9874D0', fractionEdge: '#65438F' } },
-    '@shopify/react-native-skia': { Canvas: 'Canvas', Path: 'Path', Skia: { Path: { Make: path } } },
+    '@/constants/puzzle-theme': { PuzzleColors: { secondary: '#4ECDC4', success: '#247A3C', incorrect: '#C82E39', background: '#FFFFFF' }, Ink: { text: '#24314B' }, Motion: { tap: 120, step: 450, hold: 250, settle: 280, lead: 300, sweep: 900, fade: 120 }, Stroke: { unit: 1, outline: 2, major: 1.5, active: 2.5, unknown: 1.5 }, Radius: { control: 16, tray: 12, piece: 6 }, Quantity: { violet: { fill: '#9C7BD4', edge: '#6A4A9C', soft: '#F0EAF8', grid: '#8C6CC8', light: '#C9B6EC', onFill: '#4A2F78' } }, Shape: { lip: 3, empty: '#DDE3EC', emptyLip: '#C5CEDA', seamColor: '#FFFFFF', space: { seam: 4 } }, DiagramColors: { fractionSurface: '#F0EAF8', fractionFill: '#9C7BD4', fractionEdge: '#6A4A9C' } },
+    '@shopify/react-native-skia': { Canvas: 'Canvas', Group: 'Group', Path: 'Path', Skia: { Path: { Make: path } } },
     'react-native-reanimated': {
       useSharedValue: value => react.useMemo(() => shared(value), []),
       useDerivedValue: fn => ({ get: fn }),
@@ -94,7 +95,8 @@ function harness(reducedMotion = false) {
       pending.forEach(fn => fn());
       const children = tree.props.children.flat().filter(Boolean);
       overlay = children.find(child => child.type === 'Pressable');
-      return children.find(child => child.type === 'Canvas').props.children.flat().filter(Boolean);
+      const canvas = children.find(child => child.type === 'Canvas');
+      return module.exports.PiePieces(canvas.props.children.props).props.children.flat().filter(Boolean);
     },
     press(x, y) {
       overlay?.props.onPress({ nativeEvent: { locationX: x, locationY: y } });
@@ -106,7 +108,7 @@ function harness(reducedMotion = false) {
     starts: () => starts,
   };
 }
-const filled = tree => tree.find(node => typeof node.props.path.get === 'function');
+const filled = tree => tree.find(node => typeof node.props.path?.get === 'function');
 function angle(tree) {
   const commands = filled(tree).props.path.get().commands;
   return commands.reduce((sum, [command, , sweep]) => sum + (command === 'circle' ? 360 : command === 'arc' ? sweep : 0), 0);
@@ -116,7 +118,11 @@ const view = harness();
 let tree = view.render({ denominator: 6, shaded: 0 });
 assert.equal(angle(tree), 0);
 assert.equal(view.starts(), 0, 'Initial rendering does not replay an entrance animation');
-const base = tree[0].props.path;
+const base = tree[1].props.path;
+assert.equal(tree[0].props.transform[0].translateY, 3, 'The pie has a 3 pt lip');
+const gapPath = tree.at(-1).props.children.props.path;
+assert.equal(gapPath.commands[0][1] - gapPath.commands[3][1], 4, 'The first pie cut is 4 pt wide');
+assert.ok(tree.every(node => node.props.style !== 'stroke'), 'The pie faces have no strokes');
 tree = view.render({ denominator: 6, shaded: 1 });
 assert.equal(angle(tree), 0, 'Adding begins from the visible fill, without a jump');
 view.advance(100);
@@ -126,7 +132,7 @@ tree = view.render({ denominator: 6, shaded: 2 });
 close(angle(tree), intermediate);
 view.advance(240);
 close(angle(tree), 120);
-assert.equal(tree[0].props.path, base, 'Changing the fill preserves the static pie and dividers');
+assert.equal(tree[1].props.path, base, 'Changing the fill preserves the static pie and dividers');
 tree = view.render({ denominator: 6, shaded: 1 });
 view.advance(90);
 const removing = angle(tree);

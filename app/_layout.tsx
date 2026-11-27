@@ -82,7 +82,8 @@ export default function RootLayout() {
                       name="puzzles"
                       options={{ headerShown: false, statusBarStyle: "dark", contentStyle: { backgroundColor: "#FFFFFF" } }}
                     />
-                    <Stack.Screen name="play" options={{ headerShown: false, statusBarStyle: "dark", contentStyle: { backgroundColor: "#FFFFFF" }, animationTypeForReplace: "push", animationDuration: 160 }} />
+                    <Stack.Screen name="puzzle-layout-qa" options={{ fullScreenGestureEnabled: false }} />
+                    <Stack.Screen name="play" options={{ fullScreenGestureEnabled: false, headerShown: false, statusBarStyle: "dark", contentStyle: { backgroundColor: "#FFFFFF" }, animationTypeForReplace: "push", animationDuration: 160 }} />
                     <Stack.Screen name="stats" options={{ headerShown: false }} />
                     <Stack.Screen name="achievements" options={{ headerShown: false }} />
                     <Stack.Screen

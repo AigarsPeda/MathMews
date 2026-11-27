@@ -2,7 +2,11 @@ import type { Puzzle, RatioTablePuzzle, SignedLinePuzzle, EquationBoardPuzzle, C
 export type BridgePuzzle = RatioTablePuzzle | SignedLinePuzzle | EquationBoardPuzzle | CoordinateMapPuzzle;
 export type Point = { x: number; y: number };
 export type EquationState = { a: number; b: number; c: number };
-export type BridgeState = { value?: number | null; point?: Point | null; equation?: EquationState | null };
+/** One both-sides move on the equation board, in the order the learner made it. */
+export type EquationMove = { operation: 'add' | 'divide'; amount: number };
+export type BridgeState = { value?: number | null; point?: Point | null; equation?: EquationState | null;
+  /** The learner's moves from the authored equation to `equation`; replayed by the checked proof. */
+  equationMoves?: EquationMove[] };
 export function isBridgePuzzle(p: Puzzle): p is BridgePuzzle {
   return ['ratio_table', 'signed_line', 'equation_board', 'coordinate_map'].includes(p.type ?? '');
 }

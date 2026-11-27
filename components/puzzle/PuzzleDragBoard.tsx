@@ -1,13 +1,18 @@
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { Ink, LandSpring, Motion, PuzzleColors as GameColors, Quantity, Radius, Stroke } from "@/constants/puzzle-theme";
 import { findPuzzleDropZone, type PuzzleDropZone } from "@/utils/puzzle-drag";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { cancelAnimation, Easing, measure, ReduceMotion, useAnimatedRef, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type AnimatedRef, type LayoutAnimationFunction, type SharedValue } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, FadeIn, measure, ReduceMotion, useAnimatedRef, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withSpring, withTiming, type AnimatedRef, type EntryAnimationsValues, type LayoutAnimation, type LayoutAnimationFunction, type SharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+
+export const numberTileFaces = StyleSheet.create({
+  resting: { borderWidth: 0, borderBottomWidth: 3, borderBottomColor: Quantity.amber.edge, backgroundColor: Quantity.amber.fill },
+  lifted: { borderWidth: 0, borderBottomWidth: 3, borderBottomColor: Quantity.violet.edge, backgroundColor: Quantity.violet.fill, transform: [{ translateY: -2 }] },
+});
 
 type DragContext = {
   board: AnimatedRef<View>;
@@ -22,16 +27,21 @@ type DragContext = {
   finish: (source: string, target: string | null) => void;
   register: (id: string, view: View | null) => void;
   refresh: () => void;
+  /** True once the board's first frame is on screen: later mounts are placements and land. */
+  ready: { current: boolean };
 };
 const Context = createContext<DragContext | null>(null);
+// Worklets cannot call moderateScale: sizes used on the UI thread are fixed here.
+const INSERT_OFFSET = moderateScale(8);
+const LAND_DROP = moderateScale(10);
 function useDragBoard() {
   const context = useContext(Context);
   if (!context) throw new Error("Puzzle drag controls need a PuzzleDragBoard");
   return context;
 }
 
-export function PuzzleDragBoard({ children, onDrop, onDragStateChange }: {
-  children: ReactNode; onDrop: (source: string, target: string) => void;
+export function PuzzleDragBoard({ children, onDrop, onDragStateChange, floatingStyle }: {
+  floatingStyle?: StyleProp<ViewStyle>; children: ReactNode; onDrop: (source: string, target: string) => void;
   onDragStateChange: (dragging: boolean) => void;
 }) {
   const board = useAnimatedRef<View>();
@@ -45,6 +55,8 @@ export function PuzzleDragBoard({ children, onDrop, onDragStateChange }: {
   const views = useRef(new Map<string, View>());
   const measurements = useRef(new Map<string, PuzzleDropZone>());
   const [label, setLabel] = useState("");
+  const ready = useRef(false);
+  useEffect(() => { ready.current = true; }, []);
   const refresh = useCallback(() => {
     const ancestor = board.current;
     if (!ancestor) return;
@@ -81,21 +93,54 @@ export function PuzzleDragBoard({ children, onDrop, onDragStateChange }: {
     const p = position.get();
     return { width: p.width, height: p.height, opacity: source.get() ? 1 : 0, transform: [{ translateX: p.x }, { translateY: p.y }, { scale: lift.get() }] };
   });
-  return <Context value={{ board, zones, source, hovered, position, released, lift, landing, begin, finish, register, refresh }}>
+  return <Context value={{ board, zones, source, hovered, position, released, lift, landing, begin, finish, register, refresh, ready }}>
     <Animated.View ref={board} collapsable={false} onLayout={refresh} style={styles.board}>
       {children}
-      <Animated.View pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.tile, styles.floating, floating]}>
-        <Text style={styles.number}>{label}</Text>
+      <Animated.View pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.tile, styles.floating, floatingStyle, floating]}>
+        <TileLabel label={label} />
       </Animated.View>
     </Animated.View>
   </Context>;
 }
 
-export function PuzzleDropArea({ id, motionId, children, style, label }: { id: string; motionId?: string; children: ReactNode; style?: StyleProp<ViewStyle>; label: string }) {
-  const { register, refresh, hovered, released, source, landing } = useDragBoard();
+/** Stacked a/b for fraction labels ("2/4"), plain text for everything else. */
+export function TileLabel({ label, compact = false, selected = false, size }: { label: string; compact?: boolean; selected?: boolean; size?: number }) {
+  // An explicit size belongs to a physical piece, so system text size does not grow it past the piece.
+  const cap = size ? 1 : undefined;
+  const fraction = /^(\d+)\/(\d+)$/.exec(label);
+  // An explicit size (pt) is used as given, so big tiles keep big digits.
+  const sized = size ? { fontSize: size, lineHeight: Math.round(size * 1.2) } : null;
+  const text = [styles.number, compact && styles.compactNumber, selected && styles.selectedNumber, sized];
+  if (!fraction) return <Text numberOfLines={1} maxFontSizeMultiplier={cap} style={text}>{label}</Text>;
+  return <View style={styles.fraction} accessible={false}>
+    <Text maxFontSizeMultiplier={cap} style={[text, styles.fractionPart, sized]}>{fraction[1]}</Text>
+    <View style={[styles.fractionBar, selected && styles.fractionBarSelected]} />
+    <Text maxFontSizeMultiplier={cap} style={[text, styles.fractionPart, sized]}>{fraction[2]}</Text>
+  </View>;
+}
+
+/**
+ * A move (drag) inserts the tile before or after the hovered one; a two-tap
+ * swap exchanges them. Moving tiles pass each other on opposite arcs, so a
+ * swap visibly crosses over; a tile released by the finger lands with the
+ * shared landing spring.
+ */
+export function PuzzleDropArea({ id, motionId, children, style, label, insertion = false, fillOnly = false }: {
+  id: string; motionId?: string; children: ReactNode; style?: StyleProp<ViewStyle>; label: string;
+  /** Show an insertion bar on the side the dragged tile will be inserted, instead of outlining the target. */
+  insertion?: boolean; fillOnly?: boolean;
+}) {
+  const { register, refresh, hovered, released, source, landing, zones } = useDragBoard();
   const reducedMotion = useReducedMotion();
   const ref = useCallback((view: View | null) => register(id, view), [id, register]);
-  const highlight = useAnimatedStyle(() => ({ borderColor: hovered.get() === id ? GameColors.secondaryDark : "transparent" }));
+  const highlight = useAnimatedStyle(() => ({ opacity: !insertion && source.get() !== id && hovered.get() === id ? 1 : 0 }));
+  const insertBar = useAnimatedStyle(() => {
+    if (!insertion || hovered.get() !== id || source.get() === id) return { opacity: 0 };
+    const all = zones.get();
+    const from = all.find(zone => zone.id === source.get()), to = all.find(zone => zone.id === id);
+    const after = !!from && !!to && from.x < to.x;
+    return { opacity: 1, left: after ? undefined : -INSERT_OFFSET, right: after ? -INSERT_OFFSET : undefined };
+  });
   const layer = useAnimatedStyle(() => ({ zIndex: motionId && landing.get() === motionId ? 100 : 0 }));
   const settle = useCallback<LayoutAnimationFunction>(values => {
     "worklet";
@@ -105,7 +150,16 @@ export function PuzzleDropArea({ id, motionId, children, style, label }: { id: s
       released.set(null);
       source.set("");
     }
-    const timing = { duration: reducedMotion ? 0 : 240, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System };
+    const timing = { duration: reducedMotion ? 0 : Motion.step, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System };
+    const half = { duration: reducedMotion ? 0 : Motion.step / 2, easing: Easing.out(Easing.quad), reduceMotion: ReduceMotion.System };
+    const dx = values.targetOriginX - values.currentOriginX;
+    // Rightward tiles ride over the top and leftward tiles under, so a swap crosses instead of colliding.
+    const rise = Math.min(values.currentHeight * .55, Math.abs(dx) * .35) * (dx > 0 ? -1 : 1);
+    const originY = reducedMotion ? withTiming(values.targetOriginY, timing)
+      : fromFinger ? withSpring(values.targetOriginY, LandSpring)
+        : Math.abs(dx) > 1 && Math.abs(values.targetOriginY - values.currentOriginY) < 1
+          ? withSequence(withTiming(values.targetOriginY + rise, half), withSpring(values.targetOriginY, LandSpring))
+          : withTiming(values.targetOriginY, timing);
     return {
       initialValues: {
         originX: values.currentOriginX + (fromFinger ? drop.translationX : 0),
@@ -114,9 +168,9 @@ export function PuzzleDropArea({ id, motionId, children, style, label }: { id: s
         transform: [{ scale: fromFinger && !reducedMotion ? 1.06 : 1 }],
       },
       animations: {
-        originX: withTiming(values.targetOriginX, timing), originY: withTiming(values.targetOriginY, timing),
+        originX: withTiming(values.targetOriginX, timing), originY,
         width: withTiming(values.targetWidth, timing), height: withTiming(values.targetHeight, timing),
-        transform: [{ scale: withTiming(1, timing) }],
+        transform: [{ scale: reducedMotion ? withTiming(1, timing) : withSpring(1, LandSpring) }],
       },
       callback: finished => {
         if (landing.get() === motionId) landing.set("");
@@ -126,17 +180,44 @@ export function PuzzleDropArea({ id, motionId, children, style, label }: { id: s
   }, [landing, motionId, reducedMotion, refresh, released, source]);
   return <Animated.View ref={ref} collapsable={false} onLayout={refresh} layout={motionId ? settle : undefined} style={[styles.dropArea, style, layer]} accessibilityLabel={label}>
     {children}
-    <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.highlight, highlight]} />
+    {!fillOnly && <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.highlight, highlight]} />}
+    {insertion ? <Animated.View pointerEvents="none" style={[styles.insertBar, insertBar]} /> : null}
   </Animated.View>;
 }
 
-export function PuzzleDragTile({ id, motionId, label, disabled, compact, style, accessibilityLabel, accessibilityHint, actions, onPress, selected }: {
-  id: string; motionId?: string; label: string; disabled: boolean; compact?: boolean; style?: StyleProp<ViewStyle>; accessibilityLabel: string; accessibilityHint: string;
+/** A picked tile can be placed in any tinted slot. */
+export function PuzzleDropSlot({ armed, onPress, accessibilityLabel, compact, style }: {
+  armed: boolean; onPress: () => void; accessibilityLabel: string; compact?: boolean; style?: StyleProp<ViewStyle>;
+}) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} accessibilityState={{ disabled: !armed }} disabled={!armed} onPress={onPress}
+    hitSlop={6} style={({ pressed }) => [styles.slot, compact && styles.compactSlot, armed && styles.slotArmed, pressed && styles.slotPressed, style]}>
+    {armed ? <View style={styles.slotDot} accessible={false} /> : null}
+  </Pressable>;
+}
+
+function landTile(_values: EntryAnimationsValues): LayoutAnimation {
+  "worklet";
+  return {
+    initialValues: { opacity: 0, transform: [{ translateY: -LAND_DROP }, { scale: .86 }] },
+    animations: { opacity: withTiming(1, { duration: Motion.tap }), transform: [{ translateY: withSpring(0, LandSpring) }, { scale: withSpring(1, LandSpring) }] },
+  };
+}
+
+export function PuzzleDragTile({ id, motionId, label, disabled, compact, grip, style, accessibilityLabel, accessibilityHint, actions, onPress, selected, face, footer }: {
+  id: string; motionId?: string; label: string; disabled: boolean; compact?: boolean;
+  /** Show a small grip under the number: this tile can be picked up and reordered. */
+  grip?: boolean; style?: StyleProp<ViewStyle>; accessibilityLabel: string; accessibilityHint: string;
   actions: { id: string; label: string }[];
   onPress?: () => void;
   selected?: boolean;
+  /** Small picture under the label (e.g. a fraction strip). */
+  footer?: ReactNode; face?: ReactNode;
 }) {
-  const { board, zones, source, hovered, position, released, lift, landing, begin, finish } = useDragBoard();
+  const { board, zones, source, hovered, position, released, lift, landing, begin, finish, ready } = useDragBoard();
+  const reducedMotion = useReducedMotion();
+  // Tiles that appear after the first frame have just been placed: they land.
+  // Reordered tiles (motionId) travel with their drop area instead.
+  const entering = !motionId && ready.current ? reducedMotion ? FadeIn.duration(Motion.fade) : landTile : undefined;
   const tile = useAnimatedRef<View>();
   const origin = useSharedValue({ x: 0, y: 0, pageX: 0, pageY: 0 });
   const target = useSharedValue<string | null>(null);
@@ -156,7 +237,7 @@ export function PuzzleDragTile({ id, motionId, label, disabled, compact, style, 
       const x = item.pageX - root.pageX, y = item.pageY - root.pageY;
       origin.set({ x, y, pageX: root.pageX, pageY: root.pageY });
       position.set({ x, y, width: item.width, height: item.height });
-      lift.set(withTiming(1.06, { duration: 100, reduceMotion: ReduceMotion.System }));
+      lift.set(withTiming(1.06, { duration: Motion.tap, reduceMotion: ReduceMotion.System }));
       active.set(true);
       source.set(id);
     })
@@ -181,8 +262,9 @@ export function PuzzleDragTile({ id, motionId, label, disabled, compact, style, 
       hovered.set(null);
       if (source.get() === id && (destination === null || motionId && destination === id)) {
         const start = origin.get();
-        lift.set(withTiming(1, { duration: 200, reduceMotion: ReduceMotion.System }));
-        position.set(withTiming({ ...position.get(), x: start.x, y: start.y }, { duration: 200, reduceMotion: ReduceMotion.System }, done => {
+        lift.set(withTiming(1, { duration: Motion.tap, reduceMotion: ReduceMotion.System }));
+        // Released nowhere: the tile travels back to where it came from.
+        position.set(withTiming({ ...position.get(), x: start.x, y: start.y }, { duration: Motion.step, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }, done => {
           if (done) source.set("");
         }));
       } else {
@@ -199,7 +281,7 @@ export function PuzzleDragTile({ id, motionId, label, disabled, compact, style, 
     : gesture, [disabled, gesture, onPress, released]);
   const dragging = useAnimatedStyle(() => ({ opacity: motionId && released.get()?.id === motionId ? 0 : source.get() === id ? 0.2 : 1 }));
   return <GestureDetector gesture={combinedGesture}>
-    <Animated.View ref={tile} collapsable={false} style={[styles.tile, compact && styles.compact, style, dragging]} accessible
+    <Animated.View ref={tile} testID={`drag-choice-${id}`} collapsable={false} entering={entering} style={[styles.tile, compact && styles.compact, selected && !disabled && styles.selected, style, dragging]} accessible
       accessibilityRole="button" accessibilityState={{ disabled, selected }} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint}
       accessibilityActions={disabled ? [] : actions.map(action => ({ name: action.id, label: action.label }))}
       onAccessibilityTap={disabled ? undefined : () => { released.set(null); onPress?.(); }}
@@ -209,18 +291,38 @@ export function PuzzleDragTile({ id, motionId, label, disabled, compact, style, 
         if (event.nativeEvent.actionName === "activate") onPress?.();
         else if (actions.some(action => action.id === event.nativeEvent.actionName)) finish(id, event.nativeEvent.actionName);
       }}>
-      <Text style={[styles.number, compact && styles.compactNumber]}>{label}</Text>
+      {face ?? <TileLabel label={label} compact={compact} selected={selected && !disabled} />}
+      {footer}
+      {grip && !disabled ? <View style={styles.grip} accessible={false}>{[0, 1, 2].map(i => <View key={i} style={styles.gripDot} />)}</View> : null}
     </Animated.View>
   </GestureDetector>;
 }
 
+// Draggable tiles share the kit's NumberTile recipe: white face, 2 pt outline,
+// 4 pt lip; selection is the berry ring. The lifted copy is flat (no blur).
 const styles = StyleSheet.create({
   board: { position: "relative", gap: moderateScale(16) },
-  tile: { minWidth: moderateScale(64), minHeight: moderateScale(60), padding: moderateScale(12), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, justifyContent: "center", alignItems: "center" },
-  compact: { minWidth: moderateScale(48), minHeight: moderateScale(48), padding: moderateScale(6), borderRadius: moderateScale(10) },
-  number: { fontSize: moderateScale(23), fontWeight: "800", color: GameColors.text, textAlign: "center" },
+  tile: { minWidth: moderateScale(64), minHeight: moderateScale(60), paddingHorizontal: moderateScale(12), paddingVertical: moderateScale(8), borderRadius: Radius.tray, borderBottomWidth: 3, borderColor: GameColors.cardBorder, backgroundColor: Ink.tray, justifyContent: "center", alignItems: "center" },
+  compact: { minWidth: moderateScale(48), minHeight: moderateScale(48), paddingHorizontal: moderateScale(6), paddingVertical: moderateScale(4), borderRadius: moderateScale(10) },
+  selected: { borderColor: GameColors.primary, backgroundColor: GameColors.selectedSurface },
+  number: { fontSize: moderateScale(23), fontWeight: "800", color: Ink.text, textAlign: "center", fontVariant: ["tabular-nums"] },
+  selectedNumber: { color: GameColors.primaryDark },
   compactNumber: { fontSize: moderateScale(19) },
-  floating: { position: "absolute", left: 0, top: 0, zIndex: 100, elevation: 8, borderColor: GameColors.secondaryDark, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.16, shadowRadius: 8 },
+  fraction: { alignItems: "center" },
+  fractionPart: { fontSize: moderateScale(19), lineHeight: moderateScale(22) },
+  fractionBar: { alignSelf: "stretch", minWidth: moderateScale(18), height: Stroke.outline, borderRadius: 1, backgroundColor: Ink.text, marginVertical: 1 },
+  fractionBarSelected: { backgroundColor: GameColors.primaryDark },
+  grip: { flexDirection: "row", gap: moderateScale(3), marginTop: moderateScale(4) },
+  gripDot: { width: moderateScale(4), height: moderateScale(4), borderRadius: moderateScale(2), backgroundColor: Ink.line },
+  floating: { position: "absolute", left: 0, top: 0, zIndex: 100, elevation: 0, borderColor: GameColors.primary, backgroundColor: GameColors.selectedSurface },
   dropArea: { position: "relative" },
-  highlight: { borderWidth: 3, borderRadius: moderateScale(14) },
+  // friendly-ok: Visible only over the active drag destination.
+  highlight: { borderStyle: "dashed", borderColor: GameColors.primary, borderWidth: 3, borderRadius: moderateScale(14) },
+  insertBar: { position: "absolute", top: moderateScale(4), bottom: moderateScale(4), width: moderateScale(4), borderRadius: 2, backgroundColor: GameColors.primary },
+  slot: { minWidth: moderateScale(52), minHeight: moderateScale(52), borderRadius: Radius.tray, backgroundColor: Ink.tray,
+    alignItems: "center", justifyContent: "center" },
+  compactSlot: { minWidth: moderateScale(48), minHeight: moderateScale(48), borderRadius: moderateScale(10) },
+  slotArmed: { backgroundColor: GameColors.selectedSurface },
+  slotPressed: { transform: [{ scale: .97 }] },
+  slotDot: { width: 16, height: 16, borderRadius: 8, backgroundColor: GameColors.primary },
 });

@@ -24,7 +24,7 @@ const mocks = {
   '@/components/puzzle/PuzzleGradient': { PuzzleGradient: 'PuzzleGradient' },
   '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
   '@/hooks/use-animation-activity': { useAnimationActivity: () => ({ active: false, reduceMotion: false }) },
-  '@/constants/puzzle-theme': { TopicPathColors: { current: {}, locked: {}, completed: {} } },
+  '@/constants/puzzle-theme': { TopicPathColors: { current: {}, locked: {}, completed: {} }, Quantity: { berry: {} } },
   '@/constants/puzzle-path': { getPathProgress: () => ({ solved: 0, total: 10, complete: false }), isPathAvailable: () => true },
   '@/utils/topic-path-layout': layoutModule.exports,
   '@/utils/border-radius': { insetRadius: (radius, inset) => Math.max(0, radius - inset) },

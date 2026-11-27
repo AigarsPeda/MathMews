@@ -43,15 +43,25 @@ assert.doesNotMatch(byId.get('v2-medium-division-parcels-2').hint,/cookies|7/);
 // Evaluate real JSX to verify the visible quantities instead of just checking metadata.
 const jsx=(type,props)=>({type,props});
 const strings=JSON.parse(fs.readFileSync('locales/en.json'));
+// The real design tokens, so diagrams render with the production palette and metrics.
+const money={exports:{}};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('utils/puzzle-money.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module:money,exports:money.exports,Intl,require:()=>({})});
+const tape={exports:{}};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('utils/money-tape.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module:tape,exports:tape.exports,require:()=>money.exports});
+const theme={exports:{}};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('constants/puzzle-theme.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module:theme,exports:theme.exports,require:()=>({GameColors:{}})});
 function render(file,name,props) {
   const mod={exports:{}};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{
     module:mod,exports:mod.exports,require:id=>{
+      if(id.endsWith('/useModelPaint'))return{useModelPaint:()=>({current:null})};
       if(id==='react/jsx-runtime')return{jsx,jsxs:jsx};
       if(id==='react-native')return{View:'View',StyleSheet:{create:x=>x,absoluteFill:{}},useWindowDimensions:()=>({width:393,height:852,fontScale:1})};
       if(id==='react-i18next')return{useTranslation:()=>({t:key=>key.split('.').reduce((v,k)=>v[k],strings)})};
       if(id==='@/contexts/LocaleProvider')return{useLocale:()=>({locale:'en'})};
-      if(id==='@/constants/puzzle-theme')return{PuzzleColors:{},DiagramColors:{}};
+      if(id==='@/constants/puzzle-theme')return theme.exports;
+      if(id==='@/utils/puzzle-money')return money.exports;
+      if(id==='@/utils/money-tape')return tape.exports;
       if(id==='@shopify/react-native-skia')return{};
       if(id==='@/utils/border-radius')return{insetRadius:(outer,inset)=>Math.max(0,outer-inset)};
       return new Proxy({},{get:(_,key)=>key});
@@ -60,11 +70,11 @@ function render(file,name,props) {
 }
 function nodes(v){return Array.isArray(v)?v.flatMap(nodes):v?.props?[v,...nodes(v.props.children)]:[];}
 const pack = byId.get('v2-medium-money-lesson-7-1');
-const packNodes=nodes(render('components/puzzle/EverydayDiagram.tsx','EverydayDiagram',{model:pack.everyday.model}));
-assert.equal(packNodes.filter(n=>n.type==='AppIcon'&&n.props.name==='apple').length,4);
-assert.ok(packNodes.some(n=>n.props.children==='Whole pack price'));
-assert.ok(packNodes.some(n=>n.props.children==='€12'));
-assert.ok(!packNodes.some(n=>n.props.children==='€3'),'Do not print the unit-price answer');
+const packNodes=nodes(render('components/puzzle/everyday/MoneyStage.tsx','MoneyShelf',{model:pack.everyday.model}));
+assert.equal(packNodes.filter(n=>n.type==='MoneyDiagramIcon'&&n.props.name==='apple').length,4,'Show every apple in the pack');
+assert.equal(packNodes[0].props.accessibilityLabel, 'Apple: 4 in the pack; whole pack €12.');
+assert.match(fs.readFileSync('components/puzzle/everyday/MoneyPurse.tsx','utf8'),/model\.task === 'unit' \? formatPriceTicket\(model\.prices\[0\]/,'Show the whole pack price once, in the lane above the purse');
+assert.ok(!packNodes.some(n=>['€3','€3.00'].includes(n.props.children)),'Do not print the unit-price answer');
 const contextNodes=nodes(render('components/puzzle/PuzzleContextObjects.tsx','PuzzleContextObjects',{objects:[{object:'ribbon',count:8,role:'start'},{object:'ribbon',count:5,role:'add'}]}));
 assert.equal(contextNodes.filter(n=>n.type==='PuzzleObjectImage').length,13,'Show every object in small given groups');
 assert.ok(contextNodes.some(n=>n.props.accessibilityLabel==='At the start 8 ribbons'));

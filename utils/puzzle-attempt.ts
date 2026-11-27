@@ -19,12 +19,14 @@ export type PuzzleDraft = {
   decimalPlace?: DecimalPlaceState | null;
   fractionStrip?: FractionStripState | null;
   placeValue?: PlaceValueState | null;
+  distribution?: readonly number[];
   choice: number | null;
   operators: (MathOperator | null)[];
   shaded: number;
   numberLine: number | null;
   pairIndices: number[];
   order: number[];
+  selectedByPair?: readonly (readonly number[])[];
   matchedCount: number;
   pairs: [number, number][];
   challenge: ChallengeAnswer | null;
@@ -37,6 +39,12 @@ export function getPuzzleDraftAnswer(puzzle: Puzzle, draft: PuzzleDraft): Puzzle
   if (isBridgePuzzle(puzzle)) return bridgeComplete(puzzle, draft.bridge) ? { kind: "bridge", state: draft.bridge } : null;
   if (isOptionalChallengePuzzle(puzzle)) return draft.challenge;
   switch (puzzle.type) {
+    case "fair_share": {
+      const locations = draft.distribution;
+      return locations?.length === puzzle.payload.items && locations.some(place => place > 0)
+        && locations.every(place => Number.isInteger(place) && place >= 0 && place <= puzzle.payload.people)
+        ? { kind: "distribution", locations } : null;
+    }
     case "geometry_measure": return draft.geometry == null ? null : { kind: "geometry", value: draft.geometry };
     case "decimal_grid": return draft.decimalGrid == null ? null : { kind: "decimal_grid", shaded: draft.decimalGrid };
     case "decimal_place_value": return draft.decimalPlace ? { kind: "decimal_place", state: draft.decimalPlace } : null;
@@ -51,7 +59,13 @@ export function getPuzzleDraftAnswer(puzzle: Puzzle, draft: PuzzleDraft): Puzzle
     case "number_line": return draft.numberLine === null ? null : { kind: "value", value: draft.numberLine };
     case "pair_sum": return draft.pairIndices.length === 2 ? { kind: "pair", indices: [draft.pairIndices[0], draft.pairIndices[1]] } : null;
     case "order_numbers": return draft.order.length === puzzle.payload.numbers.length ? { kind: "order", numbers: draft.order } : null;
-    case "fraction_match": return draft.matchedCount === puzzle.payload.pairs.length ? { kind: "fraction_match", matchedCount: draft.matchedCount } : null;
+    case "fraction_match":
+      if (draft.selectedByPair) {
+        const masks = draft.selectedByPair;
+        return masks.length === puzzle.payload.pairs.length && masks.every(mask => mask.length > 0)
+          ? { kind: 'fraction_match', selectedByPair: masks } : null;
+      }
+      return draft.matchedCount === puzzle.payload.pairs.length ? { kind: "fraction_match", matchedCount: draft.matchedCount } : null;
     case "find_all_pairs": return draft.pairs.length === getValidPairs(puzzle.payload.numbers, puzzle.payload.target).length
       ? { kind: "pairs", pairs: draft.pairs } : null;
     default: return draft.choice === null ? null : { kind: "choice", index: draft.choice };

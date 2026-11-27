@@ -4,7 +4,7 @@ const text = (locale, en, lv, ru) => ({ en, lv, ru })[locale];
 const number = (n, locale) => String(n).replace('.', locale === 'en' ? '.' : ',');
 const selectionTypes = new Set(['multiple_choice', 'balance', 'fix_mistake', 'function_machine', 'pattern_next', 'estimate', 'fair_share', 'fraction_equivalent', 'compare']);
 const numeric = s => /^-?\d+(?:[.,]\d+)?$/.test(s);
-const point = p => `(${p.x}; ${p.y})`;
+const point = p => `(${p.x}, ${p.y})`;
 const hash = s => [...s].reduce((n, c) => Math.imul(n ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
 
 /** The alternative question uses the same givens and the same taught operation. */
@@ -83,7 +83,8 @@ export function responseExample(p, locale) {
     if (v.mode === 'split') {
       if (v.exchangeUnit === 'tenths') { ones--; tenths += 10; } else { tenths--; hundredths += 10; }
     }
-    const blocks = (a, b, c) => `${a} × 1 + ${b} × ${number(0.1, locale)} + ${c} × ${number(0.01, locale)}`;
+    // Non-breaking spaces keep each "digit × place" term on one line in narrow answer cards.
+    const blocks = (a, b, c) => `${a}\u00a0×\u00a01 +\u00a0${b}\u00a0×\u00a0${number(0.1, locale)} +\u00a0${c}\u00a0×\u00a0${number(0.01, locale)}`;
     answer = blocks(ones, tenths, hundredths); wrong = [blocks(ones, tenths + 1, hundredths), blocks(ones, tenths, hundredths + 1)];
     const decimal = number(v.hundredths / 100, locale);
     const small = number(v.exchangeUnit === 'tenths' ? 0.1 : 0.01, locale), large = number(v.exchangeUnit === 'tenths' ? 1 : 0.1, locale);

@@ -26,6 +26,10 @@ for (const locale of ['en', 'lv']) {
     if (id === '@/utils/scale') return { moderateScale: value => value };
     if (id === '@/constants/puzzle-theme') return { PuzzleColors: {}, DiagramColors: {} };
     if (id === '@/components/puzzle/PuzzleText') return { PuzzleText: 'Text' };
+    if (id === '@/components/puzzle/kit/PuzzleKit') return { ValueChip: 'ValueChip' };
+    if (id === '@/components/puzzle/number-line/LineStepButton') return {
+      LineStepButton: 'Pressable',
+    };
     if (id === '@/components/puzzle/NumberLineTrack') return { NumberLineTrack: 'Track' };
     throw new Error(`Unexpected import: ${id}`);
   };
@@ -82,14 +86,30 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/puzzle/NumberL
     useMemo: fn => fn(), useEffect: fn => effects.push(fn),
   };
   if (id === 'react-native-reanimated') return { default: { View: 'Marker' }, Easing: { linear: n => n },
-    useSharedValue: initial => { const value = hook(() => ({ value: initial })); shared.push(value); return value; },
+    useSharedValue: initial => { const value = hook(() => ({ value: initial, get() { return this.value; }, set(next) { this.value = next; } })); shared.push(value); return value; },
     useReducedMotion: () => reducedMotion, useAnimatedStyle: fn => { markerStyle = fn; return {}; },
     withTiming: (to, options) => { animations.push({ to, ...options, fromPhase: shared[1].value }); return to; },
   };
   if (id === 'react-i18next') return { useTranslation: () => ({ t: (key, params = {}) => key.split('.').reduce((value, part) => value[part], strings).replace(/{{(\w+)}}/g, (_, name) => params[name]) }) };
   if (id === 'react-native') return { useWindowDimensions: () => ({ width: 393, height: 852, fontScale: 1 }), Pressable: 'Pressable', ScrollView: 'ScrollView', Text: 'Text', View: 'View', StyleSheet: { create: s => s } };
   if (id === '@shopify/react-native-skia') return { Canvas: 'Canvas', Path: 'Path', Skia: { Path: { Make: path } } };
-  if (id === '@/constants/puzzle-theme') return { PuzzleColors: {}, DiagramColors: {} };
+  if (id === '@/constants/puzzle-theme') return {
+    PuzzleColors: {}, Ink: {}, Motion: { step: 450 }, Quantity: { teal: {}, violet: {} },
+    Radius: { tray: 12 }, Shape: { stroke: { axis: 2, major: 2 } }, Stroke: { outline: 2, major: 1.5, active: 2.5 },
+  };
+  if (id === '@/utils/puzzle-motion') return { countingCadence: n => n * (.5 + .5 * n * (3 - 2 * n)) };
+  if (id === '@/components/puzzle/fraction/FractionNotation') return { FractionNotation: 'FractionNotation' };
+  if (id === '@/components/puzzle/kit/DenseLayout') return {
+    DenseLabel: 'Text', denseSpacing: { mark: 4, label: 8 }, useMeasuredLabels: () => ({ width: 18, height: 22 }),
+  };
+  if (id === './number-line/LineMarks') return { LineDot: 'LineDot' };
+  if (id === './number-line/LandmarkLine') return { LandmarkLine: 'LandmarkLine' };
+  if (id === './number-line/FractionLineRail') return {
+    FractionLineMarker: 'FractionLineMarker', FractionLineRail: 'FractionLineRail', fractionLineBaseline: 76,
+    fractionLineLabelOffset: 19, fractionMarkerSize: 30, fractionLineSpacing: (width, count) => Math.max(44, width / count),
+  };
+  if (id === './kit/PracticeAffordances') return { EntryBuild: 'EntryBuild' };
+  if (id === '@/utils/number-line-reveal') return { lineValue: n => String(n).replace('-', '−') };
   if (id === '@/components/puzzle/PuzzleText') return { PuzzleText: 'Text' };
   if (id === '@/utils/scale') return { moderateScale: n => n };
   throw new Error(`Unexpected import: ${id}`);
@@ -98,7 +118,8 @@ let value = 8;
 const renderTrack = () => {
   cursor = 0; effects = []; shared = []; animations.length = 0;
   const tree = trackModule.exports.NumberLineTrack({ min: 2, max: 8, start: 8, value, onSelect: next => { value = next; } });
-  effects.forEach(fn => fn()); return tree;
+  const rendered = typeof tree.type === 'function' ? tree.type(tree.props) : tree;
+  effects.forEach(fn => fn()); return rendered;
 };
 let tree = renderTrack();
 tree.props.onLayout({ nativeEvent: { layout: { width: 350 } } });

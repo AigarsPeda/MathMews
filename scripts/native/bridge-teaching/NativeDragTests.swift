@@ -52,10 +52,26 @@ final class NativeDragTests: XCTestCase {
  func tap(_ id: String, times: Int = 1) {
   let button = app.buttons[id]
   XCTAssertTrue(button.exists || button.waitForExistence(timeout: 8), "Missing \(id)\n\(app.debugDescription)")
+  let scroll = id.hasPrefix("bridge-qa-case-") ? app.scrollViews["bridge-qa-case-list"] : app.scrollViews.firstMatch
   for _ in 0..<times {
-   for _ in 0..<6 { if button.isHittable { break }; app.scrollViews.firstMatch.swipeUp() }
-   for _ in 0..<6 { if button.isHittable { break }; app.scrollViews.firstMatch.swipeDown() }
-   XCTAssertTrue(button.isHittable, id); XCTAssertTrue(button.isEnabled, id); button.tap()
+   for _ in 0..<6 { if button.isHittable { break }; scroll.swipeUp() }
+   for _ in 0..<6 { if button.isHittable { break }; scroll.swipeDown() }
+   XCTAssertTrue(button.isHittable, "\(id)\n\(app.debugDescription)"); XCTAssertTrue(button.isEnabled, id); button.tap()
+  }
+ }
+ func applyOperation(_ id: String, times: Int = 1) {
+  for _ in 0..<times {
+   tap(id)
+   let pan = app.buttons["balance-left-pan"], scroll = app.scrollViews.firstMatch
+   // XCT can report a clipped pan as hittable. Bring its center into the board's viewport.
+   if !scroll.frame.insetBy(dx: 0, dy: 16).contains(CGPoint(x: pan.frame.midX, y: pan.frame.midY)) { scroll.swipeDown() }
+   XCTAssertTrue(pan.isEnabled)
+   pan.coordinate(withNormalizedOffset: CGVector(dx: 0.75, dy: 0.25)).tap()
+   let placed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+    let operation = self.app.buttons[id]
+    return !operation.exists || !operation.isSelected
+   }, object: nil)
+   XCTAssertEqual(XCTWaiter.wait(for: [placed], timeout: 3), .completed, "Place \(id) on the pan")
   }
  }
  func enter(_ value: Int) { for digit in String(value) { tap("bridge-digit-\(digit)") } }
@@ -63,23 +79,27 @@ final class NativeDragTests: XCTestCase {
   let attachment = XCTAttachment(screenshot: app.screenshot())
   attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
  }
- func assertFits(_ name: String) {
+ func assertBoardIsReachable(_ name: String) {
   let previous = continueAfterFailure; continueAfterFailure = true
   defer { continueAfterFailure = previous }
   let current = state()
   let attachment = XCTAttachment(string: String(data: try! JSONSerialization.data(withJSONObject: current, options: [.sortedKeys]), encoding: .utf8)!)
   attachment.name = "\(name)-layout.json"; attachment.lifetime = .keepAlways; add(attachment)
   let metrics = current["metrics"] as! [String: Any]
-  XCTAssertLessThanOrEqual((metrics["contentHeight"] as! NSNumber).doubleValue, (metrics["viewportHeight"] as! NSNumber).doubleValue + 2, "Initial board must fit: \(name)")
-  XCTAssertTrue(app.buttons["puzzle-picture-help"].isHittable, "Picture help must fit: \(name)")
+  XCTAssertGreaterThan((metrics["viewportHeight"] as! NSNumber).doubleValue, 0)
+  XCTAssertGreaterThan((metrics["contentHeight"] as! NSNumber).doubleValue, 0)
+  let heading = app.staticTexts["puzzle-question"], help = app.buttons["puzzle-picture-help"]
+  XCTAssertTrue(heading.isHittable, "Initial question must be visible: \(name)")
+  for _ in 0..<5 { if help.isHittable { break }; app.scrollViews.firstMatch.swipeUp() }
+  XCTAssertTrue(help.isHittable, "Picture help must be reachable: \(name)")
  }
  func solveEquation(_ name: String) {
   switch name {
-  case "equation-easy", "equation-zero": tap("bridge-add--1")
-  case "equation-medium": tap("bridge-divide-2")
-  case "equation-hard": tap("bridge-add--1", times: 3); tap("bridge-divide-2")
-  case "equation-negative": tap("bridge-add-1", times: 2)
-  case "equation-dense": tap("bridge-add--5"); tap("bridge-divide-4")
+  case "equation-easy", "equation-zero": applyOperation("bridge-add--1")
+  case "equation-medium": applyOperation("bridge-divide-2")
+  case "equation-hard": applyOperation("bridge-add--1", times: 3); applyOperation("bridge-divide-2")
+  case "equation-negative": applyOperation("bridge-add-1", times: 2)
+  case "equation-dense": applyOperation("bridge-add--1", times: 3); applyOperation("bridge-divide-4")
   default: XCTFail("Unknown equation case")
   }
   XCTAssertTrue(node("bridge-equation-ready").waitForExistence(timeout: 5), "Solved equation names the next action")
@@ -88,6 +108,9 @@ final class NativeDragTests: XCTestCase {
  }
  func checkResult(_ locale: String, _ name: String) {
   tap(checks[locale]!)
+  let seeResult = ["en": "See result", "lv": "Skatīt rezultātu", "ru": "Посмотреть результат"]
+  XCTAssertFalse(app.staticTexts[results[locale]!].exists)
+  tap(seeResult[locale]!)
   XCTAssertTrue(app.staticTexts[results[locale]!].waitForExistence(timeout: 10), "Real result sheet \(name)")
   shot("\(locale)-\(name)-result")
   tap(nextActions[locale]!)
@@ -98,7 +121,7 @@ final class NativeDragTests: XCTestCase {
   continueAfterFailure = false; app.activate()
   for locale in ["en", "lv", "ru"] {
    for name in cases {
-    openCase(name, locale); shot("\(locale)-\(name)-initial"); assertFits("\(locale)-\(name)")
+    openCase(name, locale); shot("\(locale)-\(name)-initial"); assertBoardIsReachable("\(locale)-\(name)")
     XCTAssertFalse(node("bridge-equation-step").exists)
     if name.hasPrefix("ratio") { XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "bridge-value").count, 1, "Exactly one answer display") }
    }
@@ -119,7 +142,7 @@ final class NativeDragTests: XCTestCase {
   for (name, locale) in [("equation-easy", "en"), ("equation-medium", "lv"), ("equation-hard", "ru"), ("equation-zero", "en"), ("equation-negative", "en")] {
    openCase(name, locale)
    if name == "equation-easy" {
-    tap("bridge-add-1"); shot("en-equation-easy-changed"); tap(checks[locale]!)
+    applyOperation("bridge-add-1"); shot("en-equation-easy-changed"); tap(checks[locale]!)
     XCTAssertTrue(app.buttons[retries[locale]!].waitForExistence(timeout: 8)); shot("en-equation-easy-unfinished")
     tap(retries[locale]!); tap("bridge-reset")
     XCTAssertFalse(app.buttons[checks[locale]!].isEnabled); XCTAssertFalse(node("bridge-equation-ready").exists)
@@ -134,7 +157,7 @@ final class NativeDragTests: XCTestCase {
  func testInteractionsAndNarrow() {
   continueAfterFailure = false; app.activate()
   for name in cases.filter({ $0.hasPrefix("equation") }) {
-   openCase(name, "ru"); shot("ru-\(name)-initial"); assertFits("ru-\(name)")
+   openCase(name, "ru"); shot("ru-\(name)-initial"); assertBoardIsReachable("ru-\(name)")
   }
   testInteractions(); testNarrowScreens()
  }
@@ -142,7 +165,7 @@ final class NativeDragTests: XCTestCase {
   continueAfterFailure = false; app.activate()
   for locale in ["en", "lv", "ru"] {
    for name in ["equation-dense", "equation-multiple-divide", "equation-divide-first"] {
-    openCase(name, locale); shot("\(locale)-\(name)-initial"); assertFits("\(locale)-\(name)")
+    openCase(name, locale); shot("\(locale)-\(name)-initial"); assertBoardIsReachable("\(locale)-\(name)")
    }
   }
  }

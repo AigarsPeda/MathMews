@@ -35,6 +35,9 @@ function localizePayload(value, displayText = false) {
 export function russianPuzzle(puzzle) {
   const result = structuredClone(puzzle);
   for (const key of ['question', 'hint', 'explanation']) result[key] = russianText(result[key]);
+  if (puzzle.id === 'v2-hard-fractions-explore-10-1') {
+    result.question = 'В лотке 48 саженцев. 5/12 — цветы. Сколько цветов?';
+  }
   if (result.choices) result.choices = result.choices.map(russianText);
   if (result.payload) result.payload = localizePayload(result.payload);
   return result;

@@ -1,8 +1,9 @@
+import { DiagramIcon, type DiagramIconName } from "./kit/DiagramIcon";
 import { VisualPracticeBoard } from "@/components/puzzle/VisualPracticeBoard";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
 import { NumberLineTrack } from "@/components/puzzle/NumberLineTrack";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { Ink, Quantity, PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { VisualScene } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
@@ -12,6 +13,17 @@ import { useState } from "react";
 type VisualExplanationSceneProps = {
   scene: VisualScene;
 };
+
+const objectNames: Record<string, DiagramIconName> = {
+  "🍪": "cookie", "📦": "box", "🍎": "apple", "🎈": "balloon", "⭐": "star",
+  "🐱": "cat", "🧶": "ball", "📚": "book", "🎀": "ribbon", "🧸": "toy",
+};
+function HelpObject({ symbol, size, ghost = false }: { symbol: string; size: number; ghost?: boolean }) {
+  const name = objectNames[symbol];
+  if (name) return <DiagramIcon name={name} size={size} tone={ghost ? 'ghost' : 'primary'} />;
+  return <View style={{ width: size * .7, height: size * .7, margin: size * .15, borderRadius: size / 2,
+    backgroundColor: Quantity.teal.fill, borderBottomWidth: 3, borderColor: Quantity.teal.edge, opacity: ghost ? .3 : 1 }} />;
+}
 
 function ItemGrid({
   emoji,
@@ -32,12 +44,7 @@ function ItemGrid({
       {Array.from({ length: visible }, (_, index) => {
         const isRemoved = index >= kept;
         return (
-          <Text
-            key={`item-${index}`}
-            style={[styles.itemEmoji, isRemoved && styles.itemRemoved]}
-          >
-            {emoji}
-          </Text>
+          <HelpObject key={index} symbol={emoji} size={28} ghost={isRemoved} />
         );
       })}
       {count > maxVisible ? (
@@ -60,19 +67,14 @@ function GroupsScene({
       {groups.map((group, groupIndex) => (
         <View
           key={`group-${groupIndex}`}
-          style={[
-            styles.groupCard,
-            { borderLeftWidth: 3, borderLeftColor: group.color },
-          ]}
+          style={styles.groupCard}
         >
           {group.count > 5 ? (
-            <Text style={styles.groupEmojiSingle}>{emoji}</Text>
+            <HelpObject symbol={emoji} size={30} />
           ) : (
             <View style={styles.groupItems}>
               {Array.from({ length: group.count }, (_, index) => (
-                <Text key={`g-${groupIndex}-${index}`} style={styles.itemEmoji}>
-                  {emoji}
-                </Text>
+                <HelpObject key={index} symbol={emoji} size={26} />
               ))}
             </View>
           )}
@@ -252,15 +254,7 @@ function GridScene({
                   },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.gridEmoji,
-                    { fontSize: emojiSize },
-                    !isRemaining && styles.gridEmojiEaten,
-                  ]}
-                >
-                  {emoji}
-                </Text>
+                <HelpObject symbol={emoji} size={emojiSize} ghost={!isRemaining} />
               </View>
             );
           })}
@@ -309,12 +303,12 @@ function CompareScene({
   return (
     <View style={styles.compareWrap}>
       <View style={styles.compareSide}>
-        <Text style={styles.compareEmoji}>{left.emoji}</Text>
+        <HelpObject symbol={left.emoji} size={32} />
         <Text style={styles.compareCount}>{left.count}</Text>
       </View>
       <Text style={styles.compareOperator}>{operator}</Text>
       <View style={styles.compareSide}>
-        <Text style={styles.compareEmoji}>{right.emoji}</Text>
+        <HelpObject symbol={right.emoji} size={32} />
         <Text style={styles.compareCount}>{right.count}</Text>
       </View>
       {result !== undefined ? (
@@ -391,7 +385,6 @@ export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
 const styles = StyleSheet.create({
   stage: {
     minHeight: moderateScale(164),
-    maxHeight: moderateScale(180),
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -425,7 +418,7 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(8),
     fontSize: moderateScale(22),
     fontWeight: "800",
-    color: GameColors.primary,
+    color: Ink.text,
   },
   groupsRow: {
     flexDirection: "row",
@@ -438,7 +431,7 @@ const styles = StyleSheet.create({
     padding: moderateScale(10),
     alignItems: "center",
     gap: moderateScale(6),
-    backgroundColor: GameColors.card,
+    backgroundColor: Ink.tray,
   },
   groupItems: {
     flexDirection: "row",
@@ -478,7 +471,7 @@ const styles = StyleSheet.create({
   numberLineTrack: {
     width: "90%",
     height: moderateScale(4),
-    backgroundColor: "#E8ECEF",
+    backgroundColor: Ink.guide,
     borderRadius: moderateScale(2),
   },
   numberMarkWrap: {
@@ -501,11 +494,11 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
   },
   numberMarkHighlight: {
-    color: GameColors.primary,
+    color: Ink.text,
     fontSize: moderateScale(20),
   },
   numberRange: {
-    fontSize: moderateScale(13),
+    fontSize: moderateScale(14),
     color: GameColors.textMuted,
   },
   sequenceWrap: {
@@ -536,7 +529,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   sequenceCellHighlight: {
-    backgroundColor: "#FFF0EE",
+    backgroundColor: Quantity.violet.soft,
   },
   sequenceCellAddend: {
     backgroundColor: GameColors.selectedSurface,
@@ -547,11 +540,11 @@ const styles = StyleSheet.create({
     color: GameColors.text,
   },
   sequenceValueAddend: {
-    color: GameColors.secondary,
+    color: Quantity.violet.edge,
     fontSize: moderateScale(22),
   },
   sequenceValueHighlight: {
-    color: GameColors.primary,
+    color: Ink.text,
     fontSize: moderateScale(24),
   },
   sequenceArrow: {
@@ -600,7 +593,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   equationLineHighlight: {
-    color: GameColors.primary,
+    color: Ink.text,
     fontSize: moderateScale(26),
     fontWeight: "800",
   },
@@ -633,6 +626,6 @@ const styles = StyleSheet.create({
   compareResult: {
     fontSize: moderateScale(28),
     fontWeight: "800",
-    color: GameColors.primary,
+    color: Ink.text,
   },
 });

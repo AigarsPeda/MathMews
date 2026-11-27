@@ -26,8 +26,8 @@ export function PuzzleCatCompanion({ petType, catSkinId, petName, mood, reaction
 
 const styles = StyleSheet.create({
   wrap: { width: "100%", alignItems: "center" },
-  speech: { width: "100%", padding: moderateScale(16), borderRadius: moderateScale(16), backgroundColor: GameColors.card, borderWidth: 1, borderColor: GameColors.cardBorder, gap: moderateScale(6), marginBottom: moderateScale(10) },
+  speech: { width: "100%", padding: moderateScale(16), borderRadius: moderateScale(16), backgroundColor: GameColors.progressTrack, gap: moderateScale(6), marginBottom: moderateScale(10) },
   name: { color: GameColors.secondaryDark, fontSize: moderateScale(14), fontWeight: "800", textAlign: "center" },
   message: { color: GameColors.text, fontSize: moderateScale(20), fontWeight: "700", lineHeight: moderateScale(28), textAlign: "center" },
-  tail: { position: "absolute", alignSelf: "center", bottom: moderateScale(-7), width: moderateScale(14), height: moderateScale(14), backgroundColor: GameColors.card, borderRightWidth: 1, borderBottomWidth: 1, borderColor: GameColors.cardBorder, transform: [{ rotate: "45deg" }] },
+  tail: { position: "absolute", alignSelf: "center", bottom: moderateScale(-7), width: moderateScale(14), height: moderateScale(14), backgroundColor: GameColors.progressTrack, transform: [{ rotate: "45deg" }] },
 });
