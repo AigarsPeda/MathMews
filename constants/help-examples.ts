@@ -149,7 +149,7 @@ export function helpTemplateFor(puzzle: Puzzle): HelpTemplate | "number_line" {
   }
 }
 
-const MIGRATED_TEMPLATES: Record<string, MigratedHelpKey> = {
+const MIGRATED_TEMPLATES: Partial<Record<HelpTemplate | 'number_line', MigratedHelpKey>> = {
   coordinate_map: 'coordinates', ratio_table: 'ratio', rate: 'ratio', order_numbers: 'order_sort', sort_buckets: 'order_sort', route_grid: 'route',
   bridge_positive: 'number_line', budget_plan: 'multi_step', multiply_subtract: 'multi_step', estimate: 'estimate',
   base_ten_build: 'place_value', base_ten_add: 'place_value', base_ten_subtract: 'place_value',

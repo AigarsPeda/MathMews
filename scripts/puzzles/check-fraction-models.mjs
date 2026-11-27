@@ -25,7 +25,7 @@ export function checkFractionModels({ load }) {
     assert.ok(Number.isInteger(n) && Number.isInteger(d) && d > 0 && n > 0 && n <= d);
     assert.equal(checkPuzzleAnswer(p,{kind:'choice',index:0}),false);
     assert.equal(getPuzzleDraftAnswer(p,{numberLine:null,fractionStrip:null}),null);
-    assert.equal(helpKeyFor(p), p.type === 'fraction_number_line' ? 'fraction_line' : p.helpTemplate === 'fraction_strip_equivalent' ? 'fraction_equivalent' : 'fraction_parts');
+    assert.equal(helpKeyFor(p), p.type === 'fraction_number_line' ? 'fraction_line' : p.payload.mode === 'equivalent' ? 'fraction_equivalent' : 'fraction_parts');
     if(p.type==='fraction_number_line') {
       const divisions=p.payload.divisions;
       assert.ok(Number.isInteger(divisions) && divisions>=2 && divisions<=8);

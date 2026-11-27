@@ -43,7 +43,7 @@ final class NativeDragTests: XCTestCase {
    shot("clarity-\(i)-en")
    if i == 0 {
     XCTAssertTrue(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS 'whole pack'")).firstMatch.waitForExistence(timeout:8))
-    tap("pilot-help"); XCTAssertTrue(app.staticTexts["A different example"].waitForExistence(timeout:8)); shot("clarity-pack-help"); tap("Try my puzzle")
+    tap("pilot-help"); XCTAssertTrue(app.staticTexts["Find the price of one"].waitForExistence(timeout:8)); shot("clarity-pack-help"); tap("Try my puzzle")
    }
    if i == 1 || i == 2 {
     tap("pilot-language"); shot("clarity-container-\(i)-lv-320")
@@ -79,8 +79,8 @@ final class NativeDragTests: XCTestCase {
   shot("picnic-shopping-en")
   tap("Answer 5"); tap("pilot-check"); XCTAssertTrue(app.staticTexts["Correct"].exists)
   tap("pilot-help")
-  XCTAssertTrue(app.staticTexts["A different example"].waitForExistence(timeout:8))
-  XCTAssertTrue(app.descendants(matching:.any)["Apple: €5. Cookie: €6."].exists)
+  XCTAssertTrue(app.staticTexts["Count the coins"].waitForExistence(timeout:8))
+  XCTAssertTrue(app.descendants(matching:.any)["How much is 20 c plus 10 c?"].exists)
   shot("picnic-shopping-help")
   tap("Try my puzzle")
   tap("pilot-language")
@@ -105,7 +105,7 @@ final class NativeDragTests: XCTestCase {
    XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
    if i == 0 || i == 8 || i == 10 {
     tap("pilot-help")
-    let title = i == 0 ? "A different example" : i == 8 ? "Cits piemērs" : "Другой пример"
+    let title = i == 0 ? "Count on the clock" : i == 8 ? "Atrodi trūkstošo vērtību" : "Посчитай стаканы"
     XCTAssertTrue(app.staticTexts[title].waitForExistence(timeout: 8)); shot("everyday-help-\(row[3])")
     let close = i == 0 ? "Try my puzzle" : i == 8 ? "Risināt savu uzdevumu" : "Перейти к моей задаче"
     tap(close)

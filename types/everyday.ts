@@ -8,4 +8,3 @@ export type EverydayModel = { label: string } & (
   | { kind: "capacity"; task: "read" | "total" | "space" | "servings" | "containers" | "litres"; amounts: number[]; capacities: number[]; portion: number; unit: "ml" | "l"; portionContainer?: "cup" | "bottle" | "bowl" }
   | { kind: "solid"; answerUnit?: "cubes"; width: number; height: number; depth: number }
 );
-

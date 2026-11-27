@@ -22,6 +22,7 @@ function load(id) {
 }
 const { HELP_EXAMPLES, MIGRATED_HELP_KEYS, helpKeyFor, helpTemplateFor, puzzleGivens } = load('@/constants/help-examples');
 const { puzzleQADraft } = load('@/utils/puzzle-qa-draft');
+assert.equal(helpKeyFor({ ...HELP_EXAMPLES.add, helpTemplate: 'odd_range' }), null);
 const { getPuzzleDraftAnswer } = load('@/utils/puzzle-attempt');
 const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
 

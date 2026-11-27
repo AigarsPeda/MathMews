@@ -106,6 +106,7 @@ function comparePuzzle(source, translated, location, display = false) {
     for (const [key, value] of Object.entries(source)) comparePuzzle(value, translated[key], `${location}.${key}`, displayKeys.has(key));
   } else assert.equal(translated, source, location);
 }
+const { helpKeyFor } = load('@/constants/help-examples');
 let puzzleCount = 0;
 for (const tier of ['easy','medium','hard']) {
   const source = readPuzzles('en', tier), translated = readPuzzles('ru', tier);
@@ -114,7 +115,7 @@ for (const tier of ['easy','medium','hard']) {
     for (const key of ['question','hint']) {
       if (/[A-Za-z]/.test(source[index][key])) assert.match(puzzle[key], /[А-Яа-яЁё]/, `${puzzle.id}.${key}`);
     }
-    if (puzzle.helpTemplate) assert.ok(helpRu.lessons[puzzle.helpTemplate], `${puzzle.id}: Russian walkthrough missing`);
+    assert.ok(helpRu.examples[helpKeyFor(puzzle)], `${puzzle.id}: Russian walkthrough missing`);
   }
   puzzleCount += translated.length;
 }
