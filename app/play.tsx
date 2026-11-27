@@ -41,7 +41,7 @@ import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
 import { getVisualHelpCost, MAX_LIVES } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
-import { hasVisualExplanation } from "@/constants/visual-explanations";
+import { helpKeyFor } from "@/constants/help-examples";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { useWorldClockNow } from "@/hooks/use-world-clock-now";
@@ -408,7 +408,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured, 
 
   const visualHelpCost = getVisualHelpCost(difficulty);
   const visualHelpUnlocked = true;
-  const hasVisualHelp = hasVisualExplanation(puzzle);
+  const hasVisualHelp = helpKeyFor(puzzle) !== null;
 
   const draft = useMemo(() => ({
     response: responseValue, distribution,

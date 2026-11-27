@@ -2,11 +2,12 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { QuantityStage } from './QuantityStage';
 import { useProofViewport } from '../PlayProofCaption';
 import { useQuantityPractice } from './QuantityPractice';
+import { HelpProofContext } from '../kit/HelpProofContext';
 import { landTick } from '../kit/proofHaptics';
 import { ProofLanding } from '../kit/ProofFeedback';
 import { EntryBuild, IdleHint } from '../kit/PracticeAffordances';
 import { ProofWindow } from './ProofWindow';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, View, type GestureResponderEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -28,12 +29,13 @@ export function sharingSlot(box: Box, slot: number) {
   return {x: box.x + (box.width - box.columns * pitch) / 2 + slot % box.columns * pitch,
     y: box.y + (box.insetY ?? pad) + Math.floor(slot / box.columns) * pitch};
 }
-export function sharingTableLayout(width: number, slots: number[], items: number, groups: number, badges = false, pitch = cell) {
+export function sharingTableLayout(width: number, slots: number[], items: number, groups: number, badges = false, pitch = cell, stacked = false, fill = false) {
   const padding = badges ? 2 : pad;
-  const across = Math.max(1, Math.min(groups, Math.floor((width + gap) / (2 * pitch + 2 * padding + gap))));
-  const columns = Math.max(1, Math.min(Math.ceil(Math.sqrt(Math.max(1, items / groups))),
+  const across = Math.max(1, Math.min(groups, Math.floor((width + gap) / ((stacked ? 1 : 2) * pitch + 2 * padding + gap))));
+  const columns = Math.max(1, Math.min(stacked ? 1 : Math.ceil(Math.sqrt(Math.max(1, items / groups))),
     Math.floor(((width + gap) / across - gap - 2 * padding) / pitch)));
-  const dishWidth = columns * pitch + 2 * padding;
+  // Picture help spreads the groups over the whole width when they sit in one row.
+  const dishWidth = fill && across === groups ? (width - (groups - 1) * gap) / groups : columns * pitch + 2 * padding;
   const sourceCols = Math.max(1, Math.min(items === 4 ? 2 : items, Math.floor((width - 2 * pad) / pitch)));
   const sourceWidth = sourceCols * pitch + 2 * pad;
   const boxes: Box[] = [{ x: (width - sourceWidth) / 2, y: 0, width: sourceWidth,
@@ -114,7 +116,8 @@ function Movable({ x, y, pitch, flight, landed, muted, entryIndex, object, selec
     dx.set(0); dy.set(0); setDragging(false);
   }
   const size = pitch - Shape.space.loose;
-  const paint = object ? <DiagramIcon name={object} size={size} /> : <CountingCounter diameter={28} />;
+  const help = useContext(HelpProofContext);
+  const paint = object ? <DiagramIcon name={object} size={size} /> : <CountingCounter diameter={help ? size : 28} />;
   return <Animated.View accessible={enabled} accessibilityElementsHidden={!enabled} importantForAccessibility={enabled ? 'yes' : 'no-hide-descendants'} pointerEvents={enabled ? 'auto' : 'none'} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={hint} accessibilityState={{ selected }}
     accessibilityActions={[{ name: 'activate' }, ...actions]} onAccessibilityAction={e => {
       const name = e.nativeEvent.actionName;
@@ -149,8 +152,17 @@ export function SharingTable({ items, groups, object, disabled = false, onDistri
   useEffect(() => { if (!disabled) practice.saveDeal(locations, slots); }, [disabled, locations, slots, practice]);
   const counts = Array.from({ length: groups }, (_, i) => Math.max(0, ...slots.map((slot, id) => locations[id] === i + 1 ? slot + 1 : 0)));
   const badges = selectedGroups > 0 && object === 'plant';
-  const pitch = object === 'cookie' && items <= 6 && groups <= 2 && width >= 275 ? Math.min(76, Math.floor((width - 4 * pad - gap) / 4)) : cell;
-  const { boxes: positionedBoxes, height } = sharingTableLayout(width, counts, items, groups, badges, pitch);
+  const help = useContext(HelpProofContext);
+  // Picture help stacks a small share on each plate and takes the biggest cookies the model area holds.
+  const stacked = !!help && (object === 'cookie' || selectedGroups > 0) && items / groups <= 3;
+  const fill = !!help && selectedGroups > 0;
+  let pitch = object === 'cookie' && items <= 6 && groups <= 2 && width >= 275 ? Math.min(76, Math.floor((width - 4 * pad - gap) / 4)) : cell;
+  if (help && (object === 'cookie' || selectedGroups > 0) && width >= 275) {
+    // The fraction sheet also needs room for a translated equation and wrapping playback controls.
+    pitch = selectedGroups > 0 ? 56 : 76;
+    while (pitch > cell && sharingTableLayout(width, counts, items, groups, badges, pitch, stacked, fill).height > help.height) pitch--;
+  }
+  const { boxes: positionedBoxes, height } = sharingTableLayout(width, counts, items, groups, badges, pitch, stacked, fill);
   const leftEdge = Math.min(...positionedBoxes.map(box => box.x));
   const boardWidth = Math.max(...positionedBoxes.map(box => box.x + box.width)) - leftEdge;
   const boxes = positionedBoxes.map(box => ({ ...box, x: box.x - leftEdge }));
@@ -195,6 +207,7 @@ export function SharingTable({ items, groups, object, disabled = false, onDistri
       {object === 'cookie' && i > 0 && <PressFace pressed={false} radius={60} borderWidth={0}
         fill={highlight || selectedPlace !== null && selectedPlace !== i ? Quantity.violet.light : Quantity.teal.soft}
         edge={highlight || selectedPlace !== null && selectedPlace !== i ? Quantity.violet.fill : Quantity.teal.fill} />}
+      {help && i === 0 && beats && tintAt != null && items % groups === 0 && <TrayFinish position={beats.position} start={tintAt} color={PuzzleColors.background} plate={false} />}
       {i > 0 && beats && tintAt != null && <TrayFinish position={beats.position} start={tintAt} color={selectedGroups && i > selectedGroups ? Shape.empty : badges ? Quantity.berry.light : Quantity.violet.light} plate={object === 'cookie'} />}
       {beats && i === attemptTray && <TrayFinish position={beats.position} start={0} color={Quantity.amber.light} plate={object === 'cookie' && i > 0} />}
       {badges && i > 0 && <View style={styles.badge}><MaterialCommunityIcons name={i <= selectedGroups ? 'flower' : 'leaf'}

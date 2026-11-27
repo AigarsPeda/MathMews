@@ -1,3 +1,14 @@
+import { HelpBundleProof, HelpHundredthsProof, HelpPercentProof } from './help/HelpBaseTenProofs';
+import { useContext } from 'react';
+import { HelpBudgetTape, HelpEstimate, HelpMeanBars, HelpMissingBars } from './help/HelpDataProofs';
+import { HelpBarsTotal } from './help/HelpBarsTotal';
+import { HelpMeasureShare } from './help/HelpMeasureShare';
+import { HelpSpatialProof } from './help/HelpSpatialProof';
+import { CoordinateGrid } from './bridge/CoordinateGrid';
+import { HelpOrder, HelpRatio, HelpRoute } from './help/HelpSortRateRoute';
+import { HelpProofContext } from './kit/HelpProofContext';
+import { HelpTileProof } from './HelpTileProof';
+import { HelpWorkedProof, isHelpWorkedPuzzle } from './help/HelpProofs';
 import type { CheckedAttempt } from '@/utils/checked-attempt';
 import { fractionRevealPlan } from '@/utils/fraction-reveal';
 import { numberLineRoute } from '@/utils/number-line-reveal';
@@ -13,6 +24,7 @@ import { DecimalReveal } from './DecimalReveal';
 import { EverydayDiagram } from './EverydayDiagram';
 import { FairShareReveal } from './FairShareTask';
 import { FractionNumberLineReveal } from './fraction/FractionNumberLineReveal';
+import { HelpFractionStrips } from './fraction/HelpFractionStrips';
 import { FractionReveal } from './FractionReveal';
 import { GeometryMeasureTask } from './GeometryMeasureTask';
 import { NumberLineReveal } from './NumberLineReveal';
@@ -56,6 +68,36 @@ function CheckedLimit({ snapshot, onSolutionShown }: Props) {
 function Evidence(props: Props & { modelOnly?: boolean }) {
   const { snapshot, mode, onSolutionShown } = props;
   const { puzzle, answer, arrangement } = snapshot;
+  const help = useContext(HelpProofContext);
+  if (help && puzzle.type === 'estimate') return <HelpEstimate puzzle={puzzle} height={help.height} onSolutionShown={onSolutionShown} />;
+  if (help && (puzzle.type === 'multiple_choice' || !puzzle.type)) {
+    const model = puzzle.everyday?.model;
+    if (model?.kind === 'money' && puzzle.helpTemplate === 'multiply_subtract') return <HelpBudgetTape model={model} height={help.height} onSolutionShown={onSolutionShown} />;
+    if (model?.kind === 'bars' && model.task === 'mean') return <HelpMeanBars model={model} height={help.height} onSolutionShown={onSolutionShown} />;
+    if (model?.kind === 'bars' && model.task === 'missing') return <HelpMissingBars model={model} height={help.height} onSolutionShown={onSolutionShown} />;
+    if (model?.kind === 'bars' && model.task === 'total') return <HelpBarsTotal values={model.values} height={help.height} onSolutionShown={onSolutionShown} />;
+    if (model?.kind === 'capacity' && model.task === 'servings') return <HelpMeasureShare model={model} height={help.height} onSolutionShown={onSolutionShown} />;
+    if (model?.kind === 'solid' || (model?.kind === 'shapes' && model.task === 'symmetry') || (model?.kind === 'grid' && model.task !== 'translate')) {
+      return <HelpSpatialProof model={model} height={help.height} onSolutionShown={onSolutionShown} />;
+    }
+  }
+  if (help && puzzle.type === 'coordinate_map') return <CoordinateGrid puzzleId={puzzle.id} min={puzzle.payload.min} max={puzzle.payload.max}
+    side={help.height} points={[]} route={{ kind: 'walk', from: puzzle.payload.start, to: puzzle.payload.end }} onSettled={settled => { if (settled) onSolutionShown(); }} />;
+  if (help && puzzle.type === 'ratio_table') return <HelpRatio puzzle={puzzle} height={help.height} onDone={onSolutionShown} />;
+  if (help && puzzle.type === 'order_numbers') return <HelpOrder puzzle={puzzle} height={help.height} onDone={onSolutionShown} />;
+  if (help && puzzle.type === 'route_grid' && snapshot.draft.challenge?.kind === 'route') return <HelpRoute puzzle={puzzle} path={snapshot.draft.challenge.cells} onDone={onSolutionShown} />;
+  if (help && puzzle.type === 'place_value' && puzzle.payload.mode === 'bundle') return <HelpBundleProof puzzle={puzzle} height={help.height} onSolutionShown={onSolutionShown} />;
+  if (help && puzzle.type === 'decimal_grid') return <HelpHundredthsProof puzzle={puzzle} height={help.height} onSolutionShown={onSolutionShown} />;
+  if (help && puzzle.percentageExample) return <HelpPercentProof example={puzzle.percentageExample} height={help.height} onSolutionShown={onSolutionShown} />;
+  if (help && (puzzle.type === 'fraction_strip' || puzzle.type === 'fraction_equivalent'
+    || (puzzle.type === 'compare' && puzzle.topic === 'fractions'))) {
+    const plan = fractionRevealPlan(puzzle, snapshot.draft.fractionStrip);
+    if (plan) return <HelpFractionStrips plan={plan} height={help.height} onSolutionShown={onSolutionShown} />;
+  }
+  if (help && isHelpWorkedPuzzle(puzzle)) return <HelpWorkedProof puzzle={puzzle} onSolutionShown={onSolutionShown} />;
+  if (help && puzzle.type === 'pattern_next') {
+    return <HelpTileProof puzzle={puzzle} onSolutionShown={onSolutionShown} />;
+  }
   const index = answer.kind === 'choice' ? answer.index : null;
   const choice = answer.kind === 'response' ? responseContent(puzzle.response, answer.value)
     : index !== null && 'choices' in puzzle ? puzzle.choices[index] : undefined;
@@ -63,6 +105,7 @@ function Evidence(props: Props & { modelOnly?: boolean }) {
     : choice ? Number(choice.replace('−', '-').replace(',', '.')) : undefined;
   const submittedNumber = mode === 'attempt' && typeof value === 'number' && Number.isFinite(value) ? value : undefined;
   if ((puzzle.type === 'multiple_choice' || !puzzle.type) && puzzle.everyday?.model.kind === 'grid') {
+    if (help) return <EverydayDiagram model={puzzle.everyday.model} onSolutionShown={onSolutionShown} />;
     const state = { mode, answered: true, isCorrect: snapshot.correct, incorrectAttempt: !snapshot.correct, onSolutionShown };
     const model = puzzle.everyday.model;
     return <>

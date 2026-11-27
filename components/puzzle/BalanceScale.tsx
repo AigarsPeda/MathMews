@@ -75,7 +75,7 @@ function Arm({ children, side, tilt, reach, bump, action, layout, width }: {
 /**
  * @param tilt Beam angle in degrees (positive = right side down). Leave unset for a fixed, level scale.
  */
-export function BalanceScale({ left, right, tilt, accessibilityLabel, leftBump, rightBump, leftAction, rightAction, proofFocus, wide = false, rightWidth, gap = GAP }: {
+export function BalanceScale({ left, right, tilt, accessibilityLabel, leftBump, rightBump, leftAction, rightAction, proofFocus, wide = false, rightWidth, gap = GAP, loadHeight }: {
   left: ReactNode; right: ReactNode; tilt?: SharedValue<number>; accessibilityLabel?: string;
   /** Change these to bounce a tray when something is put on it. */
   leftBump?: unknown; rightBump?: unknown; leftAction?: PanAction; rightAction?: PanAction; proofFocus?: number;
@@ -83,6 +83,8 @@ export function BalanceScale({ left, right, tilt, accessibilityLabel, leftBump, 
   gap?: number;
   wide?: boolean;
   rightWidth?: number;
+  /** Keep both trays at this height above the beam while loads come and go (picture help). */
+  loadHeight?: number;
 }) {
   const window = useWindowDimensions();
   const [width, setWidth] = useState(Math.max(1, window.width - moderateScale(64)));
@@ -97,7 +99,7 @@ export function BalanceScale({ left, right, tilt, accessibilityLabel, leftBump, 
   const top = proofFocus !== undefined && tilt ? Math.ceil(Math.max(rightReach, leftReach) * Math.sin((compact ? 6 : BALANCE_MAX_TILT) * Math.PI / 180)) : moderateScale(8);
   const trayHeight = compact ? moderateScale(16) : TRAY;
   const inset = top + moderateScale(4) + trayHeight + postHeight + footHeight + BASE_H;
-  const minimumLoad = Math.max(0, Math.min(moderateScale(96), height - inset));
+  const minimumLoad = loadHeight ?? Math.max(0, Math.min(moderateScale(96), height - inset));
   const armLayout = { wide, proofFocus, inset, postHeight, minimumLoad, trayHeight };
   const beamLength = wide ? width : width ? reach * 2 + moderateScale(36) : 0;
   const beamStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${tilt?.value ?? 0}deg` }] }));

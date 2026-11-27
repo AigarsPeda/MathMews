@@ -268,6 +268,7 @@ function renderHarness(file, exportName, mocks = {}, fontScale = 1) {
   const same = (a, b) => a && a.length === b.length && a.every((value, i) => Object.is(value, b[i]));
   const react = {
     memo: component => component,
+    useContext: context => context.defaultValue,
     useState(initial) {
       const index = cursor++;
       if (!(index in slots)) {
@@ -301,6 +302,7 @@ function renderHarness(file, exportName, mocks = {}, fontScale = 1) {
   };
   const native = Object.fromEntries(['View', 'Text', 'Pressable', 'ScrollView', 'ActivityIndicator'].map(name => [name, name]));
   const base = {
+    './kit/HelpProofContext': { HelpProofContext: { defaultValue: false } },
     '@shopify/react-native-skia': { makeImageFromView: async () => null },
     react,
     'react/jsx-runtime': { jsx, jsxs: jsx },

@@ -28,11 +28,13 @@ type GridProps = {
   size: number; amount: number; preview?: SharedValue<number>; scale?: 10 | 100;
   trackCanvas?: TrackProofCanvas; canvasIndex?: number;
   selected?: readonly number[]; moving?: readonly number[];
+  /** Picture help: these selected cells are violet, so tenths (teal) and hundredths read apart. */
+  accent?: readonly number[];
   transfer?: { position: SharedValue<number>; beat: number };
 };
 
 /** Submitted masks use native faces, which paint in the same commit as the count. */
-export function BaseTenGrid({ selected, moving, transfer, scale = 100, hue = 'amber', groupedColumns = 0, difference = [], trace, ...props }: GridProps) {
+export function BaseTenGrid({ selected, moving, transfer, accent, scale = 100, hue = 'amber', groupedColumns = 0, difference = [], trace, ...props }: GridProps) {
   if (!selected) return <AnimatedGrid {...props} scale={scale} />;
   const { size } = props;
   const field = size - Stroke.outline;
@@ -40,6 +42,7 @@ export function BaseTenGrid({ selected, moving, transfer, scale = 100, hue = 'am
   const seam = Shape.space.seam;
   const marked = new Set(difference);
   const lit = new Set(selected);
+  const accented = new Set(accent);
   const donors = new Set(moving?.filter((_, index) => index % 2 === 0));
   return <View style={{ width: size, height: size }} accessible={false} pointerEvents="none">
     <View style={[styles.gaps, { left: start + seam / 2, top: start + seam / 2, width: field - seam, height: field - seam }]} />
@@ -49,7 +52,7 @@ export function BaseTenGrid({ selected, moving, transfer, scale = 100, hue = 'am
       const filled = lit.has(index) && !(transfer && donors.has(index));
       const band = scale === 100 && column < groupedColumns && !difference.some(i => Math.floor(i / 10) === column);
       if (band && row > 0) return null;
-      return <Face key={index} hue={marked.has(index) ? 'amber' : hue} missing={!filled && marked.has(index)} traced={index === trace} left={start + column * unit + seam / 2} top={start + row * unit + seam / 2}
+      return <Face key={index} hue={marked.has(index) ? 'amber' : accented.has(index) ? 'violet' : hue} missing={!filled && marked.has(index)} traced={index === trace} left={start + column * unit + seam / 2} top={start + row * unit + seam / 2}
         width={unit - seam} height={(scale === 10 || band ? field : unit) - seam} filled={filled} />;
     })}
     {transfer && moving?.map((from, index) => index % 2 === 0 ? <MovingCell hue={hue} key={from}
@@ -70,7 +73,7 @@ function MovingCell({ from, to, pitch, position, beat, hue }: { hue: 'teal' | 'a
 }
 
 function Face({ left, top, width, height, filled, hue, missing = false, traced = false }: {
-  hue: 'teal' | 'amber'; missing?: boolean; traced?: boolean;
+  hue: 'teal' | 'amber' | 'violet'; missing?: boolean; traced?: boolean;
   left: number; top: number; width: number; height: number; filled: boolean;
 }) {
   const radius = Math.min(width / 2, Shape.tile(width));

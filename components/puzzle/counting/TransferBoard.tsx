@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { Canvas, Group, Path } from '@shopify/react-native-skia';
 import { glyphs } from '../glyphs/library';
 import { Pressable, StyleSheet, useWindowDimensions, View, type AccessibilityActionEvent } from 'react-native';
@@ -10,6 +10,7 @@ import { Caption } from '../kit/Focus';
 import { DiagramIcon } from '../kit/DiagramIcon';
 import { EntryBuild, IdleHint, MovablePiece } from '../kit/PracticeAffordances';
 import { RevealSurface } from '../kit/RevealSurface';
+import { HelpProofContext } from '../kit/HelpProofContext';
 import { landTick } from '../kit/proofHaptics';
 import { useRevealBeats } from '../kit/useRevealBeats';
 import { CountingCounter } from './CountingCounter';
@@ -48,6 +49,7 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
   const screen = useWindowDimensions();
   const viewport = useProofViewport();
   const practice = useQuantityPractice();
+  const help = useContext(HelpProofContext);
   const [measured, setWidth] = useState(0);
   const [manual, setManual] = useState(() => Math.min(model.right, practice.snapshot.transfers));
   const [picked, pick] = useState<boolean | null>(null);
@@ -58,7 +60,7 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
   const join = model.kind === 'join';
   const base = running ? manual : 0;
   const remaining = model.right - base;
-  const transferStep = Math.min(300, Math.floor(3300 / Math.max(1, remaining)));
+  const transferStep = Math.min(help ? 450 : 300, Math.floor(3300 / Math.max(1, remaining)));
   const beats = useRevealBeats(running ? measured ? Math.max(1, remaining) : null : 0, {
     awaitInitialPaint: running && canSnapshotModel, lead: join ? 65 : 0,
     step: i => !join && i === 0 ? Math.min(ProofMotion.travel, transferStep) : transferStep, hold: 12,
@@ -74,16 +76,18 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
   const width = Math.max(100, measured || viewport?.innerWidth || screen.width - 48);
   const total = model.left + (join ? model.right : 0);
   const gap = join ? 28 : 12, inset = 4;
+  // Picture help gives the amber take-away card room around its stars.
+  const cardPad = help && !join ? 12 : inset;
   const columnsFor = (size: number) => {
     const pitch = size + Shape.space.loose;
     const slots = Math.max(2, Math.floor((width - 4 * inset - gap) / pitch));
     const rightCols = Math.max(1, Math.min(model.right, Math.floor(slots / 2), join ? model.right : Math.ceil(model.right / 2)));
-    const cardWidth = Math.min(width / 2, Math.max(join ? 44 : 72, rightCols * pitch + 2 * inset));
+    const cardWidth = Math.min(width / 2, Math.max(join ? 44 : 72, rightCols * pitch + 2 * cardPad));
     const leftCols = Math.max(1, Math.min(total, Math.floor((width - cardWidth - gap - 2 * inset) / pitch)));
     return {rightCols, cardWidth, leftCols};
   };
-  const maxHeight = Math.min(screen.height * .38, (viewport?.availableModelHeight ?? screen.height) - 12);
-  let fit = Math.min(72, Math.floor((width - 4 * inset - gap) / 2) - Shape.space.loose);
+  const maxHeight = Math.min(help ? help.height : screen.height * .38, (viewport?.availableModelHeight ?? screen.height) - 12);
+  let fit = Math.min(help ? 90 : 72, Math.floor((width - 4 * inset - gap) / 2) - Shape.space.loose);
   while (fit > 38) {
     const {rightCols, leftCols} = columnsFor(fit);
     const rows = Math.max(Math.ceil(total / leftCols), Math.ceil(model.right / rightCols));
@@ -99,8 +103,14 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
   const {rightCols, cardWidth, leftCols} = columnsFor(size);
   const mainWidth = Math.min(width - cardWidth - gap, leftCols * pitch + 2 * inset);
   const boardWidth = mainWidth + gap + cardWidth;
+  // Picture help ends a join as one group: the emptied card and the plus fade, and the group moves to the middle.
+  const merge = !!help && join && running;
+  const settle = useSharedValue(0);
+  useEffect(() => { settle.set(merge && beats.settled ? beats.reduced ? 1 : withTiming(1, {duration: 520}) : 0); }, [merge, beats.settled, beats.reduced, settle]);
+  const fade = useAnimatedStyle(() => ({opacity: 1 - settle.value}));
+  const centre = useAnimatedStyle(() => ({transform: [{translateX: settle.value * (boardWidth - mainWidth) / 2}]}));
   const heightFor = (n: number, cols: number) => 2 * inset + Math.max(1, Math.ceil(n / cols)) * pitch;
-  const maxMain = heightFor(total, leftCols), maxCard = Math.max(join ? 44 : 72, heightFor(model.right, rightCols));
+  const maxMain = heightFor(total, leftCols), maxCard = Math.max(join ? 44 : 72, heightFor(model.right, rightCols) + 2 * (cardPad - inset));
   const height = Math.max(maxMain, maxCard);
   const mainHeight = maxMain;
   const mainTop = (height - maxMain) / 2, cardTop = (height - maxCard) / 2;
@@ -108,7 +118,7 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
     const cols = main ? leftCols : rightCols;
     const left = main ? 0 : mainWidth + gap;
     return {x: left + ((main ? mainWidth : cardWidth) - cols * pitch) / 2 + Shape.space.loose / 2 + i % cols * pitch,
-      y: (main ? mainTop : cardTop) + inset + Shape.space.loose / 2 + Math.floor(i / cols) * pitch};
+      y: (main ? mainTop : cardTop) + (main ? inset : cardPad) + Shape.space.loose / 2 + Math.floor(i / cols) * pitch};
   };
   const source = (turn: number) => join ? slot(false, turn) : slot(true, total - 1 - turn);
   const destination = (turn: number) => join ? slot(true, model.left + turn) : slot(false, turn);
@@ -146,7 +156,8 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
   const board = <View testID="practice-board" onLayout={e => setWidth(e.nativeEvent.layout.width)}>
     <QuantityStage model={model.kind} locked={!interactive}><View ref={drawing} collapsable={false} nativeID={running ? 'play-proof-model' : 'play-entry-model'} testID={running ? 'play-proof-model' : 'play-entry-model'}
       style={{alignSelf: 'center', width: boardWidth, height}}>
-      {tray(true)}{tray(false)}
+      {merge ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, centre]}>{tray(true)}</Animated.View> : tray(true)}
+      {merge ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, fade]}>{tray(false)}</Animated.View> : tray(false)}
       {!join && model.object === 'star' && <Canvas pointerEvents="none" accessible={false} style={StyleSheet.absoluteFill}>
         {Array.from({length: model.right}, (_, turn) => {
           if (turn < moved) return null;
@@ -156,8 +167,8 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
           </Group>;
         })}
       </Canvas>}
-      {join && <View pointerEvents="none" style={[styles.plus, {left: mainWidth, width: gap, top: height / 2 - 12}]}><View style={styles.across}/><View style={styles.down}/></View>}
-      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill}>
+      {join && <Animated.View pointerEvents="none" style={[styles.plus, {left: mainWidth, width: gap, top: height / 2 - 12}, merge && fade]}><View style={styles.across}/><View style={styles.down}/></Animated.View>}
+      <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[StyleSheet.absoluteFill, merge && centre]}>
         {Array.from({length: total}, (_, id) => {
           const turn = join ? id - model.left : total - 1 - id;
           const movable = turn >= 0 && turn < model.right;
@@ -165,12 +176,12 @@ export function TransferBoard({ model, running, interactive = false, onSolutionS
           return <TransferPiece key={id} from={from} to={movable ? destination(turn) : from} turn={movable ? turn : -1}
             {...{size, model, progress}} entry={!running} index={id} landed={movable && moved > turn} selected={editing && movable && (picked === true && turn === manual || picked === false && turn === manual - 1)} />;
         })}
-      </View>
+      </Animated.View>
       {editing && first && model.right > 0 && <IdleHint movable={interactive && !running} firstEncounter={first} interacted={touched || moved > 0} from={center(source(0))} to={center(destination(0))} />}
     </View>
     {showCue && (viewport?.availableModelHeight ?? Infinity) > height + 64 && <Caption>{t('friendlyQ.shareHint')}</Caption>}
     </QuantityStage>
-    {running && <QuantityEquation text={equation} settled={beats.settled} />}
+    {running && <QuantityEquation large={!!help} text={equation} settled={beats.settled} />}
   </View>;
   return running ? <RevealSurface beats={beats}>{board}</RevealSurface> : board;
 }

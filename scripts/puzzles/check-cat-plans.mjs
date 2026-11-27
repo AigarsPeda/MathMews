@@ -31,14 +31,11 @@ export function checkCatPlans() {
           const answer = solveEveryday(p.everyday.model, p.question);
           assert.equal(p.choices[p.correctIndex], String(answer).replace('.', locale === 'en' ? '.' : ','), `${id}/${locale}: solve the givens independently`);
           assert.equal(new Set(p.choices).size, 3);
-          assert.notDeepEqual(p.everyday.model, p.everyday.example.model, 'Worked help must use its own quantities');
           const model = p.everyday.model;
           if (model.kind === 'money') {
             const names = JSON.parse(fs.readFileSync(`locales/${locale}.json`)).everyday.shopItems;
-            for (const shown of [model, p.everyday.example.model]) {
-              assert.equal(shown.items.length, shown.prices.length, 'Every price belongs to a pictured, named item');
-              shown.items.forEach((item, i) => assert.ok(shown.label.includes(`${names[item]}: €${shown.prices[i] / 100}`), 'Screen readers get the same item-price pairing'));
-            }
+            assert.equal(model.items.length, model.prices.length, 'Every price belongs to a pictured, named item');
+            model.items.forEach((item, i) => assert.ok(model.label.includes(`${names[item]}: €${model.prices[i] / 100}`), 'Screen readers get the same item-price pairing'));
             if (model.task === 'total') assert.doesNotMatch(model.label, /Budget|Budžets|Бюджет/, 'An addition task has no irrelevant budget');
           }
           if (model.kind === 'clock') assert.ok(p.question.includes(String(model.duration)), 'Preparation duration must be visible, not only in hidden diagram data');
@@ -56,6 +53,6 @@ export function checkCatPlans() {
   for (const file of runtimeFiles) assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /AchievementsLink|AchievementMovie|LearningMilestonePerformance|BossStoryScene|\/achievements/,
     `${file}: no retired reward or boss entry point`);
   assert.match(fs.readFileSync('app/achievements.tsx', 'utf8'), /<Redirect href="\/puzzles"/);
-  console.log('Verified three cat plans per difficulty, 90 independently solved tasks, three-language goals, distinct worked examples, normal coins, timer registrations and retired reward entry points.');
+  console.log('Verified three cat plans per difficulty, 90 independently solved tasks, three-language goals, normal coins, timer registrations and retired reward entry points.');
 }
 if (process.argv[1]?.endsWith('check-cat-plans.mjs')) checkCatPlans();

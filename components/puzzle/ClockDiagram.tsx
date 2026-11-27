@@ -2,7 +2,9 @@ import { ProofEquationSlot } from './everyday/ProofEquationSlot';
 import { PuzzleText } from './PuzzleText';
 import { useProofAnnouncement } from './counting/useProofAnnouncement';
 import { useProofViewport } from '@/components/puzzle/PlayProofCaption';
-import { useLayoutEffect, useState } from 'react';
+import { HelpProofContext } from './kit/HelpProofContext';
+import { ProofLine } from './help/helpKit';
+import { useContext, useLayoutEffect, useState } from 'react';
 import { Path, Skia, StrokeCap } from '@shopify/react-native-skia';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -94,11 +96,12 @@ type ClockProps = {
 };
 
 export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onSolutionShown }: ClockProps) {
+  const help = useContext(HelpProofContext);
   const viewport = useProofViewport();
   const { width, height, fontScale } = useWindowDimensions();
   const [available, setAvailable] = useState(0);
   const { t } = useTranslation();
-  const numerals = useMeasuredLabels(hours, 'value');
+  const numerals = useMeasuredLabels(hours, help ? 'sequence' : 'value');
   const labelWidth = numerals.ready ? numerals.width : 19 * fontScale;
   const labelHeight = numerals.ready ? numerals.height : 18 * fontScale;
   const solving = !!onSolutionShown,
@@ -114,7 +117,8 @@ export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onS
   const magnitude = Math.abs(delta),
     firstHour = delta < 0 ? start % 60 || 60 : 60 - (start % 60);
   const stops = [0];
-  for (let boundary = firstHour; !clockAttempt && boundary < magnitude; boundary += 60) stops.push(boundary);
+  const interval = help ? 5 : 60;
+  for (let boundary = help ? interval : firstHour; !clockAttempt && boundary < magnitude; boundary += interval) stops.push(boundary);
   if (magnitude) stops.push(magnitude);
   const legs = stops.slice(1).map((stop, i) => stop - stops[i]);
   const beats = useRevealBeats(solving ? (read ? (clockAttempt ? 1 : 2) : Math.max(1, legs.length)) : 0, {
@@ -179,7 +183,7 @@ export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onS
   const givenHeight = showGivenTime || outsideChip || showEndTime ? Math.ceil(20 * fontScale) + 8 : 0;
   // At the top of the face, the centres of 11 and 12 are half a label-ring radius apart.
   const spacedDiameter = (2 * (labelWidth + 4) * 240) / numeralRadius;
-  const size = Math.min(
+  const size = help ? Math.min(available || width - 48, Math.max(204, help.height - 12)) : Math.min(
     available || width - 48,
     solving ? viewport?.innerWidth ?? width : width,
     Math.max(204, 4 * Math.max(labelWidth, labelHeight),
@@ -248,7 +252,7 @@ export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onS
                           length={direction * leg}
                           distance={distance}
                           exactMinutes={start % 5 !== 0 || delta % 5 !== 0}
-                          color={wrongColor ? Quantity.berry.edge : i % 2 ? Quantity.amber.edge : Quantity.teal.edge}
+                          color={help ? Quantity.teal.fill : wrongColor ? Quantity.berry.edge : i % 2 ? Quantity.amber.edge : Quantity.teal.edge}
                         />
                       ))
                     )}
@@ -265,10 +269,10 @@ export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onS
                   }]}><View style={styles.flagPost} /><View style={styles.flagCloth} /></View>
                 </> : solving && !read && <View testID="clock-given-start" style={[styles.start, { left: rimStart.x - 6, top: rimStart.y - 6 }]} />}
                 <Animated.View style={[StyleSheet.absoluteFill, hourHand]}>
-                  <Animated.View style={[styles.hourHand, { top: 120 - hourRadius, height: hourRadius + 3 }, read && solving && !wrongRead && styles.highlight, wrongHour && styles.mismatch, stationary && wrongHour && mismatchPulse]} />
+                  <Animated.View style={[styles.hourHand, help && { backgroundColor: Quantity.amber.fill }, { top: 120 - hourRadius, height: hourRadius + 3 }, read && solving && !wrongRead && styles.highlight, wrongHour && styles.mismatch, stationary && wrongHour && mismatchPulse]} />
                 </Animated.View>
                 <Animated.View style={[StyleSheet.absoluteFill, minuteHand]}>
-                  <Animated.View style={[styles.minuteHand, { top: 120 - minuteRadius, height: minuteRadius + 3 }, wrongColor && !wrongHour && styles.mismatch, stationary && !wrongHour && mismatchPulse, read && solving && !wrongRead && !readMinutes && onHourLanding]} />
+                  <Animated.View style={[styles.minuteHand, help && { backgroundColor: Quantity.violet.fill, width: 10, left: 115 }, { top: 120 - minuteRadius, height: minuteRadius + 3 }, wrongColor && !wrongHour && styles.mismatch, stationary && !wrongHour && mismatchPulse, read && solving && !wrongRead && !readMinutes && onHourLanding]} />
                 </Animated.View>
                 <View style={styles.pivot} />
               </View>
@@ -296,7 +300,7 @@ export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onS
                     }}
                   >
                     <Animated.View style={read && solving && !wrongRead && Number(hour) === namedHour ? [hourPop, { backgroundColor: Quantity.amber.light, borderRadius: 8 }] : undefined}>
-                      <DenseLabel role="value">{hour}</DenseLabel>
+                      <DenseLabel role={help ? 'sequence' : 'value'}>{hour}</DenseLabel>
                     </Animated.View>
                   </View>
                 );
@@ -320,7 +324,7 @@ export function ClockDiagram({ model, clockInput, clockAttempt, elapsedUnit, onS
           <ProofEquationSlot settled={settled}>
             <View testID="clock-solution-caption" style={styles.caption}>
               <View testID={read ? 'clock-solution-time' : 'clock-solution-duration'}>
-                <ProofCaption text={caption} reserveTexts={[final]} />
+                {help ? <ProofLine readout caption={caption} equation={settled ? final : undefined} /> : <ProofCaption text={caption} reserveTexts={[final]} />}
               </View>
             </View>
           </ProofEquationSlot>

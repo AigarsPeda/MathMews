@@ -1,6 +1,8 @@
+import { HelpProofContext } from './kit/HelpProofContext';
+import { ProofLine } from './help/helpKit';
 import { ProofEquationSlot } from './everyday/ProofEquationSlot';
 import { useProofAnnouncement } from './counting/useProofAnnouncement';
-import { useLayoutEffect, useState } from 'react';
+import { useContext, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -69,6 +71,7 @@ function Vessel({
   const { t } = useTranslation();
   const { fontScale } = useWindowDimensions();
   const viewport = useProofViewport();
+  const help = useContext(HelpProofContext);
   const solving = !!beats;
   const plan = jugScale(model, capacity);
   // Retain every graduation; space the printed numerals to fit the measured native text.
@@ -78,7 +81,7 @@ function Vessel({
   samples.push(axisUnit);
   const litreReference = t('jugSolution.litres', { value: 1 });
   if (model.task === 'litres' && !solving) samples.push(litreReference);
-  const axis = useMeasuredLabels(samples, 'axis');
+  const axis = useMeasuredLabels(samples, help ? 'readout' : 'axis');
   const axisH = axis.ready ? axis.height : 18 * fontScale;
   const axisW = axis.ready ? axis.width : (solving ? 60 : 36) * fontScale;
   const stride = Math.max(1, Math.ceil((plan.majors.length - 1) / 5));
@@ -95,7 +98,7 @@ function Vessel({
   const smallestMarkGap = Math.min(...plan.marks.slice(1).map((v, i) => v - plan.marks[i]));
   // Give the centred jug room for the complete widest number on its left, including at XL.
   const room = Math.max(44, available - 2 * (axisW + 16) - 20);
-  const chamber = Math.min(152, room);
+  const chamber = Math.min(help ? 205 : 152, help ? room - 12 : room);
   const frameWidth = available;
   const left = (available - chamber - 20) / 2;
   const head = axisH / 2 + 8;
@@ -132,7 +135,7 @@ function Vessel({
       })
     : model.task === 'total' && !solving ? volume : model.label;
   return (
-    <View style={{ alignItems: 'center', maxWidth: available }}>
+    <View style={[{ alignItems: 'center', maxWidth: available }, help && !axis.ready && styles.unmeasured]}>
       {axis.probe}
       <PaintedModel
         beats={beats}
@@ -154,13 +157,15 @@ function Vessel({
               volume={v - stops[i]}
               scale={scale}
               progress={progress}
-              tint={i % 2 ? water.light : water.fill}
+              tint={i % 2 ? (help ? Quantity.amber.fill : water.light) : water.fill}
             />
           ))}
         </View>
-        <View style={[styles.lip, { left: left - 5, top: top - 2, width: chamber + 10 }]} />
+        <View style={[styles.lip, { left: left - 5, top: top - 2, width: chamber + 10 }, help && { height: 12, borderRadius: 6, top: top - 6, left, width: chamber }]} />
+        {help && <View style={{ position: 'absolute', right: 0, top: top - axisH / 2 }}><DenseLabel role="readout">{litreReference}</DenseLabel></View>}
         {marks.map((mark) => {
           const y = top + height - mark * scale;
+          if (help && !printed.includes(mark)) return null;
           const litreMark = model.task === 'litres' && !solving && mark === 1000;
           const referenceOnRight = litreMark && !printed.includes(mark);
           const major = printed.includes(mark) || litreMark;
@@ -168,13 +173,13 @@ function Vessel({
             <View pointerEvents="none" key={mark} style={StyleSheet.absoluteFill}>
               <View
                 testID={'jug-tick-' + mark}
-                style={[styles.tick, { left: referenceOnRight ? left + chamber : left - (major ? 11 : 5), top: y - (major ? 2.5 : 1.5), width: major ? 11 : 5, height: major ? 5 : 3 }]}
+                style={[styles.tick, { left: referenceOnRight ? left + chamber : left - (major ? 11 : 5), top: y - (major ? 2.5 : 1.5), width: major ? 11 : 5, height: major ? 5 : 3 }, help && { height: 10, width: 14, top: y - 5, left: left - 22 }]}
               />
               {major && (
                 <View
-                  style={{ position: 'absolute', left: referenceOnRight ? left + chamber + 14 : left - axisW - 15, width: axisW, flexDirection: 'row', justifyContent: referenceOnRight ? 'flex-start' : 'flex-end', top: y - axisH / 2 }}
+                  style={{ position: 'absolute', left: referenceOnRight ? left + chamber + 14 : left - axisW - (help ? 29 : 15), width: axisW, flexDirection: 'row', justifyContent: referenceOnRight ? 'flex-start' : 'flex-end', top: y - axisH / 2 }}
                 >
-                  <DenseLabel role="axis">{litreMark ? litreReference : mark}</DenseLabel>
+                  <DenseLabel role={help ? "readout" : "axis"}>{litreMark ? litreReference : mark}</DenseLabel>
                 </View>
               )}
             </View>
@@ -217,6 +222,7 @@ export function JugPour({ model, onSolutionShown, capacityInput, capacityAttempt
   model: CapacityModel; onSolutionShown?: () => void; capacityInput?: CapacityInput; capacityAttempt?: CapacityAttempt;
 }) {
   const { t } = useTranslation();
+  const help = useContext(HelpProofContext);
   const { locale } = useLocale();
   const window = useWindowDimensions();
   const viewport = useProofViewport();
@@ -235,7 +241,9 @@ export function JugPour({ model, onSolutionShown, capacityInput, capacityAttempt
     jugScale(model, capacity)
       .majors.filter((v) => v < end)
       .at(-1) ?? 0;
-  const ml = (n: number) => valueToken(t('jugSolution.ml', { value: n }));
+  // Picture help writes the English unit as mL, the way the question does.
+  const unit = (text: string) => help && locale === 'en' ? text.replace(/\bml\b/, 'mL') : text;
+  const ml = (n: number) => valueToken(unit(t('jugSolution.ml', { value: n })));
   const litre = (n: number) =>
     valueToken(t('jugSolution.litres', { value: String(n / 1000).replace('.', locale === 'en' ? '.' : ',') }));
   const divisions = portionTask ? Math.ceil(end / model.portion) : 0;
@@ -265,7 +273,8 @@ export function JugPour({ model, onSolutionShown, capacityInput, capacityAttempt
     awaitInitialPaint: solving,
     onDone: onSolutionShown,
     easing: 'inOut',
-    step: (i) => (portionTask ? tempo.step(i) : read ? 400 : 520),
+    ...(help && { lead: 750, hold: 350 }),
+    step: (i) => help ? 1150 : (portionTask ? tempo.step(i) : read ? 400 : 520),
   });
   const { landed, reduced, position, settled } = beats;
   const batchSize = tempo.batchSize;
@@ -277,7 +286,7 @@ export function JugPour({ model, onSolutionShown, capacityInput, capacityAttempt
     return stops[from] + (at - i) * (stops[to] - stops[from]);
   });
   const level = useDerivedValue(() => (wrong ? model.amounts[0] : value.value));
-  const height = Math.max(128, Math.min(window.height * (window.fontScale >= 1.5 ? .22 : .26), 224));
+  const height = help ? Math.max(128, Math.min(help.height - 66, window.height * 0.32)) : Math.max(128, Math.min(window.height * (window.fontScale >= 1.5 ? .22 : .26), 224));
   const entryScale = useSharedValue(1);
   const entryReady = width > 0 && !solving;
   useLayoutEffect(() => {
@@ -355,7 +364,8 @@ export function JugPour({ model, onSolutionShown, capacityInput, capacityAttempt
                 )}
               </ProofWindow>
               {wrong && total && <ProofEquationSlot settled={false}><ProofCaption text={model.amounts.map(ml).join(' + ')} /></ProofEquationSlot>}
-              {!wrong && <ProofEquationSlot settled={settled}>
+              {help ? <ProofLine equation={settled ? `${start} + ${end - start} = ${ml(end)}` : undefined}
+                caption={settled ? undefined : ml(start) + ' + ' + ml(end - start)} /> : !wrong && <ProofEquationSlot settled={settled}>
                 <View testID="jug-solution-caption" style={styles.caption}>
                   {(window.fontScale >= 2 || portionTask) && !final ? <>
                     <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.reserve}>
@@ -388,6 +398,8 @@ const styles = StyleSheet.create({
   guide: { position: 'absolute', height: 5, borderRadius: 3, backgroundColor: Quantity.berry.edge },
   editor: { alignItems: 'center', gap: 4 },
   reserve: { opacity: 0 },
+  // The first frame waits for the measured labels, so the jug is drawn once, at its final size.
+  unmeasured: { opacity: 0 },
   currentCaption: { ...StyleSheet.absoluteFill, justifyContent: 'center' },
   bottleEquation: { textAlign: 'center', fontSize: 19, fontWeight: '800', color: Ink.text },
   caption: { alignSelf: 'stretch', alignItems: 'stretch' },

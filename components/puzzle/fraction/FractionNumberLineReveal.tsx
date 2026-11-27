@@ -1,7 +1,8 @@
 import type { FractionNumberLinePuzzle } from '@/types/puzzle';
 import { Ink, Quantity } from '@/constants/puzzle-theme';
 import { Path, Skia } from '@shopify/react-native-skia';
-import { useEffect, useRef, useState } from 'react';
+import { HelpProofContext } from '../kit/HelpProofContext';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { DenseLabel, denseSpacing, useMeasuredLabels } from '../kit/DenseLayout';
@@ -17,6 +18,7 @@ export function FractionNumberLineReveal({ puzzle, submitted, onSolutionShown }:
   puzzle: FractionNumberLinePuzzle; submitted?: number; onSolutionShown: () => void;
 }) {
   const { divisions, numerator, denominator } = puzzle.payload;
+  const help = useContext(HelpProofContext);
   const goal = numerator * divisions / denominator;
   const [width, setWidth] = useState(0);
   const { fontScale } = useWindowDimensions();
@@ -24,7 +26,7 @@ export function FractionNumberLineReveal({ puzzle, submitted, onSolutionShown }:
   const axis = useMeasuredLabels(['0', String(divisions)], 'readout');
   const endpointWidth = (axis.width || String(divisions).length * 13 * fontScale) + denseSpacing.label;
   const spacing = fractionLineSpacing(width, divisions + 1, endpointWidth);
-  const height = baseline + fractionLineLabelOffset + (axis.height || 24 * Math.max(1, fontScale)) + denseSpacing.mark;
+  const height = baseline + fractionLineLabelOffset + (help ? 40 * Math.max(1, fontScale) : axis.height || 24 * Math.max(1, fontScale)) + denseSpacing.mark;
   const count = submitted === undefined ? goal : 0;
   const beats = useRevealBeats(width ? count : null, { awaitInitialPaint: true, lead: 120, minTotal: 0, reducedSteps: true,
     step: Math.min(650, 2700 / Math.max(1, count)), hold: i => i === count ? 220 : 0, onDone: onSolutionShown });
@@ -62,26 +64,27 @@ export function FractionNumberLineReveal({ puzzle, submitted, onSolutionShown }:
         {axis.probe}
         <FractionLineRail baseline={baseline} spacing={spacing} count={divisions + 1} labels={submitted === undefined ? [landed] : [goal, submitted]} testPrefix="reveal-line-tick-" />
         {[0, divisions].map(i => <View key={i} style={{ position: 'absolute', alignItems: 'center',
-          top: baseline + fractionLineLabelOffset, left: fractionLineX(spacing, i) - spacing / 2, width: spacing }}><DenseLabel role="readout">{i ? '1' : '0'}</DenseLabel></View>)}
+          top: baseline + fractionLineLabelOffset, left: fractionLineX(spacing, i) - spacing / 2, width: spacing }}>{help ? <PuzzleText style={styles.helpDigit}>{i ? '1' : '0'}</PuzzleText> : <DenseLabel role="readout">{i ? '1' : '0'}</DenseLabel>}</View>)}
         {submitted !== undefined && <View style={[styles.gap, { left: fractionLineX(spacing, Math.min(goal, submitted)),
           width: Math.abs(submitted - goal) * spacing }]} />}
         <ProofCanvas trackCanvas={trackCanvas} style={StyleSheet.absoluteFill}>
           {/* friendly-ok: broad bands trace completed fraction hops */}
-          <Path path={arcs} color={Quantity.violet.fill} style="stroke" strokeWidth={10} strokeCap="round" />
+          <Path path={arcs} color={Quantity.violet.fill} style="stroke" strokeWidth={help ? 12 : 10} strokeCap="round" />
         </ProofCanvas>
         {Array.from({ length: Math.min(count, landed + 1) }, (_, i) => <View key={i}
-          style={[styles.chip, { left: fractionLineX(spacing, i) + spacing / 2 - 22 }]}><PuzzleText numberOfLines={1}
-          adjustsFontSizeToFit maxFontSizeMultiplier={1.15} style={styles.text}>{`1/${divisions}`}</PuzzleText></View>)}
-        <Animated.View style={[styles.marker, marker]}><FractionLineMarker amber={submitted !== undefined} /></Animated.View>
+          style={[styles.chip, help && { height: 34 }, { left: fractionLineX(spacing, i) + spacing / 2 - 22 }]}><PuzzleText numberOfLines={1}
+          adjustsFontSizeToFit maxFontSizeMultiplier={1.15} style={[styles.text, help && styles.helpDigit]}>{`1/${divisions}`}</PuzzleText></View>)}
+        <Animated.View style={[styles.marker, marker]}><FractionLineMarker amber={!!help || submitted !== undefined} /></Animated.View>
       </View>
     </ScrollView></FractionLineStage>
     {beats.settled && submitted === undefined && <PlayProofCaption><View nativeID="play-proof-equation" testID="play-proof-equation">
-      <View testID="line-solution-equation"><ProofCaption text={equation} /></View>
+      <View testID="line-solution-equation">{help ? <PuzzleText style={styles.helpDigit}>{equation}</PuzzleText> : <ProofCaption text={equation} />}</View>
     </View></PlayProofCaption>}
   </RevealSurface>;
 }
 
 const styles = StyleSheet.create({
+  helpDigit: { fontSize: 26, lineHeight: 32, fontWeight: '800', color: Ink.text, textAlign: 'center' },
   marker: { position: 'absolute', top: 0, left: 0 },
   chip: { position: 'absolute', top: 4, width: 44, height: 28, borderRadius: 12, justifyContent: 'center', backgroundColor: Quantity.violet.soft },
   text: { fontSize: 20, fontWeight: '800', textAlign: 'center', color: Ink.text },

@@ -5,8 +5,9 @@ import { EntryBuild, IdleHint } from '@/components/puzzle/kit/PracticeAffordance
 import { PuzzleText } from '../PuzzleText';
 import { PlaceValuePiece } from './PlaceValuePiece';
 import { DenseLabel, denseSpacing, useMeasuredLabels } from '@/components/puzzle/kit/DenseLayout';
-import { Motion, Quantity, Radius } from '@/constants/puzzle-theme';
-import { useState } from 'react';
+import { HelpProofContext } from '@/components/puzzle/kit/HelpProofContext';
+import { Ink, Motion, Quantity, Radius } from '@/constants/puzzle-theme';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeOut, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
@@ -60,6 +61,7 @@ export function PlaceValueMat({ tens, ones, pending, stock, addend, capacity, tr
   matHeight?: number; laneHeight?: number; total?: number; submittedOnly?: boolean; target?: Groups; enter?: boolean; fadeOnRemove?: boolean; interacted?: boolean; compactOnes?: boolean;
 }) {
   const stage = useModelStage();
+  const help = useContext(HelpProofContext);
   const firstEncounter = useFirstQuantityEncounter('place-value-exchange', !!exchangeAction);
   const { t } = useTranslation();
   const [measuredWidth, setWidth] = useState(0);
@@ -182,7 +184,8 @@ export function PlaceValueMat({ tens, ones, pending, stock, addend, capacity, tr
         return <Pressable key={name} disabled={!onColumn || placement !== name} onPress={() => onColumn?.(name)}
           accessible accessibilityLabel={`${names[name]}: ${display[name]}`}
           accessibilityRole={onColumn ? 'button' : 'text'} style={[styles.header, { width: available, height: headerHeight }]}>
-          <DenseLabel role="title" maxFontSizeMultiplier={1.8}>{names[name]}</DenseLabel>
+          {help ? <PuzzleText numberOfLines={1} maxFontSizeMultiplier={1.4} style={styles.helpTitle}>{names[name]}</PuzzleText>
+            : <DenseLabel role="title" maxFontSizeMultiplier={1.8}>{names[name]}</DenseLabel>}
         </Pressable>;
       })}
     </View>
@@ -230,6 +233,7 @@ export function PlaceValueMat({ tens, ones, pending, stock, addend, capacity, tr
 }
 
 const styles = StyleSheet.create({
+  helpTitle: { color: Ink.text, fontSize: 22, lineHeight: 28, fontWeight: '800' },
   total: { textAlign: 'center', paddingVertical: 4, backgroundColor: teal.soft, borderRadius: Radius.piece, fontSize: 24, fontWeight: '800' },
   mat: { position: 'relative', alignSelf: 'stretch' },
   zone: { borderRadius: Radius.tray, backgroundColor: teal.soft },

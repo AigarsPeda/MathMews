@@ -9,4 +9,3 @@ export type EverydayModel = { label: string } & (
   | { kind: "solid"; answerUnit?: "cubes"; width: number; height: number; depth: number }
 );
 
-export type EverydayExample = { question: string; explanation: string; model: EverydayModel };

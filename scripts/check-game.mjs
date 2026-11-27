@@ -25,6 +25,7 @@ const core = [
   "check-result-dismissal",
   "check-answer-feedback",
   "check-locales",
+  "check-help-examples",
   "puzzles/test-catalog"
 ];
 

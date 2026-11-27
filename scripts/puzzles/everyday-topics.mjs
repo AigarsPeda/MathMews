@@ -287,14 +287,11 @@ export function appendEverydayTopics({ topics, lessons, puzzles, pathExtras }) {
         }
         assert.ok(spec, `${id}: author more distinct examples of this skill`);
         used.set(`${difficulty}/${topicId}`, seen);
-        let example = factories[topicId](tier, focus, n + 127, stage % 2 === 1);
-        // A finite shape/clock pool can cycle back to the task's own worked example.
-        for (let offset = 128; JSON.stringify(example.model) === JSON.stringify(spec.model); offset++) example = factories[topicId](tier, focus, n + offset, stage % 2 === 1);
         const puzzleId = `v2-${id}-${slot + 1}`;
         for (const locale of ['en', 'lv', 'ru']) {
           const p = { id: puzzleId, difficulty, type: 'multiple_choice', topic: topicId, ageRange: tier === 0 ? [5, 7] : tier === 1 ? [7, 10] : [10, 12],
             question: spec.question[locale], hint: spec.hint[locale], explanation: spec.explanation[locale], ...choicesFor(spec, n, locale),
-            everyday: { model: localize(spec.model, locale), example: { model: localize(example.model, locale), question: example.question[locale], explanation: `${example.hint[locale]}\n\n${example.explanation[locale]}` } },
+            everyday: { model: localize(spec.model, locale) },
             learning: { skillId, prerequisiteSkillIds: prerequisites, role: slot >= 8 ? 'review' : slot >= 4 ? 'application' : 'practice', representation: spec.model.kind, reasoningSteps: tier === 2 ? 2 : 1 } };
           puzzles[locale][difficulty].push(p);
         }

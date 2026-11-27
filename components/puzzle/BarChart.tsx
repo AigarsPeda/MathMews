@@ -1,7 +1,9 @@
+import { HelpProofContext } from './kit/HelpProofContext';
+import { ProofLine } from './help/helpKit';
 import { ProofEquationSlot } from './everyday/ProofEquationSlot';
 import { useProofAnnouncement } from './counting/useProofAnnouncement';
 import { useProofViewport } from '@/components/puzzle/PlayProofCaption';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View, type TextProps } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { useDerivedValue, useAnimatedStyle, useSharedValue, useReducedMotion, withDelay, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -17,12 +19,14 @@ import { barAnswer, groupLetter, type BarModel } from '@/utils/puzzle-bars';
 
 // Bar labels are 20 pt bold navy on every axis and group, kept near 20 pt at accessibility sizes too.
 const LABEL_PT = 20;
-const labelStyle = (fontScale: number) => ({
-  color: Ink.text, fontSize: LABEL_PT / Math.max(1, fontScale), fontWeight: '800' as const, fontVariant: ['tabular-nums' as const],
+const HELP_LABEL_PT = 22;
+const labelStyle = (fontScale: number, help = false) => ({
+  color: Ink.text, fontSize: (help ? HELP_LABEL_PT : LABEL_PT) / Math.max(1, fontScale), fontWeight: '800' as const, fontVariant: ['tabular-nums' as const],
 });
 function BarLabel({ children, ...props }: { children: ReactNode; onLayout?: TextProps['onLayout'] }) {
   const { fontScale } = useWindowDimensions();
-  return <PuzzleText {...props} numberOfLines={1} style={labelStyle(fontScale)}>{children}</PuzzleText>;
+  const help = useContext(HelpProofContext);
+  return <PuzzleText {...props} numberOfLines={1} style={labelStyle(fontScale, !!help)}>{children}</PuzzleText>;
 }
 /** One native probe per label set: ready once every string has a layout. */
 function useBarLabels(labels: readonly string[]) {
@@ -53,7 +57,7 @@ function useBarLabels(labels: readonly string[]) {
   };
 }
 
-function Column({
+export function BarColumn({
   height,
   width,
   progress,
@@ -149,6 +153,7 @@ export function BarChart({
   selectedGroup,
   submitted,
 }: BarControls & { model: BarModel; onSolutionShown?: () => void }) {
+  const help = useContext(HelpProofContext);
   const viewport = useProofViewport();
   const { height, width, fontScale } = useWindowDimensions();
   const [measuredWidth, setAvailable] = useState(0);
@@ -182,7 +187,7 @@ export function BarChart({
     : mean
       ? Math.max(1, transfers.length)
       : comparing
-        ? 2
+        ? (help ? 3 : 2)
         : read || extremum
           ? 2
           : model.values.length;
@@ -230,7 +235,7 @@ export function BarChart({
   const headroomFor = (plot: number) => Math.ceil(8 + Math.max(0, amounts.height + 4 - (1 - tallest / max) * plot));
   const fixedHeight = captionReserve + labelHeight + totalChip + margin + 6;
   const roomPlot = modelRoom - fixedHeight - headroomFor(modelRoom - fixedHeight - 8 - amounts.height - 4);
-  const naturalHeight = viewport
+  const naturalHeight = help ? Math.max(96, help.height - labelHeight - 48) : viewport
     ? Math.min(Math.max(fontScale > 1.3 ? 96 : 100, roomPlot), 320)
     : Math.max(Math.min(solving ? (fontScale > 1.3 ? 150 : 176) : 208, height * 0.243), (ticks.length - 1) * (axis.height + 4));
   const plotHeight = Math.max(84, axis.height + 4, 4 * max / model.step, naturalHeight);
@@ -293,8 +298,9 @@ export function BarChart({
   const captions = Array.from({ length: count + 1 }, (_, n) => (n === count ? solution.caption : ''));
   useProofAnnouncement(beats, landed === count ? solution.caption : '', solving);
   // The highlighted gap grows up from the low bar (no fade, so it is never a see-through blend).
-  const gapHeight = Math.max(0, y(gap) - 4);
-  const remainder = useAnimatedStyle(() => ({ height: gapHeight * Math.max(0, Math.min(1, position.value - 1)) }));
+  const gapInset = help ? 0 : 4;
+  const gapHeight = Math.max(0, y(gap) - gapInset);
+  const remainder = useAnimatedStyle(() => ({ height: gapHeight * Math.max(0, Math.min(1, position.value - (help ? 2 : 1))) }));
   return (
     <DiagramSurface beats={beats} playing={solving}>
       <View style={styles.wrap}>
@@ -354,7 +360,7 @@ export function BarChart({
                                 <PuzzleText style={styles.unknownMark}>?</PuzzleText>
                               </View>
                             ) : (
-                              <Column
+                              <BarColumn
                                 height={mean && landed === count ? y(low) : height}
                                 width={(plotWidth * 0.76) / model.values.length}
                                 progress={progress}
@@ -367,7 +373,7 @@ export function BarChart({
                             )}
                             {comparing && i === highIndex && gap > 0 && (
                               <Animated.View
-                                style={[styles.band, { bottom: labelHeight + y(low) + 4 }, remainder]}
+                                style={[styles.band, { bottom: labelHeight + y(low) + gapInset }, remainder]}
                               />
                             )}
                             <View style={[styles.letter, { height: labelHeight }]}>
@@ -377,6 +383,12 @@ export function BarChart({
                         );
                       })}
                     </View>
+                    {help && comparing && landed < count && (
+                      <View style={{ position: 'absolute', left: axisWidth, height: 16, borderRadius: 8,
+                        width: plotLeft - axisWidth + plotWidth * ((landed === 0 ? lowIndex : highIndex) + 0.5) / model.values.length,
+                        bottom: labelHeight + y(landed === 0 ? low : high) - 8,
+                        backgroundColor: landed === 0 ? Quantity.violet.light : Quantity.teal.light }} />
+                    )}
                     {miss && attemptHeight !== null && landed > 0 && (() => {
                       // ONE amber difference on the same bars. A total's cap sits on the last bar added; it never adds a bar or a chip.
                       const totalTask = model.task === 'total';
@@ -479,7 +491,8 @@ export function BarChart({
             </ScrollView>
           </View>
         </ProofWindow>
-        {solving && (
+        {help && comparing ? <ProofLine equation={settled ? solution.caption : undefined}
+          caption={landed === 0 ? `A = ${low}` : landed === 1 ? `B = ${high}` : undefined} /> : solving && (
           <ProofEquationSlot settled={settled}>
             <View testID="bar-solution-caption" style={{ alignSelf: 'stretch' }}>
               <ProofCaption

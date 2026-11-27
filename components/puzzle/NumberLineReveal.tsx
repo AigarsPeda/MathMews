@@ -1,3 +1,4 @@
+import { HelpProofContext } from './kit/HelpProofContext';
 import { focusedScale, LandmarkLine } from './number-line/LandmarkLine';
 import { useProofModelScroll } from '@/components/puzzle/place-value/ExchangeDetail';
 import { DenseLabel, denseSpacing, useMeasuredLabels, valueToken } from '@/components/puzzle/kit/DenseLayout';
@@ -8,7 +9,7 @@ import { useRevealBeats } from '@/components/puzzle/kit/useRevealBeats';
 import { ProofMotion, Quantity, Radius } from '@/constants/puzzle-theme';
 import { integerHopStops, landingEquation, lineValue, type HopRoute } from '@/utils/number-line-reveal';
 import { Path, Skia } from '@shopify/react-native-skia';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
@@ -48,6 +49,7 @@ export function NumberLineReveal({ route, submitted, onSolutionShown }: NumberLi
 }
 
 function IntegerLineProof({ route, submitted, onSolutionShown }: NumberLineRevealProps) {
+  const help = useContext(HelpProofContext);
   const start = route.stops[0], goal = route.stops.at(-1)!;
   const mismatch = submitted !== undefined && submitted !== goal;
   const missedJudgment = submitted !== undefined && route.claim !== undefined;
@@ -68,7 +70,8 @@ function IntegerLineProof({ route, submitted, onSolutionShown }: NumberLineRevea
       annotate={route.kind === 'signed-move' && 'total'} settled={beats.settled} trackCanvas={trackCanvas}
       landed={beats.landed} submitted={frozen ? submitted : undefined} missLastHop={missedJudgment} />
     {beats.settled && (!frozen || mismatch) && <PlayProofCaption><View nativeID="play-proof-equation" testID="play-proof-equation">
-      <ProofCaption text={mismatch ? `${lineValue(submitted)} ≠ ${lineValue(goal)}` : equation} /></View></PlayProofCaption>}
+      {help ? <Caption strong style={{ fontSize: 28, lineHeight: 36 }}>{equation}</Caption>
+        : <ProofCaption text={mismatch ? `${lineValue(submitted)} ≠ ${lineValue(goal)}` : equation} />}</View></PlayProofCaption>}
   </RevealSurface>;
 }
 

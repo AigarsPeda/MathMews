@@ -1,4 +1,5 @@
-import type { ComponentProps, ReactNode } from 'react';
+import { HelpProofContext } from '../kit/HelpProofContext';
+import { useContext, type ComponentProps, type ReactNode } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Ink, Quantity } from '@/constants/puzzle-theme';
 import { useLocale } from '@/contexts/LocaleProvider';
@@ -14,6 +15,9 @@ export function useMoneyWidth() {
 export const MONEY_CARD_HEIGHT = 92;
 export const MONEY_ZONE_HEIGHT = 60;
 export const MONEY_LANE_HEIGHT = 32;
+/** Picture help draws one model: the coins land on a taller tape, under a taller total band. */
+export const HELP_ZONE_HEIGHT = 100;
+export const HELP_LANE_HEIGHT = 48;
 const CARD_GAP = 8;
 
 type Card = { key: string; face: 'good' | 'wallet' | 'sale'; icon?: 'apple' | 'cookie' | 'book' | 'plant' | 'balloon' | 'cupcake' | 'bag'; tag: string; coin?: number };
@@ -59,17 +63,19 @@ export function MoneyShelf({ model, unknown = '?' }: { model: MoneyModel; unknow
  * width with its label centred, never a chip floating at the end; an amber over/under label stays a pill over the amber part.
  */
 export function MoneyLane({ label, tone = 'teal', width }: { label?: string; tone?: 'teal' | 'amber'; width?: number }) {
+  const help = useContext(HelpProofContext);
   // A band is exactly the width of what it measures: the whole tape, or `width` from its left edge.
-  return <View style={styles.lane}>
-    {!!label && <View style={tone === 'teal' ? [styles.band, width !== undefined && { alignSelf: 'flex-start', width }] : [styles.pill, { backgroundColor: Quantity[tone].light }]}>
-      <Text numberOfLines={1} adjustsFontSizeToFit maxFontSizeMultiplier={1.2} style={styles.laneText}>{label}</Text>
+  return <View style={[styles.lane, help && { height: HELP_LANE_HEIGHT }]}>
+    {!!label && <View style={tone === 'teal' ? [styles.band, help && { height: HELP_LANE_HEIGHT }, width !== undefined && { alignSelf: 'flex-start', width }] : [styles.pill, { backgroundColor: Quantity[tone].light }]}>
+      <Text numberOfLines={1} adjustsFontSizeToFit maxFontSizeMultiplier={1.2} style={[styles.laneText, help && { fontSize: 30 }]}>{label}</Text>
     </View>}
   </View>;
 }
 
 /** The money row: the purse before Check, the tape after. Same size and place both times. */
 export function MoneyZone({ children, padded = false }: { children?: ReactNode; padded?: boolean }) {
-  return <View style={[styles.zone, padded && styles.zonePadded]}>{children}</View>;
+  const help = useContext(HelpProofContext);
+  return <View style={[styles.zone, padded && styles.zonePadded, help && styles.helpZone]}>{children}</View>;
 }
 
 /** The child's answer before Check: one card, centred in the money row, "?" until a choice is picked. */
@@ -87,9 +93,11 @@ export function MoneyStage({ model, id, unknown, lane, zone, pocket }: {
 }) {
   const { locale } = useLocale();
   const width = useMoneyWidth();
+  const help = useContext(HelpProofContext);
   const count = shelfCards(model, n => formatPriceTicket(n, model.unit, locale), '?').length;
   return <View nativeID={id} testID={id} style={[styles.stage, { width }]}>
-    <MoneyShelf model={model} unknown={unknown} />
+    {/* Picture help is one model: the coins land on the tape, so there is no shelf of coin cards above it. */}
+    {!(help && zone !== undefined) && <MoneyShelf model={model} unknown={unknown} />}
     {(zone !== undefined || !!pocket) && <View style={[styles.money, !!pocket && styles.pocketRow]}>
       {lane}{zone}
       {pocket && <View pointerEvents="none" style={styles.pocketHolder}><MoneyPocket icon={pocket.icon} label={pocket.label} size={cardSize(count, width)} /></View>}
@@ -116,5 +124,6 @@ const styles = StyleSheet.create({
   band: { alignSelf: 'stretch', height: MONEY_LANE_HEIGHT, alignItems: 'center', justifyContent: 'center', borderRadius: 8, backgroundColor: Quantity.teal.soft },
   pill: { minWidth: 44, height: MONEY_LANE_HEIGHT, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
   zone: { height: MONEY_ZONE_HEIGHT, borderRadius: 14, overflow: 'hidden', backgroundColor: Quantity.teal.soft },
+  helpZone: { height: HELP_ZONE_HEIGHT, overflow: 'visible', backgroundColor: 'transparent' },
   zonePadded: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8, overflow: 'visible' },
 });

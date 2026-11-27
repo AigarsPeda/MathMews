@@ -52,6 +52,27 @@ export type PuzzleType =
 export type MathOperator = "+" | "-" | "×" | "÷";
 
 /** Quantities shown in the task itself, separate from worked picture help. */
+export type HelpTemplate =
+  | 'fraction_unit_set' | 'fraction_decimal_link' | 'fraction_compare_common' | 'fraction_compare_unit'
+  | 'fraction_compare_same_numerator' | 'fraction_compare_half' | 'easy_fraction_half' | 'easy_fraction_compare'
+  | 'ratio_table' | 'bridge_positive' | 'signed_line' | 'equation_board'
+  | 'coordinate_map' | 'geometry_area' | 'geometry_perimeter' | 'geometry_compare'
+  | 'geometry_missing_area' | 'geometry_missing_perimeter' | 'decimal_grid_10' | 'decimal_grid_100'
+  | 'decimal_place_tenths' | 'decimal_place_build' | 'decimal_place_bundle' | 'decimal_place_split'
+  | 'fraction_number_line' | 'fraction_strip_build' | 'fraction_strip_equivalent' | 'base_ten_build'
+  | 'base_ten_bundle' | 'base_ten_split' | 'base_ten_add' | 'base_ten_subtract'
+  | 'sort_buckets' | 'fraction_sort' | 'repair_pattern' | 'route_grid'
+  | 'budget_plan' | 'number_range' | 'fraction_of_set' | 'percent_half'
+  | 'percent_tenth' | 'percent_half_discount' | 'percent_tenth_discount' | 'percent_of'
+  | 'percent_fifth' | 'percent_fifth_discount' | 'percent_discount' | 'all_pairs'
+  | 'subtraction' | 'addition' | 'multiplication' | 'division'
+  | 'all_but' | 'odd_range' | 'place_value' | 'multiply_add'
+  | 'multiply_subtract' | 'fraction_left' | 'rate' | 'percent'
+  | 'compare' | 'operation_path' | 'target_build' | 'fraction_build'
+  | 'true_false' | 'balance' | 'pair_sum' | 'fix_mistake'
+  | 'estimate' | 'fair_share' | 'fraction_equivalent' | 'fraction_match'
+  | 'pattern_next' | 'function_machine' | 'order_numbers';
+
 export type QuantityTaskModel = { object?: PuzzleObject } & (
   | { kind: "join" | "take_away"; left: number; right: number }
   | { kind: "array"; rows: number; columns: number }
@@ -179,7 +200,7 @@ type PuzzleBase = {
   taskVisual?: QuantityTaskModel;
   contextObjects?: { object: PuzzleObject; count?: number; role?: "start" | "add" | "remove"; primary?: boolean }[];
   /** Selects an independent worked example, never an answer to this task. */
-  helpTemplate?: keyof typeof import("@/constants/visual-practice").VISUAL_PRACTICE;
+  helpTemplate?: HelpTemplate;
   /** Authored quantities for worked help, shared across locales. */
   visualHelp?: { scene: import("@/types/visual-explanation").VisualScene; worked: import("@/types/visual-explanation").VisualScene };
   id: string;
@@ -195,7 +216,7 @@ export type MultipleChoicePuzzle = PuzzleBase & {
   type?: "multiple_choice";
   choices: string[];
   correctIndex: number;
-  everyday?: { model: import("./everyday").EverydayModel; example: import("./everyday").EverydayExample };
+  everyday?: { model: import("./everyday").EverydayModel };
 };
 
 export type ComparePuzzle = PuzzleBase & {

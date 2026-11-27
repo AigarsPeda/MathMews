@@ -21,6 +21,20 @@ export function modelInk(image: SkImage, width: number, height: number) {
   };
 }
 
+/**
+ * Skia sizes a canvas' drawing surface at its first native layout. Until then the native view reports a size of -1,
+ * and a snapshot would ask Metal for a texture that is (size_t)-1 wide and abort the app. A mount that lands before
+ * that first layout, such as a second picture help opening straight after the first, hit this. Wait instead: the
+ * caller retries on the next frame.
+ */
+export function nativeCanvasReady(canvas: CanvasRef | null | undefined) {
+  if (!canvas) return false;
+  const api = (globalThis as { SkiaViewApi?: { size(nativeId: number): { width: number; height: number } } }).SkiaViewApi;
+  if (!api) return true;
+  const size = api.size(canvas.getNativeId());
+  return Number.isFinite(size.width) && Number.isFinite(size.height) && size.width > 0 && size.height > 0;
+}
+
 export async function verifySnapshot(snapshot: Promise<SkImage | null | undefined> | undefined, verify?: (image: SkImage) => boolean) {
   const image = await snapshot;
   if (!image) return false;
@@ -32,6 +46,6 @@ export async function verifySnapshot(snapshot: Promise<SkImage | null | undefine
 export function useModelPaint(ready: boolean, beats?: RevealBeats, canvas?: RefObject<CanvasRef | null>, verify?: (image: SkImage) => boolean) {
   const view = useRef<View>(null);
   useInitialModelPaint(beats ?? { runId: 0 }, !!beats && (canvas ? canSnapshotCanvas : canSnapshotModel) && ready,
-    () => verifySnapshot(canvas ? canvas.current?.makeImageSnapshotAsync() : makeImageFromView(view), verify));
+    () => canvas && !nativeCanvasReady(canvas.current) ? Promise.resolve(false) : verifySnapshot(canvas ? canvas.current?.makeImageSnapshotAsync() : makeImageFromView(view), verify));
   return view;
 }

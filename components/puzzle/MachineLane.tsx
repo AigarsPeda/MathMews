@@ -1,9 +1,10 @@
 import { PuzzleText } from './PuzzleText';
 import type { RevealBeats } from './kit/useRevealBeats';
+import { HelpProofContext } from './kit/HelpProofContext';
 import { Land } from './tiles/TileMotion';
 import { Ink, Quantity, Shape } from '@/constants/puzzle-theme';
 import type { MachinePlan } from '@/utils/operations-reveal';
-import { useState, type ReactNode } from 'react';
+import { useContext, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
@@ -14,12 +15,17 @@ type Props = {
 
 export function MachineLane({ input, output, socket, proof }: Props) {
   const [width, setWidth] = useState(0);
+  // Picture help draws the lane bigger: tiles with 34 pt digits, a taller track.
+  const help = useContext(HelpProofContext);
+  const S = help ? 1.6 : 1;
+  const maxTile = Math.round(54 * S), pieceHeight = Math.round(48 * S);
+  const big = help ? { fontSize: 34, lineHeight: 42 } : null;
   const forming = Math.max(0, Math.floor(((proof?.beats.landed ?? 0) - 1) / 2));
   const operation = proof?.plan.ops[Math.min(forming, proof.plan.ops.length - 1)];
   const finished = !!proof?.beats.settled;
   const count = !finished && operation?.op === '×' && operation.n <= 8 ? operation.n : 1;
   const tracks = proof?.beats.position;
-  const tile = Math.min(54, Math.max(28, (width - 8 - (count - 1) * 4) / count));
+  const tile = Math.min(maxTile, Math.max(28, (width - 8 - (count - 1) * 4) / count));
   const travel = Math.max(0, width - tile);
   const stages = proof?.plan.ops.length ?? 1;
   const destination = proof && !proof.plan.ok ? Math.max(0, travel - tile - 14) : travel;
@@ -40,22 +46,22 @@ export function MachineLane({ input, output, socket, proof }: Props) {
   const missed = finished && !proof?.plan.ok;
   const firstOp = proof?.plan.ops[0];
   const inputCount = firstOp?.op === '×' && firstOp.n <= 8 ? firstOp.n : 1;
-  const inputTile = Math.min(54, Math.max(28, (width - 54 * 2 - 4 - 16 - (inputCount - 1) * 4) / inputCount));
-  return <View style={styles.machine}>
-    <View style={styles.rule}>{socket}</View>
-    <View onLayout={e => setWidth(e.nativeEvent.layout.width)} style={styles.track}>
-      <View style={styles.goal}><PuzzleText maxFontSizeMultiplier={1.4} style={styles.number}>{output}</PuzzleText></View>
+  const inputTile = Math.min(maxTile, Math.max(28, (width - maxTile * 2 - 4 - 16 - (inputCount - 1) * 4) / inputCount));
+  return <View style={[styles.machine, help && { gap: 10, paddingVertical: 14 }]}>
+    <View style={[styles.rule, help && { minHeight: 64 }]}>{socket}</View>
+    <View onLayout={e => setWidth(e.nativeEvent.layout.width)} style={[styles.track, help && { height: Math.round(60 * S) }]}>
+      <View style={[styles.goal, help && { minWidth: maxTile, minHeight: pieceHeight }]}><PuzzleText maxFontSizeMultiplier={1.4} style={[styles.number, big]}>{output}</PuzzleText></View>
       {missed && <View style={styles.output}>
-        <PuzzleText maxFontSizeMultiplier={1.4} adjustsFontSizeToFit numberOfLines={1} style={styles.number}>{proof?.plan.result}</PuzzleText>
+        <PuzzleText maxFontSizeMultiplier={1.4} adjustsFontSizeToFit numberOfLines={1} style={[styles.number, big]}>{proof?.plan.result}</PuzzleText>
       </View>}
       {settledRight && width > 0 && <Land style={styles.runner}>
-        {Array.from({ length: inputCount }, (_, i) => <View key={i} style={[styles.piece, { width: inputTile }]}>
-          <PuzzleText maxFontSizeMultiplier={1.4} adjustsFontSizeToFit numberOfLines={1} style={styles.number}>{input}</PuzzleText>
+        {Array.from({ length: inputCount }, (_, i) => <View key={i} style={[styles.piece, { width: inputTile, height: pieceHeight }]}>
+          <PuzzleText maxFontSizeMultiplier={1.4} adjustsFontSizeToFit numberOfLines={1} style={[styles.number, big]}>{input}</PuzzleText>
         </View>)}
       </Land>}
       {!settledRight && <Animated.View style={[styles.runner, { width: tile }, growing]}>
-        {Array.from({ length: count }, (_, i) => <View key={i} style={[styles.piece, { width: tile }, i % 2 === 1 && !finished && styles.alternate, finished && proof?.plan.ok && styles.merged]}>
-          <PuzzleText maxFontSizeMultiplier={1.4} adjustsFontSizeToFit numberOfLines={1} style={styles.number}>{amount}</PuzzleText>
+        {Array.from({ length: count }, (_, i) => <View key={i} style={[styles.piece, { width: tile, height: pieceHeight }, i % 2 === 1 && !finished && styles.alternate, finished && proof?.plan.ok && styles.merged]}>
+          <PuzzleText maxFontSizeMultiplier={1.4} adjustsFontSizeToFit numberOfLines={1} style={[styles.number, big]}>{amount}</PuzzleText>
         </View>)}
       </Animated.View>}
     </View>

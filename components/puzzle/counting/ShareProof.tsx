@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import type { PuzzleObject } from '@/types/puzzle-object';
 import { QuantityEquation } from './QuantityEquation';
+import { HelpProofContext } from '../kit/HelpProofContext';
 import { RevealSurface } from '../kit/RevealSurface';
 import { useRevealBeats } from '../kit/useRevealBeats';
 import { useQuantityPractice } from './QuantityPractice';
@@ -15,6 +16,7 @@ export function ShareProof({items, groups, selectedGroups = 0, initialLocations,
 }) {
   const {t} = useTranslation();
   const practice = useQuantityPractice();
+  const help = useContext(HelpProofContext);
   const [start] = useState(() => {
     const submitted = initialLocations ?? practice.snapshot.locations;
     return submitted.length === items ? [...submitted] : Array<number>(items).fill(0);
@@ -24,7 +26,7 @@ export function ShareProof({items, groups, selectedGroups = 0, initialLocations,
   const batch = Math.max(1, Math.ceil(flights.length / 6));
   const rounds = Math.ceil(flights.length / batch);
   const beats = useRevealBeats(rounds + 1, {awaitInitialPaint: canSnapshotModel, lead: 45,
-    step: attempt ? 360 : i => i > rounds ? 180 : Math.min(390, batch * 135), hold: 0, minTotal: 0, reducedSteps: true, onDone: onSolutionShown});
+    step: attempt ? 360 : i => i > rounds ? help ? 500 : 180 : help ? Math.min(400, Math.floor(3000 / rounds)) : Math.min(390, batch * 135), hold: 0, minTotal: 0, reducedSteps: true, onDone: onSolutionShown});
   const position = useDerivedValue(() => Math.min(flights.length, beats.position.value * batch));
   const each = Math.floor(items / groups), remainder = items % groups;
   // Inspect one part of the submitted deal. An evenly dealt fraction can still have a wrong scalar answer.
@@ -40,6 +42,6 @@ export function ShareProof({items, groups, selectedGroups = 0, initialLocations,
   useProofAnnouncement(beats, !attempt && beats.settled ? equation : '', true);
   return <RevealSurface beats={beats} replayable={!attempt || !selectedGroups}>
     <SharingTable {...{items, groups, object, selectedGroups, beats, flights, position, attemptTray}} completed={Math.min(flights.length, beats.landed * batch)} initialLocations={start} disabled tintAt={attempt ? undefined : rounds} highlight={!attempt && beats.settled} />
-    {!attempt && <QuantityEquation text={equation} settled={beats.settled} />}
+    {!attempt && <QuantityEquation large={!!help && selectedGroups > 0} text={equation} settled={beats.settled} />}
   </RevealSurface>;
 }

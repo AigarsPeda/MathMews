@@ -1,7 +1,10 @@
+import { HelpProofContext } from './kit/HelpProofContext';
+import { ProofLine } from './help/helpKit';
+import { MoveChips, VisitedFaces, moveChips } from './help/HelpGridMoves';
 import { useModelStage } from './kit/ModelStage';
 import { GridPoint } from './GridPoint';
 import { canSnapshotCanvas, useModelPaint } from './counting/useModelPaint';
-import { useMemo, useState, type ReactNode } from 'react';
+import { useContext, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Canvas, Circle, Group, Line, Path, RoundedRect, Skia, useCanvasRef } from '@shopify/react-native-skia';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
@@ -13,12 +16,16 @@ import { ProofMotion, PuzzleColors as C, Quantity, Shape } from '@/constants/puz
 
 import { gridPose, gridSteps, type GridModel } from '@/utils/puzzle-grid';
 
+/** The move chips lane (52) and its gap sit under the board in picture help. */
+const HELP_MOVE_LANE = 56;
+
 export function GridDiagram({ model, onSolutionShown, instruction, renderCells, attemptedCell, playback = false }: {
   model: GridModel; onSolutionShown?: () => void; instruction?: string; attemptedCell?: number; playback?: boolean;
   renderCells?: (layout: { pitch: number; pad: number }) => ReactNode;
 }) {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
+  const help = useContext(HelpProofContext);
   const stage = useModelStage();
   const canvas = useCanvasRef();
   const steps = gridSteps(model);
@@ -31,7 +38,7 @@ export function GridDiagram({ model, onSolutionShown, instruction, renderCells, 
   const lane = instruction ? 40 : 0;
   const MISS_DOCK_EXTRA = 44;
   const fitHeight = stage.height > 0 ? stage.height - lane - 8 - MISS_DOCK_EXTRA : Infinity;
-  const extent = Math.max(168, Math.min(width - 32, 560, fitHeight));
+  const extent = Math.max(168, Math.min(width - 32, 560, help ? help.height - 8 - HELP_MOVE_LANE : fitHeight));
   const pitch = extent / n;
   const pad = 0;
   const board = extent;
@@ -116,25 +123,39 @@ export function GridDiagram({ model, onSolutionShown, instruction, renderCells, 
           {/* friendly-ok: a soft radius band connects the rotating mark to its pivot. */}
           {model.task === 'rotate' && <Line p1={pivot} p2={tip} color={Quantity.amber.light} strokeWidth={10} strokeCap="round" />}
           {/* friendly-ok: a moving path shows the translation or the rotation around its pivot. */}
-          {solving && !done && !attempting && <Path path={trail} end={traced} color={Quantity.violet.fill} style="stroke" strokeWidth={10} strokeJoin="round" strokeCap="round" />}
+          {solving && !help && !done && !attempting && <Path path={trail} end={traced} color={Quantity.violet.fill} style="stroke" strokeWidth={10} strokeJoin="round" strokeCap="round" />}
           {/* friendly-ok: these two measured paths show the equal distances from the mirror axis. */}
           {(!attempting && solving && !done && model.task === 'reflect') && <Path path={distances} end={measured} color={Quantity.violet.fill} style="stroke" strokeWidth={12} strokeCap="round" strokeJoin="round" />}
         </Group>
+        {help && model.task === 'translate' && <VisitedFaces model={model} step={step} pitch={pitch} />}
         {model.task === 'rotate' && <Circle cx={centre} cy={centre - Shape.lip / 2} r={6}
           color={Quantity.amber.fill} style="fill" />}
       </Canvas>
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width: diameter, height: diameter }, marker]}>
-        <GridPoint diameter={diameter} hue={Quantity.teal} label="→" />
+        <GridPoint diameter={diameter} hue={help && done ? Quantity.amber : Quantity.teal} label={help ? undefined : "→"} />
       </Animated.View>
+      {/* The cell numbers sit above the marker, so a number is always readable, on the board or on the token. */}
+      {help && Array.from({ length: n * n }, (_, i) => <View key={i} style={{ position: 'absolute',
+        left: i % n * pitch, top: Math.floor(i / n) * pitch, height: pitch, width: pitch, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={styles.cellNumber}>{i + 1}</Text>
+      </View>)}
       </View>
       {renderCells?.({ pad, pitch })}
     </View>
+    {help && <>
+      <MoveChips chips={moveChips(model)} landed={beats.landed} />
+      <ProofLine equation={done ? [
+        model.dx && t(`visualHelp.examples.grid_moves.${model.dx > 0 ? 'right' : 'left'}`, { n: Math.abs(model.dx) }),
+        model.dy && t(`visualHelp.examples.grid_moves.${model.dy < 0 ? 'up' : 'down'}`, { n: Math.abs(model.dy) }),
+      ].filter(Boolean).join(', ') : undefined} />
+    </>}
   </View></DiagramSurface>;
 }
 
 const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', alignItems: 'center', paddingVertical: 6, gap: 3 },
   moveChip: { alignSelf: 'center', borderRadius: 16, backgroundColor: Quantity.violet.soft, paddingHorizontal: 12, paddingVertical: 3 },
+  cellNumber: { color: C.text, fontSize: 28, fontWeight: '800', textAlign: 'center', fontVariant: ['tabular-nums'] },
   moveText: { color: C.text, fontSize: 20, fontWeight: '800', textAlign: 'center' },
   hiddenInstruction: { opacity: 0 },
   instruction: { alignSelf: 'stretch', flexShrink: 1, paddingHorizontal: 4 },

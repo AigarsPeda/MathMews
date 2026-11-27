@@ -56,19 +56,6 @@ export type VisualScene =
       result?: number;
     };
 
-export type VisualKeyframe = {
-  at: number;
-  captionKey: string;
-  scene: VisualScene;
-};
-
-export type VisualExplanation = {
-  puzzleId: string;
-  titleKey: string;
-  keyframes: VisualKeyframe[];
-};
-
-/** Positions on the practice board, in a 300 × 140 coordinate space. */
 export type PracticeToken = {
   object?: PuzzleObject;
   id: string;

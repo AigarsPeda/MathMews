@@ -74,7 +74,6 @@ function task(plan, tier, slot, variant) {
     options = [answer, clock((backward ? start : start + duration) + 30), clock((backward ? start : start + duration) + 60)];
   } else if (slot === 3) {
     const sides = tier === 0 ? [4, 4] : tier === 1 ? [3, 4, 3] : [6, 4, 6];
-    // A different number of mats gives the worked example its own givens.
     if (variant >= 3) sides.push(4);
     model = { kind: 'shapes', task: 'corners', sides, rectangle: false, context: 'mats',
       label: T(`Mats for the cats. Sides on each mat: ${sides.join(', ')}.`, `Paklājiņi kaķiem. Malas katram paklājiņam: ${sides.join(', ')}.`, `Коврики для котов. Стороны каждого коврика: ${sides.join(', ')}.`) };
@@ -116,11 +115,11 @@ export function appendCatPlans({ topics, lessons, puzzles, pathExtras }) {
       completion: plan.completion, skillId, prerequisiteSkillIds: prerequisites, levels: [] };
     const ids = [];
     for (let slot = 0; slot < 10; slot++) {
-      const spec = task(plan, tier, slot, index), example = task(plan, tier, slot, index + 3);
+      const spec = task(plan, tier, slot, index);
       const puzzleId = `v2-${id}-${slot + 1}`;
       for (const locale of locales) puzzles[locale][difficulty].push({ id: puzzleId, difficulty, type: 'multiple_choice', topic: 'cat-plans',
         ageRange: [[5, 7], [7, 10], [10, 12]][tier], question: spec.question[locale], hint: spec.hint[locale], explanation: spec.explanation[locale], ...choices(spec, slot, locale),
-        everyday: { model: localizeModel(spec.model, locale), example: { model: localizeModel(example.model, locale), question: example.question[locale], explanation: `${example.hint[locale]}\n\n${example.explanation[locale]}` } },
+        everyday: { model: localizeModel(spec.model, locale) },
         learning: { skillId, prerequisiteSkillIds: prerequisites, role: slot >= 8 ? 'review' : slot >= 4 ? 'application' : 'practice', representation: spec.model.kind, reasoningSteps: tier === 2 ? 2 : 1 } });
       ids.push(puzzleId);
       if (slot < 8) lesson.levels.push({ id: `${id}-step-${slot + 1}`, kind: slot === 7 ? 'challenge' : 'practice', title: plan.title, description: plan.description,

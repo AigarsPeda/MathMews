@@ -1,3 +1,5 @@
+import { HelpProofContext } from './kit/HelpProofContext';
+import { Digit } from './help/helpKit';
 import { ProofWindow } from './counting/ProofWindow';
 import { canSnapshotModel } from './counting/useModelPaint';
 import { useInitialModelPaint } from './kit/useInitialModelPaint';
@@ -6,7 +8,7 @@ import { UnitRunGlyph } from './kit/UnitRun';
 import { ProofCaption } from './kit/Focus';
 import { useRevealBeats } from './kit/useRevealBeats';
 import { RevealSurface } from './kit/RevealSurface';
-import type { ReactNode } from 'react';
+import { useContext, type ReactNode } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Canvas, Group } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
@@ -40,6 +42,7 @@ export function GeometryMeasureReveal({ puzzle, measured, confirmPaint, viewport
   children: (progress: SharedValue<number>, done: boolean, second: SharedValue<number>, phase: number) => ReactNode;
 }) {
   const { t } = useTranslation();
+  const help = useContext(HelpProofContext);
   const {fontScale} = useWindowDimensions();
   const { mode, width: w, height: h, other } = puzzle.payload;
   const { total, equation } = geometryMeasurement(puzzle);
@@ -51,7 +54,7 @@ export function GeometryMeasureReveal({ puzzle, measured, confirmPaint, viewport
   const stops = area ? Array.from({ length: Math.ceil(h / rowBatch) }, (_, i) => rowsAt(i + 1) * w) : missing ? [total, total + 1, total + 2] :
     [...corners(w, h), ...(other ? corners(other.width, other.height).map(n => total + n) : [])];
   const beats = useRevealBeats(measured ? stops.length : null, { awaitInitialPaint: canSnapshotModel, onDone: onSolutionShown, reducedSteps: true, minTotal: 0,
-    lead: 50, step: mode === 'compare' ? ProofMotion.beat[300] : missing ? (n: number) => [1200, 600, 360][n] ?? 360 : ProofMotion.beat[360], hold: n => mode === 'compare' && n === stops.length ? ProofMotion.beat[300] : 0 });
+    lead: 50, step: help ? 650 : mode === 'compare' ? ProofMotion.beat[300] : missing ? (n: number) => [1200, 600, 360][n] ?? 360 : ProofMotion.beat[360], hold: n => mode === 'compare' && n === stops.length ? ProofMotion.beat[300] : 0 });
   useInitialModelPaint(beats, measured && canSnapshotModel, confirmPaint);
   const { position, reduced, landed, settled } = beats;
   const distance = useDerivedValue(() => {
@@ -65,12 +68,14 @@ export function GeometryMeasureReveal({ puzzle, measured, confirmPaint, viewport
   function caption(n: number, final: boolean) {
     const distance = stops[n - 1] ?? 0;
     if (final || n === stops.length && mode !== 'compare') {
+      if (help && area) return `${h} × ${w} = ${t('geometryModels.squareUnits', { value: total })}`;
       if (fontScale >= 2) return equation;
       if (mode === 'area') return `${w} × ${h} = ${t(total === 1 ? 'geometryModels.squareUnit' : 'geometryModels.squareUnits', { value: total })}`;
       if (mode === 'missing_area') return `${total} ÷ ${w} = ${units(h)}`;
       if (missing) return `${total} ÷ 2 − ${w} = ${units(h)}`;
       return equation;
     }
+    if (help && area) return n ? String(distance) : '';
     if (area) return n === 0 ? '' : `${w} × ${distance / w} = ${distance}`;
     if (missing) return ['', `${w} + ? + ${w} + ?`, `${total} ÷ 2 = ${total / 2}`][n];
     if (!n) return '';
@@ -94,7 +99,7 @@ export function GeometryMeasureReveal({ puzzle, measured, confirmPaint, viewport
   const model = children(first, settled || (mode === 'missing_area' && landed === stops.length), second, area ? rowsAt(landed) : landed);
   return <RevealSurface beats={beats}><View nativeID="play-proof-model" testID="play-proof-model" collapsable={false}>{viewportHeight == null ? model : <ProofWindow height={viewportHeight} focus={focus}>{model}</ProofWindow>}</View>
     <View testID="geometry-measure-total" style={styles.caption}>
-      <View nativeID={equationID} testID={equationID}><ProofCaption text={caption(landed, settled)} reserveTexts={[...stops.map((_, i) => caption(i + 1, false)), caption(0, false), caption(stops.length, true)]} /></View>
+      <View nativeID={equationID} testID={equationID}>{help ? <Digit size={26}>{caption(landed, settled) || ' '}</Digit> : <ProofCaption text={caption(landed, settled)} reserveTexts={[...stops.map((_, i) => caption(i + 1, false)), caption(0, false), caption(stops.length, true)]} />}</View>
     </View>
   </RevealSurface>;
 }

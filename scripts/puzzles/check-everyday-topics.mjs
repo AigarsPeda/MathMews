@@ -102,13 +102,8 @@ export function checkEverydayTopics() {
   for (const locale of ['en', 'lv', 'ru']) for (const tier of tiers) for (const p of readPuzzles(locale, tier).filter(p => p.everyday)) {
     const english = byId.get(p.id);
     checkModel(p.everyday.model);
-    checkModel(p.everyday.example.model);
-    assert.notDeepEqual(p.everyday.model, p.everyday.example.model, `${p.id}: help uses different givens`);
     const target = solveEveryday(p.everyday.model, english.question);
     checkChoice(p, target, locale);
-    const exampleTarget = solveEveryday(p.everyday.example.model, english.everyday.example.question);
-    const expectedText = typeof exampleTarget === 'number' ? String(exampleTarget).replace('.', locale === 'en' ? '.' : ',') : exampleTarget;
-    assert.ok(p.everyday.example.explanation.includes(expectedText), `${p.id}: worked example explains its own answer`);
   }
   for (const variants of Object.values(read('data/everyday-reviews.json'))) for (const q of variants) {
     const target = solveEveryday(q.model, q.prompt.en);
@@ -120,6 +115,6 @@ export function checkEverydayTopics() {
   assert.equal(solveEveryday({kind:'capacity',task:'servings',amounts:[501],portion:250}, ''), 2);
   assert.equal(solveEveryday({kind:'capacity',task:'containers',amounts:[501],portion:250}, ''), 3);
   assert.equal(solveEveryday({kind:'money',task:'change',prices:[125,175],quantities:[1,1],paid:500,discount:0,unit:'euros'}, ''), 2);
-  console.log('Verified 150 new levels, 1,500 diagram tasks in three languages, separate worked examples, 1,800 daily variants, time wrapping, currency units and container rounding.');
+  console.log('Verified 150 new levels, 1,500 diagram tasks in three languages, 1,800 daily variants, time wrapping, currency units and container rounding.');
 }
 if (process.argv[1]?.endsWith('check-everyday-topics.mjs')) checkEverydayTopics();

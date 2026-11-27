@@ -9,8 +9,8 @@ import { PuzzleText } from '../PuzzleText';
 import { useModelStage } from '../kit/ModelStage';
 import { UnitRun } from '../kit/UnitRun';
 
-export function PercentageShareBar({ parts, width: requestedWidth, whole, progress, settled, submitted }: {
-  parts: number; width: number; whole: number; progress?: SharedValue<number>; settled?: boolean; submitted?: number;
+export function PercentageShareBar({ parts, width: requestedWidth, whole, progress, settled, submitted, helpBeat }: {
+  parts: number; width: number; whole: number; helpBeat?: number; progress?: SharedValue<number>; settled?: boolean; submitted?: number;
 }) {
   const stationary = useStationaryDrawingStyle();
   const stage = useModelStage();
@@ -40,6 +40,16 @@ export function PercentageShareBar({ parts, width: requestedWidth, whole, progre
   const widths = differenceBarWidths(width, whole, amount, submitted ?? amount);
   const shown = miss ? submitted : settled ? amount : whole;
   const wholePaint = useAnimatedStyle(() => ({ opacity: progress ? 1 - Math.min(1, progress.get()) : 1 }));
+  if (helpBeat !== undefined) {
+    const count = helpBeat === 0 ? 1 : parts;
+    const barHeight = Math.min(144, width * .4);
+    return <View accessible accessibilityLabel={helpBeat === 0 ? String(whole) : Array(parts).fill(amount).join(' + ')}
+      style={{ width, height: barHeight }}>
+      <UnitRun width={width} height={barHeight} count={count} filled={helpBeat < 2 ? count : 1} />
+      <View style={styles.labels}>{Array.from({ length: count }, (_, i) =>
+        <PuzzleText key={i} style={[styles.label, { fontSize: 36 }]}>{count === 1 ? whole : amount}</PuzzleText>)}</View>
+    </View>;
+  }
   return <View ref={anchor} collapsable={false} onLayout={alignBar} style={{ width, height: 100 }}>
     <Animated.View style={[{ flex: 1, top: offset }, stationary]} accessible accessibilityRole="image"
     accessibilityLabel={`${100 / parts}% × ${whole} ${miss ? '≠' : '='} ${settled ? shown : '?'}`}>

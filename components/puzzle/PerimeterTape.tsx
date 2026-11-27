@@ -26,8 +26,11 @@ const AMBER_MIN = 44;
 const SEG_MIN = 32;
 const PAD = 8;
 
-export function tapeLaneHeight(rows: number) {
-  return PAD + rows * TAPE_BAR + (rows - 1) * TAPE_GAP + 4;
+/** Picture help draws the tape with bigger chips: 44 pt bars with 28 pt digits. */
+export const HELP_TAPE_BAR = 44;
+
+export function tapeLaneHeight(rows: number, bar = TAPE_BAR) {
+  return PAD + rows * bar + (rows - 1) * TAPE_GAP + 4;
 }
 
 const minWidth = (p: TapePiece) => p.hue === 'amber' ? AMBER_MIN : SEG_MIN;
@@ -55,7 +58,7 @@ type Geometry = {
   cx1: number; cy1: number; len1: number; foldDx?: number;
 };
 
-function Bar({ g, distance, fold, label, hue, shown }: { g: Geometry; distance: SharedValue<number>; fold?: SharedValue<number>; label: string; hue: TapePiece['hue']; shown: boolean }) {
+function Bar({ g, distance, fold, label, hue, shown, bar }: { bar: number; g: Geometry; distance: SharedValue<number>; fold?: SharedValue<number>; label: string; hue: TapePiece['hue']; shown: boolean }) {
   const lift = useDerivedValue(() => g.count ? Math.min(1, Math.max(0, (distance.value - g.start) / g.count)) : 1);
   const style = useAnimatedStyle(() => {
     const t = lift.value;
@@ -64,16 +67,17 @@ function Bar({ g, distance, fold, label, hue, shown }: { g: Geometry; distance: 
     const cx = g.cx0 + (g.cx1 + (g.foldDx ?? 0) * f - g.cx0) * q;
     const cy = g.cy0 + (g.cy1 - g.cy0) * q;
     const len = g.len0 + (g.len1 - g.len0) * q;
-    return { opacity: t > 0 ? 1 : 0, left: cx - len / 2, top: cy - TAPE_BAR / 2, width: len, transform: [{ rotate: `${g.angle0 * (1 - q)}deg` }] };
+    return { opacity: t > 0 ? 1 : 0, left: cx - len / 2, top: cy - bar / 2, width: len, transform: [{ rotate: `${g.angle0 * (1 - q)}deg` }] };
   });
   const colors = Quantity[hue];
-  return <Animated.View style={[styles.bar, { backgroundColor: colors.fill }, style]}>
-    {shown && <Text allowFontScaling={false} numberOfLines={1} style={[styles.label, { color: colors.onFill }]}>{label}</Text>}
+  const big = bar > TAPE_BAR;
+  return <Animated.View style={[styles.bar, { backgroundColor: colors.fill, height: bar, borderRadius: bar / 2 }, style]}>
+    {shown && <Text allowFontScaling={false} numberOfLines={1} style={[styles.label, { color: colors.onFill }, big && styles.bigLabel]}>{label}</Text>}
   </Animated.View>;
 }
 
 /** Solid bars lift off the sides of each shape and slide into ONE straight, labelled tape in the reserved lane. */
-export function TapeBars({ tapes, unit, available, laneY }: { tapes: TapeSpec[]; unit: number; available: number; laneY: number | null }) {
+export function TapeBars({ tapes, unit, available, laneY, bar = TAPE_BAR }: { tapes: TapeSpec[]; unit: number; available: number; laneY: number | null; bar?: number }) {
   if (laneY == null || tapes.some(t => !t.rect)) return null;
   const tu = tapeScale(tapes, unit, available);
   const width = (p: TapePiece) => Math.max(minWidth(p), p.units * tu);
@@ -82,7 +86,7 @@ export function TapeBars({ tapes, unit, available, laneY }: { tapes: TapeSpec[];
   return <View pointerEvents="none" style={StyleSheet.absoluteFill}>
     {tapes.map((tape, row) => {
       const { x, y } = tape.rect!, { width: bw, height: bh } = tape.box;
-      const cy1 = laneY + PAD + row * (TAPE_BAR + TAPE_GAP) + TAPE_BAR / 2;
+      const cy1 = laneY + PAD + row * (bar + TAPE_GAP) + bar / 2;
       let cursor = x0;
       const placed = tape.pieces.map(p => { const len = width(p), cx = cursor + len / 2; cursor += len + TAPE_GAP; return { len, cx }; });
       return tape.pieces.map((p, i) => {
@@ -92,10 +96,10 @@ export function TapeBars({ tapes, unit, available, laneY }: { tapes: TapeSpec[];
         // Start flush inside its own side of the shape, then lift and line up.
         const len0 = sideUnits * unit;
         const starts = [
-          { cx: x + len0 / 2, cy: y + TAPE_BAR / 2, a: 0 },
-          { cx: x + bw - TAPE_BAR / 2, cy: y + len0 / 2, a: 90 },
-          { cx: x + len0 / 2, cy: y + bh - TAPE_BAR / 2, a: 0 },
-          { cx: x + TAPE_BAR / 2, cy: y + len0 / 2, a: 90 },
+          { cx: x + len0 / 2, cy: y + bar / 2, a: 0 },
+          { cx: x + bw - bar / 2, cy: y + len0 / 2, a: 90 },
+          { cx: x + len0 / 2, cy: y + bh - bar / 2, a: 0 },
+          { cx: x + bar / 2, cy: y + len0 / 2, a: 90 },
         ];
         const s = side == null ? undefined : starts[side];
         const g: Geometry = {
@@ -103,7 +107,7 @@ export function TapeBars({ tapes, unit, available, laneY }: { tapes: TapeSpec[];
           cx1: placed[i].cx, cy1, len1: placed[i].len,
           foldDx: tape.fold && i >= 2 && i < 4 && tape.pieces.length === 4 ? placed[i - 2].cx - placed[i].cx : undefined,
         };
-        return <Bar key={`${tape.key}-${i}`} g={g} distance={tape.distance} fold={tape.fold} label={p.label} hue={p.hue} shown={placed[i].len >= (p.label.length > 1 ? 40 : 26)} />;
+        return <Bar bar={bar} key={`${tape.key}-${i}`} g={g} distance={tape.distance} fold={tape.fold} label={p.label} hue={p.hue} shown={placed[i].len >= (p.label.length > 1 ? 40 : 26)} />;
       });
     })}
   </View>;
@@ -112,4 +116,5 @@ export function TapeBars({ tapes, unit, available, laneY }: { tapes: TapeSpec[];
 const styles = StyleSheet.create({
   bar: { position: 'absolute', height: TAPE_BAR, borderRadius: TAPE_BAR / 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   label: { fontSize: 20, lineHeight: 24, fontWeight: '800' },
+  bigLabel: { fontSize: 28, lineHeight: 34 },
 });

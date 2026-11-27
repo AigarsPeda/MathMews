@@ -1,6 +1,7 @@
 import { DiagramIcon } from './kit/DiagramIcon';
 import { Ink, Quantity, Shape } from '@/constants/puzzle-theme';
-import { memo, type ComponentProps } from 'react';
+import { HelpProofContext } from './kit/HelpProofContext';
+import { memo, useContext, type ComponentProps } from 'react';
 import { useProofCanvasSize } from './everyday/PaintedModel';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,11 +11,13 @@ export function MoneyDiagramIcon(props: ComponentProps<typeof DiagramIcon>) {
 }
 
 export const MoneyCoin = memo(function MoneyCoin({ value, label }: { value: number; label?: string }) {
+  const help = useContext(HelpProofContext);
+  const large = help && { width: 72, height: 72, borderRadius: 36 };
   const hue = value >= 100 ? Quantity.teal : Quantity.amber;
-  return <View style={styles.coin}>
-    <View style={[styles.disc, { top: Shape.lip, backgroundColor: hue.edge }]} />
-    <View style={[styles.disc, { backgroundColor: hue.light }]} />
-    <Text numberOfLines={1} adjustsFontSizeToFit style={styles.label}>{label ?? (value >= 100 ? `€${value / 100}` : `${value} c`)}</Text>
+  return <View style={[styles.coin, large]}>
+    <View style={[styles.disc, large, { top: Shape.lip, backgroundColor: hue.edge }]} />
+    <View style={[styles.disc, large, { backgroundColor: help ? hue.fill : hue.light }]} />
+    <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.label, help && { fontSize: 26 }]}>{label ?? (value >= 100 ? `€${value / 100}` : `${value} c`)}</Text>
   </View>;
 });
 

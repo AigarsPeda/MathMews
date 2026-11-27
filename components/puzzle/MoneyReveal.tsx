@@ -1,8 +1,11 @@
 import { useDerivedValue } from 'react-native-reanimated';
+import { useContext } from 'react';
+import { HelpProofContext } from './kit/HelpProofContext';
+import { ProofLine } from './help/helpKit';
 import { View } from 'react-native';
 import { useLocale } from '@/contexts/LocaleProvider';
 import { comparePurse, formatPriceTicket, formatPuzzleMoney, moneyPurchase, trialValue, type MoneyModel, type MoneyInput } from '@/utils/puzzle-money';
-import { planMoneyTape } from '@/utils/money-tape';
+import { planMoneyTape, saleTiles } from '@/utils/money-tape';
 import { useProofAnnouncement } from './counting/useProofAnnouncement';
 import { PaintedModel } from './everyday/PaintedModel';
 import { ProofEquationSlot } from './everyday/ProofEquationSlot';
@@ -20,12 +23,13 @@ export function MoneyReveal({ model, onSolutionShown, attempt }: {
   model: MoneyModel; onSolutionShown: () => void; input?: MoneyInput; attempt?: { choice?: string };
 }) {
   const { locale } = useLocale();
+  const help = useContext(HelpProofContext);
   const width = useMoneyWidth();
   const { price, subtotal, saving, change, itemCount } = moneyPurchase(model);
   const submitted = attempt ? trialValue(model, attempt.choice) : undefined;
   const missed = attempt !== undefined && submitted !== undefined;
   const sale = model.task === 'discount';
-  const money = (n: number) => (model.task === 'unit' || attempt ? formatPriceTicket : formatPuzzleMoney)(n, model.unit, locale);
+  const money = (n: number) => (model.task === 'unit' || (help && sale) || attempt ? formatPriceTicket : formatPuzzleMoney)(n, model.unit, locale);
   const comparison = missed ? comparePurse(model, submitted, locale) : undefined;
   const terms = model.prices.map((p, i) => model.quantities[i] === 1 ? money(p) : `${model.quantities[i]} × ${money(p)}`);
   const equation = attempt ? comparison?.caption ?? '' : model.task === 'afford' ? `${itemCount} × ${money(model.prices[0])} = ${money(price)}`
@@ -36,7 +40,7 @@ export function MoneyReveal({ model, onSolutionShown, attempt }: {
   const plan = sale ? undefined : planMoneyTape(model, missed ? submitted : undefined, locale);
   const count = sale ? 3 : Math.max(1, plan!.segments.length);
   const beats = useRevealBeats(count, { awaitInitialPaint: true, onDone: onSolutionShown, reducedSteps: true,
-    lead: 80, step: Math.min(500, 3400 / count), hold: i => i === count ? 100 : 0, minTotal: 0 });
+    lead: 80, step: help ? 800 : Math.min(500, 3400 / count), hold: i => help ? 450 : i === count ? 100 : 0, minTotal: 0 });
   const { position, reduced, landed } = beats;
   const at = useDerivedValue(() => reduced ? landed : position.value);
   const stepLabel = sale ? `${money(subtotal)} − ${model.discount}%` : plan!.segments.slice(0, landed).map(s => s.label).join(' + ');
@@ -45,14 +49,22 @@ export function MoneyReveal({ model, onSolutionShown, attempt }: {
   const kept = sale ? keptWidth(model.discount, width) : undefined;
   const lane = sale ? missed ? <MoneyLane label={formatPriceTicket(price, model.unit, locale)} width={kept} />
       : <SaleLane from={formatPriceTicket(subtotal, model.unit, locale)} to={formatPriceTicket(price, model.unit, locale)} at={at} toWidth={kept} />
+    : help && model.task === 'unit' ? <MoneyLane label={money(subtotal)} />
     : <TapeLane label={formatPriceTicket(plan!.extent, model.unit, locale)} at={at} beats={count} />;
+  const counted = help && model.task !== 'unit' && plan && landed > 0 && landed < count
+    ? money(plan.segments.slice(0, landed).reduce((sum, segment) => sum + segment.value, 0)) : undefined;
   const zone = <MoneyZone>
-    {sale ? <SaleStrip percent={model.discount} width={width} at={at} miss={missed && submitted !== price ? over ? 'over' : 'under' : undefined} />
+    {sale ? <SaleStrip percent={model.discount} width={width} at={at} tileLabel={help ? money(subtotal / saleTiles(model.discount).tiles) : undefined} miss={missed && submitted !== price ? over ? 'over' : 'under' : undefined} />
       : <TapeSegments plan={plan!} width={width} at={at} />}
   </MoneyZone>;
   return <RevealSurface beats={beats} replayable><PaintedModel beats={beats}>
     <MoneyStage model={model} id="play-proof-model" unknown={model.task === 'unit' && !missed && landed >= count ? money(price) : '?'}
       lane={lane} zone={zone} />
-    <ProofEquationSlot settled={beats.settled}><View testID="money-solution-caption"><ProofCaption text={landed === count ? equation : ''} /></View></ProofEquationSlot>
+    <ProofEquationSlot settled={beats.settled}>
+      <View testID="money-solution-caption">
+        {help ? <ProofLine readout caption={counted} equation={beats.settled ? equation : undefined} />
+          : <ProofCaption text={landed === count ? equation : ''} />}
+      </View>
+    </ProofEquationSlot>
   </PaintedModel></RevealSurface>;
 }

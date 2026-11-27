@@ -1,3 +1,4 @@
+import { HelpProofContext } from './kit/HelpProofContext';
 import { useKeepModelOrigin } from './kit/ModelStage';
 import { ProofWindow, usePlaybackViewport } from './counting/ProofWindow';
 import { makeImageFromView } from '@shopify/react-native-skia';
@@ -16,9 +17,9 @@ import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
 import { PuzzleColors as Colors, Shape, Quantity } from '@/constants/puzzle-theme';
 import type { GeometryMeasurePuzzle } from '@/types/puzzle';
 import { appendGeometryDigit, geometryMeasurement } from '@/utils/geometry-models';
-import { Fragment, useCallback, useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { Fragment, useContext, useCallback, useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
-import { TapeBars, tapeLaneHeight, type TapePiece, type TapeSpec } from './PerimeterTape';
+import { HELP_TAPE_BAR, TAPE_BAR, TapeBars, tapeLaneHeight, type TapePiece, type TapeSpec } from './PerimeterTape';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
@@ -26,6 +27,7 @@ type Props = { puzzle: GeometryMeasurePuzzle; value: number | null; onChange: (v
 export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnly = false, playbackOwnsControls = false, explore = false, onSolutionShown, checkedModel, checkedResult, AnswerRow = Fragment }: Props) {
   const { t } = useTranslation();
   const [measuredWidth, setMeasuredWidth] = useState(0);
+  const help = useContext(HelpProofContext);
   const viewport = usePlaybackViewport();
   const available = measuredWidth || viewport?.innerWidth || 280;
   const hasCheckedModel = checkedModel != null;
@@ -57,8 +59,8 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
   const floor = countabilityFloor('cell', fontScale > 1.3, true) + Shape.space.seam;
   const pairUnits = other ? width + other.width : 0;
   const largestWidth = Math.max(width, other?.width ?? 0);
-  const compactDimensions = available < (other ? pairUnits : width) * floor + (other ? 3 : 2) * (fullSideWidth + 10);
-  const sideWidth = compactDimensions ? Math.ceil(String(Math.max(height, other?.height ?? 0)).length * 12 * fontScale + 5) : fullSideWidth;
+  const compactDimensions = !!help || available < (other ? pairUnits : width) * floor + (other ? 3 : 2) * (fullSideWidth + 10);
+  const sideWidth = compactDimensions ? Math.ceil(String(Math.max(height, other?.height ?? 0)).length * (help ? 16 : 12) * fontScale + 5) : fullSideWidth;
   const sideSpace = sideWidth + 10;
   // A's side label sits to its left, B's to its right, so only B's wider top label needs a gap between them.
   const pairGap = 40;
@@ -74,11 +76,12 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
   // Choose one scale for the editor, the checked drawing and the retry.
   const perimeterTape = measure === 'perimeter';
   const laneRows = mode === 'compare' ? 2 : 1;
-  const laneHeight = perimeterTape ? tapeLaneHeight(laneRows) : 0;
+  const tapeBar = help ? HELP_TAPE_BAR : TAPE_BAR;
+  const laneHeight = perimeterTape ? tapeLaneHeight(laneRows, tapeBar) : 0;
   const widthInside = largeType && mode === 'missing_perimeter';
   const figureBudget = (widthInside ? Math.min(78, screen * .09) : Math.min(missing ? 185 : 220, screen * .26)) - laneHeight * (largeType ? 1 : .5);
   const cellFloor = mode === 'area' ? 44 : measure === 'perimeter' ? (mode === 'compare' && !largeType ? 28 : 24) : floor;
-  const unit = Math.max(cellFloor, Math.min(88, figureBudget / (maxRows * figureCount), horizontal));
+  const unit = help ? Math.max(1, Math.min((available - 2 * sideSpace - 2) / width, (help.height - laneHeight - 34) / height)) : Math.max(cellFloor, Math.min(88, figureBudget / (maxRows * figureCount), horizontal));
   const tallFigure = maxRows * unit * figureCount + (stacked ? 64 * fontScale : 0) > screen * .36;
   const firstShape = useRef<View>(null), secondShape = useRef<View>(null), stageRef = useRef<View>(null);
   // Where each shape and the tape lane sit inside the stage, so the sides can lift off and slide into the tape.
@@ -98,7 +101,8 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
       if (!ref.current || !await verifySnapshot(makeImageFromView(ref), image => {
         const wide = w * unit, high = h * unit, ink = modelInk(image, wide, high);
         if (measure !== 'area') {
-          const face = ref === secondShape ? Quantity.violet.light : Quantity.teal.light;
+          const tint = help ? 'fill' : 'light';
+          const face = ref === secondShape ? Quantity.violet[tint] : Quantity.teal[tint];
           // The width label sits in the middle at XL, so sample beside it.
           return ink(widthInside ? wide * .12 : wide / 2, high / 2, parseInt(face.slice(1), 16));
         }
@@ -160,11 +164,11 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
         <UnitRun width={box.width - gap} height={size - gap} count={w} filled={row === 0 && coveredRows < h ? 0 : w} />
       </View>);
     return <Figure style={[styles.figure, paired && {width: drawingWidth}]}>
-      {!widthInside && <Text style={[styles.dimension, {width: topLabelWidth}]}>{name ? `${name} · ` : null}{compactDimensions ? w : dimension(w)}</Text>}
+      {!widthInside && <Text style={[styles.dimension, help && styles.helpDimension, {width: topLabelWidth}]}>{name ? `${name} · ` : null}{compactDimensions ? w : dimension(w)}</Text>}
       <View style={{width: drawingWidth, alignItems: 'center', marginBottom: sideBelow ? 26 * fontScale : 0}}>
         {paint ? <CoverGrid columns={w} rows={h} unit={size} covered={covered} onChange={setCovered} available={available} /> :
         <View ref={name === 'B' ? secondShape : firstShape} collapsable={false} onLayout={perimeterTape ? remeasure : undefined} testID={`geometry-shape-${name || 'main'}`} accessible={!fillRows && !editableFigure} accessibilityLabel={missing && !done ? t('geometryModels.unknownShape', { width: w }) : t('geometryModels.shape', { name, width: w, height: h })} style={{ ...box, backgroundColor: Shape.seamColor }}>
-          {perimeterTape && <View style={{...box, backgroundColor: selectedFigure ? figureColor.fill : figureColor.light, borderRadius: 10}} />}
+          {perimeterTape && <View style={{...box, backgroundColor: selectedFigure || help ? figureColor.fill : figureColor.light, borderRadius: 10}} />}
           {!perimeterTape && !rowMiss && hideUnits && <RoundedTile {...box} fill={Shape.empty} edge={Shape.emptyLip} />}
           {editableFigure && <Pressable style={StyleSheet.absoluteFill} accessibilityRole="button"
             accessibilityLabel={t('geometryModels.shape', { name, width: w, height: h })}
@@ -209,7 +213,7 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
           <Text style={styles.dimension}>{w}</Text>
         </View>}
         <View pointerEvents="none" style={[styles.sideLane, sideBelow ? {top: '100%', alignSelf: 'center'} : sideLeft ? {right: drawingWidth + 8, width: sideWidth, top: 0, bottom: 0, alignItems: 'flex-end'} : {left: drawingWidth + 8, width: sideWidth, top: 0, bottom: 0, alignItems: 'flex-start'}]}>
-          <Text style={styles.side} accessibilityHint={compactDimensions && (!missing || done) ? dimension(h) : undefined}>{missing && !done ? (checkedResult === 'wrong' && value !== null ? value : '?') : compactDimensions ? h : dimension(h)}</Text>
+          <Text style={[styles.side, help && styles.helpDimension]} accessibilityHint={compactDimensions && (!missing || done) ? dimension(h) : undefined}>{missing && !done ? (checkedResult === 'wrong' && value !== null ? value : '?') : compactDimensions ? h : dimension(h)}</Text>
         </View>
       </View>
     </Figure>;
@@ -219,7 +223,7 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
     const sides = [w, h, w, h];
     const hue: TapePiece['hue'] = name === 'B' ? 'violet' : 'teal';
     const amber = (units: number, label: string): TapePiece => ({ units, label, hue: 'amber' });
-    const plain: TapePiece[] = sides.map((units, side) => ({ units, side, label: String(units), hue }));
+    const plain: TapePiece[] = sides.map((units, side) => ({ units, side, label: String(units), hue: help && side % 2 ? 'violet' : hue }));
     const cutAt = (pieces: TapePiece[], at: number) => {
       const out: TapePiece[] = [];
       let used = 0;
@@ -265,7 +269,7 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnl
     return <View ref={stageRef} collapsable={false} onLayout={remeasure}>
       {row}
       <View style={{ height: laneHeight }} onLayout={e => { const laneY = e.nativeEvent.layout.y; setRects(r => r.laneY === laneY ? r : { ...r, laneY }); }} />
-      <TapeBars tapes={specs} unit={unit} available={available} laneY={rects.laneY} />
+      <TapeBars tapes={specs} unit={unit} available={available} laneY={rects.laneY} bar={tapeBar} />
     </View>;
   };
   const compareMiss = mode === 'compare' && checkedResult === 'wrong' && !onSolutionShown;
@@ -339,6 +343,7 @@ const styles = StyleSheet.create({
   extraCells: { position: 'absolute', alignSelf: 'center', bottom: 6, borderRadius: 10, paddingHorizontal: 8, backgroundColor: Quantity.amber.light },
   figure: { alignItems: 'center', gap: 4 }, label: { fontSize: 17, fontWeight: '700', color: Colors.text, textAlign: 'center' },
   dimension: { fontSize: 20, lineHeight: 26, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+  helpDimension: { fontSize: 26, lineHeight: 32 },
   stacked: { flexDirection: 'column', alignItems: 'center' },
   side: { fontSize: 20, lineHeight: 26, fontWeight: '800', color: Colors.text },
   gapChip: { position: 'absolute', top: '50%', marginTop: 16, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 2, backgroundColor: Quantity.amber.light },

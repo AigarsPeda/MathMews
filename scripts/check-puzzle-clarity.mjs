@@ -8,7 +8,8 @@ const all = ['easy','medium','hard'].flatMap(tier => readPuzzles('en',tier));
 const byId = new Map(all.map(p => [p.id,p]));
 let diagrams = 0, stories = 0;
 for (const p of all) {
-  for (const model of [p.everyday?.model, p.everyday?.example.model].filter(Boolean)) {
+  const model = p.everyday?.model;
+  if (model) {
     diagrams++;
     if (model.kind === 'money') {
       if (model.unit === 'cents') assert.ok(model.coins, `${p.id}: visible coins`);
@@ -80,4 +81,4 @@ assert.equal(contextNodes.filter(n=>n.type==='PuzzleObjectImage').length,13,'Sho
 assert.ok(contextNodes.some(n=>n.props.accessibilityLabel==='At the start 8 ribbons'));
 assert.ok(contextNodes.some(n=>n.props.accessibilityLabel==='Added 5 ribbons'));
 assert.ok(!contextNodes.some(n=>n.props.accessibilityLabel?.includes('13')),'Do not label the solved sum');
-console.log(`Verified ${diagrams} task/example diagrams, ${stories} pictured stories, pack quantities, localized object names and principle-based hints.`);
+console.log(`Verified ${diagrams} task diagrams, ${stories} pictured stories, pack quantities, localized object names and principle-based hints.`);

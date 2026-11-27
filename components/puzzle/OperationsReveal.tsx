@@ -28,6 +28,7 @@ import { DiagramIcon } from '@/components/puzzle/kit/DiagramIcon';
 import { MachineLane } from './MachineLane';
 import { UnknownWell } from './kit/PuzzleKit';
 import { ProofCaption } from '@/components/puzzle/kit/Focus';
+import { HelpProofContext } from '@/components/puzzle/kit/HelpProofContext';
 import { ProofLanding } from '@/components/puzzle/kit/ProofFeedback';
 import { RevealSurface } from '@/components/puzzle/kit/RevealSurface';
 import { useRevealBeats, type RevealBeats } from '@/components/puzzle/kit/useRevealBeats';
@@ -42,7 +43,7 @@ import {
 import type { PuzzleAnswer } from '@/utils/puzzle-type';
 import { moderateScale } from '@/utils/scale';
 import { Canvas, Path, Skia } from '@shopify/react-native-skia';
-import { useEffect, useMemo, useState, type ComponentProps, type ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useState, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { Easing, ReduceMotion, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -71,10 +72,16 @@ type Props = {
 /* Shared clock, caption lane and atoms                                 */
 /* ------------------------------------------------------------------ */
 
-function useProof(steps: readonly ProofStep[], onSolutionShown?: () => void, lead: number = ProofMotion.lead, hasCanvas = false) {
+/** Picture help plays an operations proof slower so each beat can be read: about 4 s in all, never more than 3.5 times slower. */
+const HELP_PACE_MS = 4000;
+
+function useProof(steps: readonly ProofStep[], onSolutionShown?: () => void, lead: number = ProofMotion.lead, hasCanvas = false, unhurried = false) {
+  const help = useContext(HelpProofContext);
+  const active = (unhurried && !!help) ? steps.reduce((sum, st) => sum + st.ms + (st.hold ?? PROOF_HOLD), lead) : 0;
+  const slow = active ? Math.max(1, Math.min(3.5, HELP_PACE_MS / active)) : 1;
   return useRevealBeats(steps.length, {
-    step: b => steps[b]?.ms ?? ProofMotion.beat[120],
-    hold: n => steps[n - 1]?.hold ?? PROOF_HOLD,
+    step: b => (steps[b]?.ms ?? ProofMotion.beat[120]) * slow,
+    hold: n => (steps[n - 1]?.hold ?? PROOF_HOLD) * slow,
     awaitInitialPaint: hasCanvas && canSnapshotModel, lead, minTotal: 0, reducedSteps: true, onDone: onSolutionShown,
   });
 }
@@ -274,8 +281,11 @@ function EquationProof({ puzzle, answer, mode, onSolutionShown }: Required<Pick<
   const { t } = useTranslation();
   const a0 = useMemo(() => answer ?? proofAnswer(puzzle, null, mode, true), [puzzle, answer, mode]);
   const plan = useMemo(() => equationPlan(puzzle, a0, mode, t), [puzzle, a0, mode, t]);
-  const beats = useProof(plan.steps, onSolutionShown, ProofMotion.lead, plan.tiles);
+  const beats = useProof(plan.steps, onSolutionShown, ProofMotion.lead, plan.tiles, true);
   const { landed, settled } = beats;
+  // Picture help keeps the trays where they are while units leave: the tallest load of any state sets the height.
+  const help = useContext(HelpProofContext);
+  const loadHeight = help ? Math.max(...plan.states.map(st => Math.max((st.a ? 56 : 0) + Math.ceil(st.b / 3) * 48, Math.ceil(st.c / 3) * 48))) + 12 : undefined;
   const at = settled ? plan.steps.length - 1 : Math.max(0, landed - 1);
   const inFlight = !settled && landed < plan.steps.length ? landed : -1;
   const moveIndex = inFlight >= 0 ? plan.stepMove[inFlight] : -1;
@@ -302,7 +312,7 @@ function EquationProof({ puzzle, answer, mode, onSolutionShown }: Required<Pick<
   const xLabel = settled && plan.ok && shown.a === 1 && shown.b === 0 ? String(shown.c) : 'x';
   const side = (units: number) => <UnitRow count={units} leaving={leaving ? { n: leaving, progress } : null} arriving={arriving ? { n: arriving, progress } : null} />;
   return <ProofFrame finalOnly beats={beats} steps={plan.steps} final={plan.final} label={equationLabel(plan.states[0])}>
-    <BalanceScale wide proofFocus={move ? 1 : .5}
+    <BalanceScale wide proofFocus={move ? 1 : .5} loadHeight={loadHeight}
       left={<View style={styles.eqPan}>
         <ProofLanding landed={landed > 0 && plan.stepMove[at] >= 0}><View style={styles.wrapRow}>{Array.from({ length: shown.a }, (_, i) => <XTile key={i} label={xLabel} fading={sharing && i > 0 ? progress : null} />)}</View></ProofLanding>
         {side(shown.b)}
@@ -316,14 +326,16 @@ function EquationProof({ puzzle, answer, mode, onSolutionShown }: Required<Pick<
 
 function XTile({ label, fading = null }: { label: string; fading?: RevealBeats['progress'] | null }) {
   const motion = useAnimatedStyle(() => ({ opacity: fading ? 1 - .85 * fading.value : 1 }), [fading]);
-  return <Animated.View style={[styles.xTile, motion]}><FaceText style={styles.xText}>{label}</FaceText></Animated.View>;
+  const help = useContext(HelpProofContext);
+  return <Animated.View style={[styles.xTile, help && HELP_X_TILE, motion]}><FaceText adjustsFontSizeToFit={!help} style={[styles.xText, help && HELP_X_TEXT]}>{label}</FaceText></Animated.View>;
 }
 
 /** Unit tiles in rows of five. The trailing `leaving` units drop away; `arriving` units fade in, on both sides together. */
 function UnitRow({ count, leaving = null, arriving = null }: { count: number; leaving?: { n: number; progress: RevealBeats['progress'] } | null; arriving?: { n: number; progress: RevealBeats['progress'] } | null }) {
+  const help = useContext(HelpProofContext);
   const total = count + (arriving?.n ?? 0);
   if (total <= 0) return null;
-  return <View style={[styles.wrapRow, styles.units]}>
+  return <View style={[styles.wrapRow, styles.units, help && HELP_UNITS]}>
     {Array.from({ length: total }, (_, i) => {
       const leaves = !!leaving && i >= count - leaving.n;
       const arrives = !!arriving && i >= count;
@@ -333,8 +345,15 @@ function UnitRow({ count, leaving = null, arriving = null }: { count: number; le
 }
 
 const UNIT_DROP = moderateScale(14);
+/** Picture help: 44 pt unit tiles with 26 pt digits, three to a row so each stays countable; a 66 pt x tile. */
+const HELP_UNIT = { width: 44, height: 44, borderRadius: Shape.tile(44) } as const;
+const HELP_UNIT_TEXT = { fontSize: 26, lineHeight: 32 } as const;
+const HELP_UNITS = { maxWidth: 3 * 44 + 2 * 4 + 10 } as const;
+const HELP_X_TILE = { minWidth: 66, height: 52, borderRadius: Shape.tile(52) } as const;
+const HELP_X_TEXT = { fontSize: 32, lineHeight: 40 } as const;
 
 function UnitTile({ motion }: { motion: { kind: 'leave' | 'arrive'; progress: RevealBeats['progress'] } | null }) {
+  const help = useContext(HelpProofContext);
   const style = useAnimatedStyle(() => {
     if (!motion) return { opacity: 1 };
     const p = motion.progress.value;
@@ -342,7 +361,7 @@ function UnitTile({ motion }: { motion: { kind: 'leave' | 'arrive'; progress: Re
       ? { opacity: 1 - p, transform: [{ translateY: p * UNIT_DROP }] }
       : { opacity: p, transform: [{ translateY: (1 - p) * -UNIT_DROP }] };
   }, [motion]);
-  return <Animated.View style={[styles.unit, motion?.kind === 'leave' && styles.unitLeaving, style]}><FaceText style={styles.unitText}>1</FaceText></Animated.View>;
+  return <Animated.View style={[styles.unit, help && HELP_UNIT, motion?.kind === 'leave' && styles.unitLeaving, style]}><FaceText adjustsFontSizeToFit={!help} style={[styles.unitText, help && HELP_UNIT_TEXT]}>1</FaceText></Animated.View>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -463,11 +482,12 @@ function FixProof({ puzzle, answer, mode, onSolutionShown }: Required<Pick<Props
 function MachineProof({ puzzle, answer, mode, onSolutionShown }: Required<Pick<Props, 'mode'>> & Props & { puzzle: Extract<OperationsPuzzle, { type: 'function_machine' }> }) {
   const index = proofChoice(answer, puzzle.correctIndex, mode);
   const plan = useMemo(() => machinePlan(puzzle, index), [puzzle, index]);
-  const beats = useProof(plan?.steps ?? [], onSolutionShown);
+  const help = useContext(HelpProofContext);
+  const beats = useProof(plan?.steps ?? [], onSolutionShown, undefined, false, true);
   if (!plan) return null;
   return <ProofFrame beats={beats} steps={plan.steps} final={plan.final} label={puzzle.question}>
     <MachineLane input={puzzle.payload.input} output={puzzle.payload.output} proof={{ plan, beats }}
-      socket={<UnknownWell label={plan.rule} filled />} />
+      socket={<UnknownWell label={plan.rule} filled size={help ? 'lg' : undefined} />} />
   </ProofFrame>;
 }
 

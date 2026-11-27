@@ -1,9 +1,10 @@
 import { Canvas, Oval, Group, RoundedRect, useCanvasRef } from '@shopify/react-native-skia';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, useWindowDimensions } from 'react-native';
 import { Ink, Quantity, Radius, Shape } from '@/constants/puzzle-theme';
 import type { QuantityTaskModel } from '@/types/puzzle';
+import { HelpProofContext } from '../kit/HelpProofContext';
 import { landTick } from '../kit/proofHaptics';
 import { QuantityEntryBuild, useQuantityPractice } from './QuantityPractice';
 import { DiagramGlyph } from '../kit/DiagramIcon';
@@ -12,6 +13,9 @@ import type { RevealBeats } from '../kit/useRevealBeats';
 import { useProofViewport } from '../PlayProofCaption';
 import { ProofWindow } from './ProofWindow';
 import { modelInk, useModelPaint } from './useModelPaint';
+
+/** Picture help keeps this much clear of the row band's edge on each side. */
+const HELP_SIDE = 8;
 
 export function ArrayBoard({ model, measuredWidth, landed, running, beats, interactive = false }: {
   model: Extract<QuantityTaskModel, { kind: 'array' }>; measuredWidth: number; landed: number; running: boolean; beats?: RevealBeats; interactive?: boolean;
@@ -22,13 +26,18 @@ export function ArrayBoard({ model, measuredWidth, landed, running, beats, inter
   const { rows, columns, object } = model;
   const viewport = useProofViewport();
   const budget = viewport ? Math.max(1, viewport.availableModelHeight - 8) : undefined;
-  const size = fontScale >= 2 ? 34 : 38;
-  const gap = Shape.space.loose;
-  const across = Math.max(1, Math.min(columns, Math.floor((width - 12) / (size + gap))));
+  const help = useContext(HelpProofContext);
+  const gap = help ? 4 : Shape.space.loose;
+  // Picture help fills the sheet width with big pieces; Play keeps its compact pieces.
+  const size = help ? Math.max(36, Math.min(96, Math.floor((width - 2 * HELP_SIDE - (columns - 1) * gap) / columns), Math.floor(help.height / rows) - gap)) : fontScale >= 2 ? 34 : 38;
+  const across = Math.max(1, Math.min(columns, Math.floor((width - (help ? 2 * HELP_SIDE : 12) + gap) / (size + gap))));
   const lines = Math.ceil(columns / across);
+  // The mouse's drawing spans 59 of its 64 units: picture help draws it a little larger so it fills the cell.
+  const zoom = help && object ? 1.08 : 1;
   const step = size + gap;
-  const rowHeight = Math.max(44, lines * step);
-  const rowWidth = Math.min(width, across * step + 12);
+  // Picture help gives each row room to breathe, up to what the model area allows.
+  const rowHeight = help ? Math.max(lines * step, Math.min(Math.round(lines * step * 1.3), Math.floor(help.height / rows))) : Math.max(44, lines * step);
+  const rowWidth = Math.min(width, across * step - (help ? gap : 0) + (help ? 2 * HELP_SIDE : 12));
   const insetX = (rowWidth - across * step + gap) / 2, insetY = (rowHeight - lines * step) / 2;
   const canvasHeight = rowHeight * rows, canvasWidth = rowWidth;
   const canvas = useCanvasRef();
@@ -62,10 +71,10 @@ export function ArrayBoard({ model, measuredWidth, landed, running, beats, inter
       <QuantityEntryBuild editing={interactive && !running} ready={measuredWidth > 0}>
         <Canvas ref={canvas} accessible={false} style={{width: canvasWidth, height: canvasHeight}}>
           {rowList.map(({ i, x, y }) => <Group key={i} transform={[{ translateX: x }, { translateY: y }]}>
-            <RoundedRect x={0} y={0} width={rowWidth} height={rowHeight - gap} r={Radius.piece}
-              color={running && i < landed ? Quantity.teal.light : (interactive && (pressedRow === i || hintVisible && !touched && i === 0)) || marked.has(i) ? Quantity.violet.light : Ink.tray} />
-            {cells.map((cell, col) => <Group key={col} transform={[{ translateX: cell.x }, { translateY: cell.y }, { scale: size / 64 }]}>
-              {object ? <DiagramGlyph name={object} displaySize={size} /> : <>
+            <RoundedRect x={0} y={0} width={rowWidth} height={rowHeight - (help ? Shape.space.loose : gap)} r={Radius.piece}
+              color={running && i < landed ? help ? Quantity.teal.soft : Quantity.teal.light : (interactive && (pressedRow === i || hintVisible && !touched && i === 0)) || marked.has(i) ? Quantity.violet.light : Ink.tray} />
+            {cells.map((cell, col) => <Group key={col} transform={[{ translateX: cell.x + size * (1 - zoom) / 2 }, { translateY: cell.y + size * (1 - zoom) / 2 }, { scale: size * zoom / 64 }]}>
+              {object ? <DiagramGlyph name={object} displaySize={size * zoom} /> : <>
                 <Oval x={6} y={6} width={52} height={52} color={Quantity.teal.edge} />
                 <Oval x={6} y={6} width={52} height={52 - Shape.lip * 64 / size} color={Quantity.teal.fill} />
               </>}

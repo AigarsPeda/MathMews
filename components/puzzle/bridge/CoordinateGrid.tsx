@@ -1,3 +1,6 @@
+import { HelpProofContext } from '../kit/HelpProofContext';
+import { useTranslation } from 'react-i18next';
+import { ProofLine, useHelpCaption } from '../help/helpKit';
 import { Land } from '@/components/puzzle/tiles/TileMotion';
 import { GridPoint } from '../GridPoint';
 import { useModelStage } from '../kit/ModelStage';
@@ -10,7 +13,7 @@ import { Ink, Motion, ProofMotion, PuzzleColors, Quantity, Shape } from '@/const
 import type { Point } from '@/utils/bridge-models';
 import { moderateScale } from '@/utils/scale';
 import { Canvas, Group, Path, RoundedRect, Skia, useCanvasRef } from '@shopify/react-native-skia';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text as NativeText, View } from 'react-native';
 import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useDerivedValue, ZoomIn } from 'react-native-reanimated';
 
@@ -39,17 +42,21 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
   /** Told when the worked route has finished (and again, false, when it replays). */
   onSettled?: (settled: boolean) => void; playback?: boolean;
 }) {
+  const help = useContext(HelpProofContext);
+  const { t } = useTranslation();
   const span = max - min;
   const viewport = useProofViewport();
   const compact = (viewport?.fontScale ?? 1) >= 1.5;
   const stage = useModelStage();
   const columns = span + 1;
   const availableWidth = (stage.width || viewport?.innerWidth || preferredSide) - (moveChip ? 24 : 0);
-  const cell = Math.max(1, (availableWidth - 2 * AXIS_GUTTER) / columns);
+  const cell = Math.max(1, ((help ? Math.min(availableWidth, help.height + 2 * AXIS_GUTTER - TOP_GUTTER - BOTTOM_GUTTER) : availableWidth) - 2 * AXIS_GUTTER) / columns);
   const side = span * cell;
-  const left = AXIS_GUTTER + cell / 2;
+  const helpInset = AXIS_GUTTER + 10;
+  const pitchX = help ? Math.max(1, (availableWidth - 2 * helpInset) / Math.max(1, span)) : cell;
+  const left = help ? helpInset : AXIS_GUTTER + cell / 2;
   const top = TOP_GUTTER + cell / 2;
-  const px = (p: Point) => ({ x: left + (p.x - min) * cell, y: top + (max - p.y) * cell });
+  const px = (p: Point) => ({ x: left + (p.x - min) * pitchX, y: top + (max - p.y) * cell });
   const measure = route?.kind === 'measure' && (route.from.x === route.to.x || route.from.y === route.to.y);
   const corner = route ? { x: route.to.x, y: route.from.y } : null;
   const units = route ? Math.abs(route.to.x - route.from.x) + Math.abs(route.to.y - route.from.y) : 0;
@@ -57,8 +64,8 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
   const legUnits = route && corner ? [Math.abs(corner.x - route.from.x), Math.abs(route.to.y - corner.y)] : [];
   // Alternate plot questions move one step from A. Only axes named by that
   // displacement take a beat; the last beat labels the point reached.
-  const horizontalBeats = route?.relativeResponse && legUnits[0] === 0 ? 0 : 1;
-  const verticalBeats = route?.relativeResponse && legUnits[1] === 0 ? 0 : 1;
+  const horizontalBeats = help ? legUnits[0] : route?.relativeResponse && legUnits[0] === 0 ? 0 : 1;
+  const verticalBeats = help ? legUnits[1] : route?.relativeResponse && legUnits[1] === 0 ? 0 : 1;
   const travelBeats = horizontalBeats + verticalBeats;
   const submittedPoint = typeof submitted === 'object' ? submitted : null;
   const stop = measure && typeof submitted === 'number' && route ? {
@@ -74,8 +81,8 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
   // a walk spends 240 ms on each nonzero leg (120 ms for a "stay") and lands its labelled point in 120 ms.
   const beats = useRevealBeats(count, {
     awaitInitialPaint: !!route && canSnapshotCanvas,
-    step: beat => measure ? ProofMotion.beat[180] : beat >= travelBeats ? ProofMotion.beat[120] : (legUnits[horizontalBeats ? beat : 1] ?? 0) > 0 ? ProofMotion.beat[240] : ProofMotion.beat[120],
-    hold: landed => measure && units > 6 && landed < count ? 0 : ProofMotion.repeatHold,
+    step: beat => help ? 380 : measure ? ProofMotion.beat[180] : beat >= travelBeats ? ProofMotion.beat[120] : (legUnits[horizontalBeats ? beat : 1] ?? 0) > 0 ? ProofMotion.beat[240] : ProofMotion.beat[120],
+    hold: landed => help ? 220 : measure && units > 6 && landed < count ? 0 : ProofMotion.repeatHold,
     // The start is pinned for 120 ms before the first move.
     lead: ProofMotion.beat[120], minTotal: 0, reducedSteps: true,
   });
@@ -94,15 +101,16 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
       return { line, head, empty: len === 0 };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route?.from.x, route?.from.y, route?.to.x, route?.to.y, measure, min, max, cell, top]);
-  const width = 2 * AXIS_GUTTER + columns * cell, height = TOP_GUTTER + columns * cell + BOTTOM_GUTTER;
+  }, [route?.from.x, route?.from.y, route?.to.x, route?.to.y, measure, min, max, cell, top, pitchX]);
+  const width = help ? availableWidth : 2 * AXIS_GUTTER + columns * cell;
+  const height = TOP_GUTTER + columns * cell + BOTTOM_GUTTER;
   const walking = !!route && !measure;
   const arrived = walking && beats.landed >= landingBeat;
   const landedPoint = walking && beats.landed >= count;
   const from = route ? px(route.from) : { x: 0, y: 0 }, mid = corner ? px(corner) : from, dest = route ? px(route.to) : from;
   const attemptedEnd = stop ? px(stop) : wrongLanding ? px(wrongLanding) : dest;
   const walker = useAnimatedStyle(() => {
-    const pos = beats.position.value, a = clamp01(pos), b = clamp01(pos - horizontalBeats);
+    const pos = beats.position.value, a = clamp01(pos / (help ? Math.max(1, horizontalBeats) : 1)), b = clamp01((pos - horizontalBeats) / (help ? Math.max(1, verticalBeats) : 1));
     if (measure) {
       const ratio = clamp01(pos / Math.max(1, shownUnits));
       return { transform: [{ translateX: from.x + (attemptedEnd.x - from.x) * ratio - DOT / 2 }, { translateY: from.y + (attemptedEnd.y - from.y) * ratio - DOT / 2 }] };
@@ -116,7 +124,7 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
     }
     // Across on beat 1 (the corner shares the start's y), then up or down on beat 2.
     return { transform: [{ translateX: from.x + (mid.x - from.x) * a - DOT / 2 }, { translateY: mid.y + (dest.y - mid.y) * b - DOT / 2 }] };
-  }, [from.x, from.y, mid.x, mid.y, dest.x, dest.y, horizontalBeats, measure, shownUnits, wrongLanding, moveChip, attemptedEnd.x, attemptedEnd.y]);
+  }, [from.x, from.y, mid.x, mid.y, dest.x, dest.y, horizontalBeats, verticalBeats, help, measure, shownUnits, wrongLanding, moveChip, attemptedEnd.x, attemptedEnd.y]);
   const learnerShown = !submittedPoint && learner && !(route && !measure && learner.x === route.to.x && learner.y === route.to.y) ? learner : null;
   const canvas = useCanvasRef();
   const [laidOutHeight, setLaidOutHeight] = useState(0);
@@ -124,6 +132,8 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
   const modelRef = useModelPaint(planeReady, beats, canSnapshotModel ? undefined : canvas);
   const finished = !!route && beats.settled;
   useEffect(() => { onSettled?.(finished); }, [finished, onSettled]);
+  const across = beats.landed < horizontalBeats;
+  useHelpCaption(help && walking && !finished ? t(`visualHelp.examples.coordinates.${across ? 'across' : 'up'}`, { n: legUnits[across ? 0 : 1] }) : null);
   const axis = route?.from.x === route?.to.x ? 'y' : 'x';
   const equation = route && (measure ? `${Math.max(route.from[axis], route.to[axis])} − ${Math.min(route.from[axis], route.to[axis])} = ${units}`
     : `${formatPoint(route.from)} → ${formatPoint(route.to)}`);
@@ -135,7 +145,7 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
     <View testID={testID ? `${testID}-frame` : undefined} style={{ width, height }}>
     <View ref={modelRef} collapsable={false} style={{ width, height, alignSelf: 'center' }} nativeID={route ? "play-proof-model" : "play-entry-model"} testID={route ? "play-proof-model" : "play-entry-model"}
       onLayout={({ nativeEvent: { layout } }) => setLaidOutHeight(layout.height)}>
-      {Array.from({ length: columns * columns }, (_, i) => {
+      {!help && Array.from({ length: columns * columns }, (_, i) => {
         const size = cell - Shape.space.seam;
         return <View key={i} pointerEvents="none" style={{ position: 'absolute',
           left: AXIS_GUTTER + (i % columns) * cell + Shape.space.seam / 2,
@@ -143,7 +153,11 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
           width: size, height: size, borderRadius: Math.min(10, size / 4), backgroundColor: Shape.empty }} />;
       })}
       <Canvas ref={canvas} style={StyleSheet.absoluteFill} pointerEvents="none">
-        {!measure && !wrongLanding && !finished && legs.map((leg, i) => leg.empty ? null : <Leg key={i} index={i === 0 ? 0 : horizontalBeats} line={leg.line} head={leg.head} beats={beats} span={measure ? count : 1} arrow={!measure} />)}
+        {help && Array.from({ length: columns }, (_, i) => <Group key={i}>
+          <RoundedRect x={left + i * pitchX - 3} y={top - 3} width={6} height={side + 6} r={3} color={Shape.empty} />
+          <RoundedRect x={left - 3} y={top + i * cell - 3} width={span * pitchX + 6} height={6} r={3} color={Shape.empty} />
+        </Group>)}
+        {!measure && !wrongLanding && (help || !finished) && legs.map((leg, i) => leg.empty ? null : <Leg key={i} index={i === 0 ? 0 : horizontalBeats} line={leg.line} head={leg.head} beats={beats} span={help ? legUnits[i] : measure ? count : 1} hue={help ? (i ? Quantity.violet.fill : Quantity.teal.fill) : undefined} arrow={!help && !measure} />)}
         {measure && Array.from({ length: Math.min(shownUnits, beats.landed) }, (_, i) => {
           const horizontal = from.y === dest.y;
           const x = Math.min(from.x + (attemptedEnd.x - from.x) * i / shownUnits, from.x + (attemptedEnd.x - from.x) * (i + 1) / shownUnits);
@@ -155,11 +169,11 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
       {Array.from({ length: span + 1 }, (_, i) => {
         const n = min + i;
         return <View key={n} pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <NativeText numberOfLines={1} allowFontScaling={false} style={[styles.tick, { left: AXIS_GUTTER + i * cell, width: cell, height: BOTTOM_GUTTER, top: top + side + cell / 2 }]}>{n}</NativeText>
-          <NativeText numberOfLines={1} allowFontScaling={false} style={[styles.tick, styles.yTick, { left: 0, top: top + (max - n) * cell - (compact ? 15 : 12) }]}>{n}</NativeText>
+          <NativeText numberOfLines={1} allowFontScaling={false} style={[styles.tick, help && styles.helpTick, { left: left + i * pitchX - cell / 2, width: cell, height: help ? 30 : BOTTOM_GUTTER, top: top + side + cell / 2 }]}>{n}</NativeText>
+          <NativeText numberOfLines={1} allowFontScaling={false} style={[styles.tick, help && styles.helpTick, styles.yTick, { left: 0, top: top + (max - n) * cell - (help || compact ? 15 : 12) }]}>{n}</NativeText>
         </View>;
       })}
-      <NativeText maxFontSizeMultiplier={1.2} pointerEvents="none" style={[styles.axisName, { left: width - AXIS_GUTTER + 3, top: height - BOTTOM_GUTTER }]}>x</NativeText>
+      <NativeText maxFontSizeMultiplier={1.2} pointerEvents="none" style={[styles.axisName, { left: width - (help ? 16 : AXIS_GUTTER - 3), top: height - BOTTOM_GUTTER }]}>x</NativeText>
       <NativeText maxFontSizeMultiplier={1.2} pointerEvents="none" style={[styles.axisName, { left: 8, top: 0 }]}>y</NativeText>
       {onTap ? <Pressable testID={testID} accessible={false} disabled={disabled}
         style={{ position: 'absolute', left: left - cell / 2, top: top - cell / 2, width: side + cell, height: side + cell }}
@@ -176,7 +190,7 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
         return <GridPoint key={label} label={label} hue={isSubmitted ? Quantity.amber : label === 'B' ? Quantity.violet : Quantity.teal}
           style={{ position: 'absolute', left: p.x - GIVEN / 2, top: p.y - GIVEN / 2 }} />;
       })}
-      {walking && !moveChip && !wrongLanding && !finished && route && corner ? legUnits.map((n, i) => {
+      {walking && !help && !moveChip && !wrongLanding && !finished && route && corner ? legUnits.map((n, i) => {
         const legBeat = (i === 0 ? 0 : horizontalBeats) + 1;
         if (!n || beats.landed < legBeat || (compact && beats.landed !== legBeat)) return null;
         const a = px(i === 0 ? route.from : corner), b = px(i === 0 ? corner : route.to);
@@ -190,26 +204,26 @@ export function CoordinateGrid({ moveChip, min, max, side: preferredSide, points
         <GridPoint hue={Quantity.violet}><View style={styles.ringDot} /></GridPoint>
       </Animated.View> : null}
       {((measure && beats.landed > 0 && (stop || !finished)) || (walking && !arrived && !(wrongLanding && moveChip))) ? <Animated.View pointerEvents="none" style={[styles.walker, walker]}>
-        <GridPoint hue={stop ? Quantity.amber : Quantity.teal} />
+        <GridPoint hue={stop ? Quantity.amber : help && !across ? Quantity.violet : Quantity.teal} />
       </Animated.View> : null}
       {wrongLanding && moveChip ? <GridPoint diameter={missDiameter} hue={Quantity.teal} style={{ position: 'absolute', left: dest.x - missDiameter / 2, top: dest.y - missDiameter / 2 }} /> : arrived && route ? <View key={`d-${beats.runId}`} pointerEvents="none" style={[styles.destination, { left: dest.x - DEST / 2, top: dest.y - DEST / 2 }]}>
-        {landedPoint ? <Animated.View entering={FadeIn.duration(Motion.fade).reduceMotion(ReduceMotion.System)} style={styles.destinationDot}><GridPoint><View style={styles.destinationCore} /></GridPoint></Animated.View> : <GridPoint />}
+        {help ? <View style={styles.helpDestination} /> : landedPoint ? <Animated.View entering={FadeIn.duration(Motion.fade).reduceMotion(ReduceMotion.System)} style={styles.destinationDot}><GridPoint><View style={styles.destinationCore} /></GridPoint></Animated.View> : <GridPoint />}
       </View> : null}
     </View>
     </View>
-    {submitted === undefined && equation && <PlayProofCaption><View testID={finished ? "play-proof-equation" : undefined} nativeID={finished ? "play-proof-equation" : undefined} style={styles.readout}>{finished && <Caption strong>{equation}</Caption>}</View></PlayProofCaption>}
+    {help && route ? <ProofLine equation={finished ? formatPoint(route.to) : undefined} /> : submitted === undefined && equation && <PlayProofCaption><View testID={finished ? "play-proof-equation" : undefined} nativeID={finished ? "play-proof-equation" : undefined} style={styles.readout}>{finished && <Caption strong>{equation}</Caption>}</View></PlayProofCaption>}
   </View></RevealSurface>;
 }
 
-function Leg({ line, head, index, beats, span, arrow }: { line: ReturnType<typeof Skia.Path.Make>; head: ReturnType<typeof Skia.Path.Make>; index: number;
-  beats: ReturnType<typeof useRevealBeats>; span: number; arrow: boolean }) {
+function Leg({ line, head, index, beats, span, arrow, hue }: { line: ReturnType<typeof Skia.Path.Make>; head: ReturnType<typeof Skia.Path.Make>; index: number;
+  beats: ReturnType<typeof useRevealBeats>; span: number; hue?: string; arrow: boolean }) {
   const { position } = beats;
   // A walk leg owns one beat; a measured span is one leg drawn over all of its unit beats.
   const end = useDerivedValue(() => clamp01((position.value - index) / span), [index, span]);
   const headOpacity = useDerivedValue(() => arrow && clamp01((position.value - index) / span) > .92 ? 1 : 0, [index, span, arrow]);
   return <Group>
     {/* friendly-ok: the learner follows this path from one coordinate to the next. */}
-    <Path path={line} style="stroke" strokeWidth={10} strokeCap="round" color={Quantity.teal.edge} start={0} end={end} />
+    <Path path={line} style="stroke" strokeWidth={hue ? 16 : 10} strokeCap="round" color={hue ?? Quantity.teal.edge} start={0} end={end} />
     <Path path={head} color={Quantity.teal.edge} opacity={headOpacity} />
   </Group>;
 }
@@ -226,6 +240,8 @@ const styles = StyleSheet.create({
   legLabel: { minWidth: moderateScale(36), fontSize: 18, lineHeight: moderateScale(20), fontWeight: '800', color: Quantity.teal.edge, textAlign: 'center',
     backgroundColor: PuzzleColors.background, borderRadius: 4, overflow: 'hidden', paddingHorizontal: 3, fontVariant: ['tabular-nums'] },
   tick: { position: 'absolute', textAlign: 'center', fontSize: 20, lineHeight: 24, fontWeight: '800', color: Ink.text, fontVariant: ['tabular-nums'] },
+  helpTick: { fontSize: 24, lineHeight: 30 },
+  helpDestination: { width: 32, height: 32, borderRadius: 16, backgroundColor: Quantity.amber.fill },
   yTick: { width: AXIS_GUTTER - 3 },
   axisName: { position: 'absolute', fontSize: 20, lineHeight: 24, fontWeight: '800', color: Ink.text },
   ring: { position: 'absolute', width: RING, height: RING, borderRadius: RING / 2, alignItems: 'center', justifyContent: 'center' },

@@ -18,7 +18,7 @@ type StripProps = {
   parts: number; shaded: number; selected?: readonly number[]; height?: number;
   gap?: number; width?: number; alignment?: Alignment; highlighted?: readonly number[];
   animateEntry?: boolean; animateChange?: boolean; demoFace?: boolean;
-  target?: number; opening?: boolean; pulseKey?: number;
+  lip?: boolean; target?: number; opening?: boolean; pulseKey?: number;
   /** The reference strip is teal; the child's strip is violet. */
   tone?: 'teal' | 'violet';
   /** Cells past the reference edge (amber) and cells still missing before it (soft amber). */
@@ -27,7 +27,7 @@ type StripProps = {
 
 /** A partition always uses the same whole bounds. The optional guide is painted into the faces. */
 export function FractionStrip({ parts, shaded, selected, height = 40, gap: requestedGap = Shape.space.seam, width, alignment, highlighted,
-  animateEntry = false, animateChange = false, demoFace = false, target, opening = false, pulseKey, tone = 'violet', over, under }: StripProps) {
+  lip = false, animateEntry = false, animateChange = false, demoFace = false, target, opening = false, pulseKey, tone = 'violet', over, under }: StripProps) {
   const seam = useSharedValue(opening ? 0 : 1);
   const reduced = useReducedMotion();
   useEffect(() => {
@@ -46,7 +46,7 @@ export function FractionStrip({ parts, shaded, selected, height = 40, gap: reque
     {Array.from({ length: parts }, (_, index) => {
       const on = !moving && active.includes(index);
       const guide = Math.max(0, Math.min(1, (target ?? 0) * parts - index));
-      const face = <StripFace shaded={on} highlighted={highlighted?.includes(index)} height={height} guide={guide}
+      const face = <StripFace lip={lip} shaded={on} highlighted={highlighted?.includes(index)} height={height} guide={guide}
         seam={seam} before={index / parts * gap} after={(1 - (index + 1) / parts) * gap}
         opening={opening} animateChange={animateChange} pulseKey={pulseKey} demo={demoFace && index === 0 && !on}
         tone={tone} flag={over?.includes(index) ? 'over' : under?.includes(index) ? 'under' : undefined} />;
@@ -71,8 +71,8 @@ function AlignFace({ from, to, pitch, gap, height, alignment: { position, snappe
   </Animated.View>;
 }
 
-function StripFace({ shaded, highlighted, height, guide = 0, seam, before = 0, after = 0, opening = false, animateChange = false, demo = false, pulseKey, tone = 'violet', flag }: {
-  shaded: boolean; highlighted?: boolean; height: number; guide?: number; seam: SharedValue<number>; before?: number; after?: number;
+function StripFace({ lip, shaded, highlighted, height, guide = 0, seam, before = 0, after = 0, opening = false, animateChange = false, demo = false, pulseKey, tone = 'violet', flag }: {
+  lip?: boolean; shaded: boolean; highlighted?: boolean; height: number; guide?: number; seam: SharedValue<number>; before?: number; after?: number;
   opening?: boolean; animateChange?: boolean; demo?: boolean; pulseKey?: number; tone?: 'teal' | 'violet'; flag?: 'over' | 'under';
 }) {
   const previous = useRef({ shaded, highlighted, pulseKey });
@@ -103,7 +103,7 @@ function StripFace({ shaded, highlighted, height, guide = 0, seam, before = 0, a
   const faceColor = flag === 'over' ? amber.fill : flag === 'under' ? amber.light
     : shaded ? highlighted ? hue.onFill : hue.fill
     : highlighted ? Shape.emptyLip : guide === 1 ? hue.soft : Shape.empty;
-  return <Animated.View style={[styles.cell, { borderRadius: radius, backgroundColor: faceColor }, motion]}>
+  return <Animated.View style={[styles.cell, { borderRadius: radius, backgroundColor: faceColor }, lip && { borderBottomWidth: 5, borderBottomColor: shaded ? hue.edge : Shape.emptyLip }, motion]}>
     {!shaded && guide > 0 && guide < 1 ? <View style={[styles.guide, { width: `${guide * 100}%` }]} /> : null}
   </Animated.View>;
 }

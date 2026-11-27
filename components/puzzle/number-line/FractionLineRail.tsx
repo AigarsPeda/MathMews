@@ -1,7 +1,8 @@
 import { LineDot } from './LineMarks';
 import { PuzzleText } from '../PuzzleText';
 import { useProofViewport } from '../PlayProofCaption';
-import type { ReactNode } from 'react';
+import { useContext, type ReactNode } from 'react';
+import { HelpProofContext } from '../kit/HelpProofContext';
 import { Ink, Quantity } from '@/constants/puzzle-theme';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
@@ -30,13 +31,14 @@ export function FractionLineStage({ children }: { children: ReactNode }) {
 export function FractionLineRail({ baseline, spacing, count, testPrefix, labels = [] }: {
   baseline: number; spacing: number; count: number; testPrefix?: string; labels?: readonly number[];
 }) {
+  const help = useContext(HelpProofContext);
   return <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-    <View style={[styles.rail, { left: fractionLineGutter, right: fractionLineGutter, top: baseline - 6 }]} />
+    <View style={[styles.rail, help && styles.helpRail, { left: fractionLineGutter, right: fractionLineGutter, top: baseline - 6 }]} />
     {Array.from({ length: count }, (_, index) => <View key={index}
       testID={testPrefix ? `${testPrefix}${index}` : undefined}
-      style={[styles.tick, { left: fractionLineX(spacing, index) - 5, top: baseline - 9 }]} />)}
+      style={[styles.tick, help && styles.helpTick, { left: fractionLineX(spacing, index) - (help ? 6 : 5), top: baseline - (help ? 13 : 9) }]} />)}
     {labels.filter(tick => tick > 0 && tick < count - 1).map(tick => <PuzzleText key={tick} numberOfLines={1} adjustsFontSizeToFit
-      maxFontSizeMultiplier={1.4} style={[styles.label, { left: fractionLineX(spacing, tick) - spacing / 2, width: spacing, top: baseline + fractionLineLabelOffset }]}>
+      maxFontSizeMultiplier={1.4} style={[styles.label, help && { fontSize: 26 }, { left: fractionLineX(spacing, tick) - spacing / 2, width: spacing, top: baseline + fractionLineLabelOffset }]}>
       {`${tick}/${count - 1}`}
     </PuzzleText>)}
   </View>;
@@ -50,4 +52,7 @@ const styles = StyleSheet.create({
   rail: { position: 'absolute', height: 12, borderRadius: 6, backgroundColor: Quantity.teal.light },
   label: { position: 'absolute', textAlign: 'center', fontSize: 20, fontWeight: '800', color: Ink.text },
   tick: { position: 'absolute', width: 10, height: 18, borderRadius: 5, backgroundColor: Quantity.teal.fill },
+  // Picture help: a solid rail like the puzzles' number lines, with small solid notches instead of pale ticks.
+  helpRail: { backgroundColor: Quantity.teal.fill },
+  helpTick: { width: 12, height: 26, borderRadius: 6, backgroundColor: Quantity.teal.edge },
 });

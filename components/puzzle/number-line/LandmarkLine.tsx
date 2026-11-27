@@ -3,7 +3,8 @@ import { useFirstQuantityEncounter } from '../counting/QuantityPractice';
 import { Ink, Quantity } from '@/constants/puzzle-theme';
 import { lineValue } from '@/utils/number-line-reveal';
 import { Path, Skia } from '@shopify/react-native-skia';
-import { useEffect, useState } from 'react';
+import { HelpProofContext } from '../kit/HelpProofContext';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -44,10 +45,12 @@ export function LandmarkLine({ scale, start, goal, value = start, unknown = fals
   const editPosition = useSharedValue(value);
   const [touched, setTouched] = useState(false);
   useEffect(() => { editPosition.set(reduced ? value : withTiming(value, { duration: 350 })); }, [editPosition, value, reduced]);
-  const { min, max, labels } = scale;
+  const help = useContext(HelpProofContext);
+  const { min, max } = scale;
+  const labels = help && route ? route : scale.labels;
   const landmarkFontScale = Math.min(fontScale, maxLandmarkFontScale);
   const labelText = (n: number) => unknown && n === goal && n !== value ? '?' : lineValue(n);
-  const labelWidth = (n: number) => 4 + 13 * landmarkFontScale * labelText(n).length;
+  const labelWidth = (n: number) => 4 + (help ? 19 : 13) * landmarkFontScale * labelText(n).length;
   const widestLabel = Math.max(...labels.map(labelWidth));
   const inset = Math.max(18, widestLabel / 2);
   const unit = (width - 2 * inset) / Math.max(1, max - min);
@@ -95,26 +98,29 @@ export function LandmarkLine({ scale, start, goal, value = start, unknown = fals
     return priority(a) - priority(b) || a - b;
   });
   const landmarks = placeLineLabels(sorted.map(n => ({ n, center: x(n), width: labelWidth(n) })), width, scale.labelRows);
-  const rowHeight = 31 * landmarkFontScale;
+  const rowHeight = (help ? 40 : 31) * landmarkFontScale;
   const content = <View pointerEvents="none" style={{ height: baseline + 18 + rowHeight * (landmarks.some(label => label.row === 1) ? 2 : 1) }}>
     <View style={[styles.rail, { left: inset, right: inset, top: baseline - 6 }]} />
-    {ticks.map(n => <View key={n} style={[styles.tick, { left: x(n) - 5, top: baseline - 9 }]} />)}
-    {[...new Set([start, goal])].map(n => <View key={n} style={[styles.stop, { left: x(n) - 14, top: baseline - 14 }]}>
+    {ticks.map(n => <View key={n} style={[styles.tick, help && styles.helpTick, { left: x(n) - (help ? 6 : 5), top: baseline - (help ? 13 : 9) }]} />)}
+    {[...new Set(help ? [] : [start, goal])].map(n => <View key={n} style={[styles.stop, { left: x(n) - 14, top: baseline - 14 }]}>
       <LineDot />
     </View>)}
     {landmarks.map(({ n, left, row, width: numeralWidth }) => <PuzzleText key={n} maxFontSizeMultiplier={maxLandmarkFontScale} numberOfLines={1}
-      style={[styles.number, { left, top: baseline + 18 + rowHeight * row, width: numeralWidth }]}>{labelText(n)}</PuzzleText>)}
+      style={[styles.number, help && { fontSize: 28 }, { left, top: baseline + 18 + rowHeight * row, width: numeralWidth }]}>{labelText(n)}</PuzzleText>)}
     {route && <ProofCanvas trackCanvas={trackCanvas} style={StyleSheet.absoluteFill}>
       {/* friendly-ok: the violet arc is the travelled hop */}
       <Path path={travelled} color={Quantity.violet.fill} style="stroke" strokeWidth={10} strokeCap="round" />
       {/* friendly-ok: the final hop changes color for a missed judgment */}
       {missLastHop && <Path path={missed} color={Quantity.amber.fill} style="stroke" strokeWidth={10} strokeCap="round" />}
     </ProofCanvas>}
+    {help && route?.slice(1, landed + 2).map((to, i) => <PuzzleText key={i} numberOfLines={1} maxFontSizeMultiplier={maxLandmarkFontScale}
+      style={[styles.number, { left: (x(route[i]) + x(to)) / 2 - 26, top: 0, width: 52, fontSize: 24 }]}>
+      {to > route[i] ? '+' : ''}{lineValue(to - route[i])}</PuzzleText>)}
     {annotate && delta !== 0 && (!settled || annotate === 'total') && <PuzzleText numberOfLines={1} maxFontSizeMultiplier={maxLandmarkFontScale} style={[styles.number, { left: Math.max(0, Math.min(width - 90, (x(route![index]) + x(next!)) / 2 - 45)), width: Math.min(90, width), top: 0 }]}>
       {delta > 0 ? '+' : ''}{lineValue(delta)}</PuzzleText>}
     {submitted != null ? <View style={[styles.stop, { left: x(submitted) - 14, top: baseline - 14 }]}>
       <LineDot palette={submitted === goal ? Quantity.teal : Quantity.amber} /></View>
-      : <Animated.View style={[styles.stop, mover]}><LineDot /></Animated.View>}
+      : <Animated.View style={[styles.stop, mover]}><LineDot palette={help ? (!route && value !== goal ? Quantity.violet : Quantity.amber) : undefined} /></Animated.View>}
     {onSelect ? <IdleHint movable={!!onSelect} firstEncounter={firstEncounter} from={{ x: x(start), y: baseline }} interacted={touched || value !== start} /> : null}
   </View>;
   return <View testID={route ? 'play-proof-model' : 'play-entry-model'} nativeID={route ? 'play-proof-model' : 'play-entry-model'}
@@ -131,6 +137,8 @@ const styles = StyleSheet.create({
   stage: { width: '100%', alignSelf: 'center' },
   rail: { position: 'absolute', height: 12, borderRadius: 6, backgroundColor: Quantity.teal.fill },
   tick: { position: 'absolute', width: 10, height: 18, borderRadius: 5, backgroundColor: Quantity.teal.fill },
+  // Picture help: solid notches that stand clear of the rail.
+  helpTick: { width: 12, height: 26, borderRadius: 6, backgroundColor: Quantity.teal.edge },
   stop: { position: 'absolute', top: 0, left: 0, width: 28, height: 28, borderRadius: 14 },
   number: { position: 'absolute', fontWeight: '800', fontSize: 20, color: Ink.text, textAlign: 'center', fontVariant: ['tabular-nums'] },
 });
